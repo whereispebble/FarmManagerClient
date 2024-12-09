@@ -122,7 +122,10 @@
                               <ComboBox fx:id="comboSpecies" prefWidth="150.0" />
                            </children>
                         </HBox>
-                        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                           <children>
+                              <Label fx:id="lblMessage" />
+                           </children></HBox>
                      </children>
                   </GridPane>
                   <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1">
