@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane id="AnchorPane" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <!-- Contenedor principal -->
+      <GridPane alignment="CENTER" hgap="10" layoutX="12.0" layoutY="31.0" prefHeight="669.0" prefWidth="985.0" vgap="10" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="31.0">
+         <!-- Fila superior: Campos de texto -->
+         <Label prefHeight="17.0" prefWidth="45.0" text="Name:" />
+         <TextField fx:id="loginField" prefHeight="26.0" prefWidth="92.0" GridPane.columnIndex="1" />
+         
+         <Label text="Description:" GridPane.rowIndex="1" GridPane.valignment="BASELINE" />
+         
+         <Label text="Area:" GridPane.columnIndex="2" />
+         <TextField fx:id="nombreField" prefWidth="120" GridPane.columnIndex="3" />
+         
+         <Label text="Creation date:" GridPane.columnIndex="2" GridPane.rowIndex="1" GridPane.valignment="BASELINE" />
+         
+         <!-- Botones Crear y Modificar -->
+         <Button fx:id="crearButton" prefWidth="80" text="New" GridPane.columnIndex="4" />
+         <DatePicker GridPane.columnIndex="3" GridPane.rowIndex="1" GridPane.valignment="BASELINE" />
+         <TextArea prefHeight="78.0" prefWidth="223.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         <Button fx:id="salirButton" prefWidth="80" text="Log out" GridPane.columnIndex="5" />
+
+         <!-- Tabla -->
+         <TableView fx:id="usuariosTable" prefHeight="523.0" prefWidth="1000.0" GridPane.columnSpan="6" GridPane.rowIndex="3">
+            <columns>
+               <TableColumn fx:id="loginColumn" prefWidth="161.60003280639648" resizable="false" text="Name" />
+               <TableColumn fx:id="nombreColumn" prefWidth="393.59996032714844" resizable="false" text="Description" />
+               <TableColumn fx:id="perfilColumn" minWidth="0.0" prefWidth="75.20001220703125" resizable="false" text="Animals" />
+               <TableColumn fx:id="departamentoColumn" minWidth="0.0" prefWidth="159.2000732421875" resizable="false" text="Area" />
+               <TableColumn fx:id="departamentoColumn1" prefWidth="92.800048828125" resizable="false" text="Consume (kg)" />
+               <TableColumn fx:id="departamentoColumn11" prefWidth="95.20003662109377" resizable="false" text="Creation date" />
+            </columns>
+         </TableView>
+         <Separator prefWidth="200.0" GridPane.columnSpan="6" GridPane.rowIndex="2" />
+         <columnConstraints>
+            <ColumnConstraints maxWidth="80.0" minWidth="38.0" prefWidth="80.0" />
+            <ColumnConstraints maxWidth="237.80001220703124" minWidth="73.0" prefWidth="224.20003662109374" />
+            <ColumnConstraints maxWidth="185.0" minWidth="68.19998779296873" prefWidth="81.79996337890623" />
+            <ColumnConstraints maxWidth="454.0" minWidth="92.0" prefWidth="104.40002441406256" />
+            <ColumnConstraints maxWidth="565.0" minWidth="203.0" prefWidth="381.1999755859374" />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints maxHeight="57.60000762939453" minHeight="30.399995422363283" prefHeight="45.60000762939453" />
+            <RowConstraints maxHeight="132.79999389648435" minHeight="18.0" prefHeight="56.000012207031276" />
+            <RowConstraints maxHeight="132.79999389648435" minHeight="0.0" prefHeight="0.0" />
+            <RowConstraints maxHeight="567.0" minHeight="410.4000061035156" prefHeight="544.8" />
+         </rowConstraints>
+      </GridPane>
+      <MenuBar layoutX="1.0" layoutY="2.0" prefHeight="26.0" prefWidth="1024.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Edit">
+            <items>
+              <MenuItem mnemonicParsing="false" text="Delete" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </children>
+</AnchorPane>
