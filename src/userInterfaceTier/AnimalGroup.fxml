@@ -19,9 +19,9 @@
 
 <AnchorPane id="AnchorPane" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <!-- Contenedor principal -->
+
       <GridPane alignment="CENTER" hgap="10" layoutX="20.0" layoutY="28.0" prefHeight="550.0" prefWidth="984.0" vgap="10" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="28.0">
-         <!-- Fila superior: Campos de texto -->
+
          <Label prefHeight="17.0" prefWidth="45.0" text="Name:" GridPane.rowIndex="3" />
          <TextField fx:id="loginField" prefHeight="26.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          
@@ -31,14 +31,12 @@
          <TextField fx:id="nombreField" prefWidth="120" GridPane.columnIndex="3" GridPane.rowIndex="3" />
          
          <Label text="Creation date:" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
-         
-         <!-- Botones Crear y Modificar -->
+
          <Button fx:id="crearButton" prefWidth="80" text="Create" GridPane.columnIndex="4" GridPane.rowIndex="3" />
          <DatePicker GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
          <TextArea prefHeight="56.0" prefWidth="221.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          <Button fx:id="salirButton" prefWidth="80" text="Log out" GridPane.columnIndex="5" GridPane.valignment="BOTTOM" />
 
-         <!-- Tabla -->
          <TableView fx:id="usuariosTable" prefHeight="0.0" prefWidth="0.0" GridPane.columnSpan="6" GridPane.rowIndex="1">
             <columns>
                <TableColumn fx:id="loginColumn" prefWidth="161.60003280639648" resizable="false" text="Name" />
@@ -76,7 +74,7 @@
             <RowConstraints maxHeight="405.60000915527337" minHeight="13.600000000000023" prefHeight="36.80001220703127" />
          </rowConstraints>
       </GridPane>
-      <MenuBar layoutY="2.0" prefHeight="26.0" prefWidth="1024.0">
+      <MenuBar layoutX="-9.0" prefHeight="26.0" prefWidth="1033.0">
         <menus>
           <Menu mnemonicParsing="false" text="Navigate to">
             <items>
