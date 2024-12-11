@@ -32,7 +32,7 @@
          
          <Label text="Creation date:" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
 
-         <Button fx:id="crearButton" prefWidth="80" text="Create" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+         <Button fx:id="crearButton" disable="true" prefWidth="80" text="Create" GridPane.columnIndex="4" GridPane.rowIndex="3" />
          <DatePicker GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
          <TextArea prefHeight="56.0" prefWidth="221.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
          <Button fx:id="salirButton" prefWidth="80" text="Log out" GridPane.columnIndex="5" GridPane.valignment="BOTTOM" />
