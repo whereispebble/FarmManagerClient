@@ -22,48 +22,48 @@
 
       <GridPane alignment="CENTER" hgap="10" layoutX="20.0" layoutY="28.0" prefHeight="550.0" prefWidth="984.0" vgap="10" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="28.0">
 
-         <Label prefHeight="17.0" prefWidth="45.0" text="Name:" GridPane.rowIndex="3" />
-         <TextField fx:id="loginField" prefHeight="26.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+         <Label fx:id="lblName" prefHeight="17.0" prefWidth="45.0" text="Name:" GridPane.rowIndex="3" />
+         <TextField fx:id="tfName" prefHeight="26.0" prefWidth="92.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
          
          <Label text="Description:" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
          
          <Label text="Area:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-         <TextField fx:id="nombreField" prefWidth="120" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+         <TextField fx:id="tfArea" prefWidth="120" GridPane.columnIndex="3" GridPane.rowIndex="3" />
          
          <Label text="Creation date:" GridPane.columnIndex="2" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
 
-         <Button fx:id="crearButton" disable="true" prefWidth="80" text="Create" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-         <DatePicker GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
-         <TextArea prefHeight="56.0" prefWidth="221.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-         <Button fx:id="salirButton" prefWidth="80" text="Log out" GridPane.columnIndex="5" GridPane.valignment="BOTTOM" />
+         <Button fx:id="btnCreate" disable="true" prefHeight="25.0" prefWidth="100.0" text="Create" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+         <DatePicker fx:id="dpCreationDate" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="BASELINE" />
+         <TextArea fx:id="tfDescription" prefHeight="56.0" prefWidth="221.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+         <Button fx:id="btnLogOut" prefWidth="80" text="Log out" GridPane.columnIndex="5" GridPane.valignment="BOTTOM" />
 
-         <TableView fx:id="usuariosTable" prefHeight="0.0" prefWidth="0.0" GridPane.columnSpan="6" GridPane.rowIndex="1">
+         <TableView fx:id="tableAnimalGroup" prefHeight="0.0" prefWidth="0.0" GridPane.columnSpan="6" GridPane.rowIndex="1">
             <columns>
-               <TableColumn fx:id="loginColumn" prefWidth="161.60003280639648" resizable="false" text="Name" />
-               <TableColumn fx:id="nombreColumn" prefWidth="367.19996643066406" resizable="false" text="Description" />
-               <TableColumn fx:id="perfilColumn" minWidth="0.0" prefWidth="61.60003662109375" resizable="false" text="Animals" />
-               <TableColumn fx:id="departamentoColumn" minWidth="0.0" prefWidth="181.5999755859375" resizable="false" text="Area" />
-               <TableColumn fx:id="departamentoColumn1" prefWidth="92.800048828125" resizable="false" text="Consume (kg)" />
-               <TableColumn fx:id="departamentoColumn11" prefWidth="119.20001220703125" resizable="false" text="Creation date" />
+               <TableColumn fx:id="columnName" prefWidth="161.60003280639648" resizable="false" text="Name" />
+               <TableColumn fx:id="columnDescription" prefWidth="337.5999755859375" resizable="false" text="Description" />
+               <TableColumn fx:id="columnAnimals" minWidth="0.0" prefWidth="92.00009155273438" resizable="false" text="Animals" />
+               <TableColumn fx:id="columnArea" minWidth="0.0" prefWidth="152.800048828125" resizable="false" text="Area" />
+               <TableColumn fx:id="columnConsume" prefWidth="122.4000244140625" resizable="false" text="Consume (kg)" />
+               <TableColumn fx:id="columnDate" prefWidth="120.0" resizable="false" text="Creation date" />
             </columns>
             <contextMenu>
                <ContextMenu>
                  <items>
-                   <MenuItem mnemonicParsing="false" text="Open" />
-                     <MenuItem mnemonicParsing="false" text="Delete" />
+                   <MenuItem fx:id="itemOpen" mnemonicParsing="false" text="Open" />
+                     <MenuItem fx:id="itemDelete" mnemonicParsing="false" text="Delete" />
                  </items>
                </ContextMenu>
             </contextMenu>
          </TableView>
          <Separator prefWidth="200.0" GridPane.columnSpan="6" GridPane.rowIndex="2" />
-         <TextField fx:id="SearchField" promptText="Insert animal group name" GridPane.columnSpan="2" GridPane.valignment="BOTTOM" />
-         <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="91.0" text="Search" GridPane.columnIndex="2" GridPane.valignment="BOTTOM" />
+         <TextField fx:id="searchField" promptText="Insert animal group name" GridPane.columnSpan="2" GridPane.valignment="BOTTOM" />
+         <Button fx:id="btnSearch" mnemonicParsing="false" prefHeight="25.0" prefWidth="100.0" text="Search" GridPane.columnIndex="2" GridPane.valignment="BOTTOM" />
          <columnConstraints>
             <ColumnConstraints maxWidth="80.0" minWidth="38.0" prefWidth="80.0" />
             <ColumnConstraints maxWidth="237.80001220703124" minWidth="73.0" prefWidth="224.20003662109374" />
-            <ColumnConstraints maxWidth="185.0" minWidth="68.19998779296873" prefWidth="81.79996337890623" />
-            <ColumnConstraints maxWidth="454.0" minWidth="92.0" prefWidth="104.40002441406256" />
-            <ColumnConstraints maxWidth="565.0" minWidth="203.0" prefWidth="376.799951171875" />
+            <ColumnConstraints maxWidth="185.0" minWidth="68.19998779296873" prefWidth="123.39999999999998" />
+            <ColumnConstraints maxWidth="454.0" minWidth="57.80000000000001" prefWidth="159.19998779296873" />
+            <ColumnConstraints maxWidth="565.0" minWidth="203.0" prefWidth="273.0000122070313" />
             <ColumnConstraints maxWidth="108.800048828125" minWidth="76.800048828125" prefWidth="76.800048828125" />
          </columnConstraints>
          <rowConstraints>
@@ -78,19 +78,14 @@
         <menus>
           <Menu mnemonicParsing="false" text="Navigate to">
             <items>
-              <MenuItem mnemonicParsing="false" text="Animals" />
-                  <MenuItem mnemonicParsing="false" text="Consumes" />
-                  <MenuItem mnemonicParsing="false" text="Products" />
+              <MenuItem fx:id="itemAnimals" mnemonicParsing="false" text="Animals" />
+                  <MenuItem fx:id="itemConsumes" mnemonicParsing="false" text="Consumes" />
+                  <MenuItem fx:id="itemProducts" mnemonicParsing="false" text="Products" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Report">
             <items>
-              <MenuItem mnemonicParsing="false" text="Print" />
-            </items>
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <items>
-              <MenuItem mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="itemPrint" mnemonicParsing="false" text="Print" />
             </items>
           </Menu>
         </menus>
