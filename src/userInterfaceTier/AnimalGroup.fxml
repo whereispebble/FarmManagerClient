@@ -16,8 +16,10 @@
 <?import javafx.scene.layout.RowConstraints?>
 
 <AnchorPane id="AnchorPane" prefHeight="720.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@styles.css" />
+    </stylesheets>
    <children>
-
       <GridPane alignment="CENTER" hgap="10" layoutX="20.0" layoutY="28.0" prefHeight="550.0" prefWidth="984.0" vgap="10" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="28.0">
 
          <Button fx:id="btnCreate" prefHeight="26.0" prefWidth="135.0" text="Add" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
