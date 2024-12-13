@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1024.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="userLogicTier.AnimalController">
+<AnchorPane id="AnchorPane" fx:id="AnchorPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1024.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="userLogicTier.AnimalController">
     <stylesheets>
         <URL value="@styles.css" />
     </stylesheets>
@@ -74,10 +74,10 @@
         <menus>
           <Menu mnemonicParsing="false" text="Navigate to">
             <items>
-                  <MenuItem fx:id="miAnimal" mnemonicParsing="false" text="Animal" />
-              <MenuItem fx:id="miAnimalGroup" mnemonicParsing="false" text="Animal Group" />
-                  <MenuItem fx:id="miConsume" mnemonicParsing="false" text="Consume" />
-                  <MenuItem fx:id="miProduct" mnemonicParsing="false" text="Product" />
+                  <MenuItem fx:id="miAnimal" mnemonicParsing="false" text="Animals" />
+              <MenuItem fx:id="miAnimalGroup" mnemonicParsing="false" text="Animal Groups" />
+                  <MenuItem fx:id="miConsume" mnemonicParsing="false" text="Consumes" />
+                  <MenuItem fx:id="miProduct" mnemonicParsing="false" text="Products" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="miLogOut" mnemonicParsing="false" text="Log out" />
             </items>
