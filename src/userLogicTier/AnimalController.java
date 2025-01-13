@@ -6,21 +6,25 @@
 package userLogicTier;
 
 import DTO.AnimalBean;
-import java.awt.Button;
-import java.awt.Label;
-import java.awt.TextField;
+
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javax.ws.rs.WebApplicationException;
 
 /**
  * FXML Controller class
@@ -130,14 +134,21 @@ public class AnimalController implements Initializable {
         tcConsume.setCellValueFactory(new PropertyValueFactory<>("monthlyonsume"));
         tcConsume.setStyle("-fx-alignment: center-right;");
         
-        //set data for table view
-//        List<AnimalBean> animals=((Account)cbAccount.getSelectionModel()
-//                                .getSelectedItem()).getMovements();
+          
+//        try {
+////        List<AnimalBean> animalData = AnimalManagerFactory.get().getAnimalsByAnimalGroup(List<AnimalBean>, "Grupo");
+////        List<AnimalBean> animalData = FXCollections.observableArrayList(AnimalManagerFactory.get().getAnimalsByAnimalGroup(List<AnimalBean>, "Grupo"));
+//     
+//            List<AnimalBean> animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(AnimalBean.class , "Grupo");
+////        List<AnimalBean> animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(Class<AnimalBean> , "Grupo");
+//            ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(animalList);
+//            tbAnimal.setItems(animalData);
+//        } catch (WebApplicationException e) {
+//            System.err.println("Error fetching animals: " + e.getMessage());
+//        }
         
-        
-        stage.show();
 
-        
+        stage.show();        
     }    
     
      // Manejador de cambios en el ComboBox
@@ -158,12 +169,43 @@ public class AnimalController implements Initializable {
             lblTo.setVisible(false);
             dpSearchFrom.setVisible(false);
             dpSearchTo.setVisible(false);
-            dpSearchFrom.clear();
-            dpSearchTo.clear();
+//            dpSearchFrom.clear();
+//            dpSearchTo.clear();
             
             // Mostrar el campo de búsqueda de texto
             tfSearch.setVisible(true);
         }
     }
+    
+    
+//    private void onSearchButtonClicked() {
+//        String searchType = comboSearch.getValue();
+//        try {
+//            List<AnimalBean> animalList = null;
+//
+//            switch (searchType) {
+//                case "Animal Group":
+//                    animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(AnimalBean.class, tfSearch.getText());
+//                    break;
+//                case "Subespecies":
+//                    animalList = AnimalManagerFactory.get().getAnimalsBySubespecies(AnimalBean.class, tfSearch.getText());
+//                    break;
+//                case "Birthdate":
+//                    String from = dpSearchFrom.getValue().toString();
+//                    String to = dpSearchTo.getValue().toString();
+//                    animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(AnimalBean.class, from, to);
+//                    break;
+//            }
+//
+//            if (animalList != null) {
+//                ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(animalList);
+//                tbAnimal.setItems(animalData);
+//            }
+//        } catch (Exception e) {
+//            System.err.println("Error fetching data: " + e.getMessage());
+//            // Show an alert dialog if needed
+//        }
+//    }
+
     
 }

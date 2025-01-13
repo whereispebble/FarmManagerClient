@@ -8,6 +8,7 @@ package DTO;
 import java.io.Serializable;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 /**
@@ -15,6 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
  * It is also used as data model for a TableView in the UI.
  * @author Aitziber
  */
+@XmlRootElement(name="species")
 public class SpeciesBean implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -33,7 +35,6 @@ public class SpeciesBean implements Serializable {
         this.perAge = perAge;
     }
 
-    @XmlElement(name="id")
     public Long getId() {
         return id;
     }
@@ -41,8 +42,7 @@ public class SpeciesBean implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
-    @XmlElement(name="name")
+    
     public String getName() {
         return name;
     }
@@ -60,7 +60,6 @@ public class SpeciesBean implements Serializable {
         this.animals = animals;
     }
 
-    @XmlElement(name="perAge")
     public ID_Species_Products_AgeBean getPerAge() {
         return perAge;
     }
