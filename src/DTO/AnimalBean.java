@@ -40,8 +40,7 @@ public class AnimalBean implements Serializable {
         this.animalGroup = animalGroup;
         this.species = species;
     }
-    
-    @XmlElement(name="id")
+
     public Long getId() {
         return id;
     }
@@ -49,8 +48,7 @@ public class AnimalBean implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-    
-    @XmlElement(name="name")
+ 
     public String getName() {
         return name;
     }
@@ -58,8 +56,7 @@ public class AnimalBean implements Serializable {
     public void setName(String name) {
         this.name = name;
     }
-    
-    @XmlElement(name="subespecies")
+
     public String getSubespecies() {
         return subespecies;
     }
@@ -67,8 +64,7 @@ public class AnimalBean implements Serializable {
     public void setSubespecies(String subespecies) {
         this.subespecies = subespecies;
     }
-   
-    @XmlElement(name="birthdate")
+
     public Date getBirthdate() {
         return birthdate;
     }
@@ -76,8 +72,7 @@ public class AnimalBean implements Serializable {
     public void setBirthdate(Date birthdate) {
         this.birthdate = birthdate;
     }
-    
-    @XmlElement(name="monthlyConsume")
+
     public float getMonthlyConsume() {
         return monthlyConsume;
     }
@@ -85,8 +80,7 @@ public class AnimalBean implements Serializable {
     public void setMonthlyConsume(float monthlyConsume) {
         this.monthlyConsume = monthlyConsume;
     }
-    
-    @XmlElement(name="animalGroup")
+
     public AnimalGroupBean getAnimalGroup() {
         return animalGroup;
     }
@@ -95,7 +89,6 @@ public class AnimalBean implements Serializable {
         this.animalGroup = animalGroup;
     }
 
-    @XmlElement(name="species")
     public SpeciesBean getSpecies() {
         return species;
     }
