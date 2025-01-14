@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
  *
  * @author Ander
  */
-@XmlRootElement(name="Group")
+@XmlRootElement(name="group")
 public class AnimalGroupBean implements Serializable{
     private static final long serialVersionUID = 1L;
     
@@ -122,6 +122,6 @@ public class AnimalGroupBean implements Serializable{
 
     @Override
     public String toString() {
-        return "entities.AnimalGroupEntity[ id=" + id + " ]";
+        return name;
     }
 }

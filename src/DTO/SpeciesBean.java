@@ -90,6 +90,6 @@ public class SpeciesBean implements Serializable {
 
     @Override
     public String toString() {
-        return "DTO.SpeciesBean[ id=" + id + " ]";
+        return name;
     }
 }

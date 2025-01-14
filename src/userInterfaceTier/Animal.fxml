@@ -38,12 +38,12 @@
             <children>
                 <TableView fx:id="tbAnimal" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="6" GridPane.rowIndex="1">
                     <columns>
-                        <TableColumn id="tcName" prefWidth="75.0" text="Name" />
-                        <TableColumn id="tcBirthdate" prefWidth="75.0" text="Birthdate" />
-                        <TableColumn id="tcAnimalGroup" prefWidth="75.0" text="Animal Group" />
-                        <TableColumn id="tcSubespecies" prefWidth="75.0" text="Subespecies" />
-                        <TableColumn id="tcSpecies" prefWidth="75.0" text="Species" />
-                        <TableColumn id="tcConsume" prefWidth="75.0" text="Consume (Kg/month)" />
+                        <TableColumn fx:id="tcName" prefWidth="75.0" text="Name" />
+                        <TableColumn fx:id="tcBirthdate" prefWidth="75.0" text="Birthdate" />
+                        <TableColumn fx:id="tcAnimalGroup" prefWidth="75.0" text="Animal Group" />
+                        <TableColumn fx:id="tcSubespecies" prefWidth="75.0" text="Subespecies" />
+                        <TableColumn fx:id="tcSpecies" prefWidth="75.0" text="Species" />
+                        <TableColumn fx:id="tcConsume" prefWidth="75.0" text="Consume (Kg/month)" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

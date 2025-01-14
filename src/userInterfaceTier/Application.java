@@ -7,12 +7,15 @@ package userInterfaceTier;
 
 import DTO.AnimalBean;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javax.ws.rs.core.GenericType;
+import userLogicTier.AnimalController;
 import userLogicTier.AnimalManagerFactory;
 
 /**
@@ -37,14 +40,23 @@ public class Application extends javafx.application.Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("SignIn.fxml"));
+//        Parent root = FXMLLoader.load(getClass().getResource("SignIn.fxml"));
+//        
+//        Scene scene = new Scene(root);
+//        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+//        stage.setScene(scene);
+//        stage.getIcons().add(new Image("resources/logo.png"));
+//        stage.setResizable(false);
+//        stage.setTitle("Sign In");
+//        stage.show();
+
+        Parent root = FXMLLoader.load(getClass().getResource("Animal.fxml"));
         
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         stage.setScene(scene);
-        stage.getIcons().add(new Image("resources/logo.png"));
         stage.setResizable(false);
-        stage.setTitle("Sign In");
+        stage.setTitle("Animals");
         stage.show();
     }
 
@@ -56,11 +68,7 @@ public class Application extends javafx.application.Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        launch(args);
-        List<AnimalBean> animalList;
-        GenericType<List<AnimalBean>> animalGenricList = new GenericType<List<AnimalBean>>() {};
-        AnimalManagerFactory.get().getAnimalsByAnimalGroup(animalGenricList.getClass(), "Grupo");
-        
+        launch(args);
     }
     
 }
