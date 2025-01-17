@@ -5,19 +5,20 @@
  */
 package userLogicTier;
 
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import model.AnimalGroupBean;
 
 /**
- * Jersey REST client generated for REST resource:AnimalGroupFacadeREST [animalgroupentity]<br>
+ * Jersey REST client generated for REST resource:AnimalGroupFacadeREST [animalgroup]<br>
  * USAGE:
  * <pre>
- *        AnimalGroupRESTClient client = new AnimalGroupRESTClient();
- *        Object response = client.XXX(...);
- *        // do whatever with response
- *        client.close();
- * </pre>
+        AnimalGroupRESTClient client = new AnimalGroupRESTClient();
+        Object response = client.XXX(...);
+        // do whatever with response
+        client.close();
+ </pre>
  *
  * @author Ander
  */
@@ -29,36 +30,56 @@ public class AnimalGroupRESTClient implements IAnimalGroup {
 
     public AnimalGroupRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("animalgroupentity");
+        webTarget = client.target(BASE_URI).path("animalgroup");
     }
 
+    //CREATE
     @Override
-    public <T> T getAnimalGroupsByName(Class<T> responseType, String name) throws WebApplicationException {
+    public void createAnimalGroup(Object requestEntity) throws ClientErrorException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), AnimalGroupBean.class);
+    }
+
+    //GET
+    @Override
+    public <T> T getAnimalGroupsByManager(Class<T> responseType, String managerId) throws ClientErrorException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("name/{0}", new Object[]{name}));
+        resource = resource.path(java.text.MessageFormat.format("managerId/{0}", new Object[]{managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    @Override
-    public void updateAnimalGroup(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
-    }
+//    @Override
+//    public <T> T getAnimalGroups(Class<T> responseType) throws ClientErrorException {
+//        WebTarget resource = webTarget;
+//        return resource.get(responseType);
+//    }
 
     @Override
-    public void createAnimalGroup(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public <T> T getAnimalGroupByName(Class<T> responseType, String name, String managerId) throws ClientErrorException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("search/{0}/{1}", new Object[]{name, managerId}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
+    //UPDATE
     @Override
-    public void deleteAnimalGroup(Object requestEntity) throws WebApplicationException {
-        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
-                .delete(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    public void updateAnimalGroup(Object requestEntity) throws ClientErrorException {
+        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), AnimalGroupBean.class);
     }
-    
+
+    //DELETE
+    @Override
+    public void deleteAnimalGroupById(String id) throws ClientErrorException {
+        webTarget.path(java.text.MessageFormat.format("delete/{0}", new Object[]{id})).request().delete(AnimalGroupBean.class);
+    }
+
+//    @Override
+//    public void deleteAnimalGroup(Object requestEntity) throws ClientErrorException {
+//        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).delete(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+//    }
+
+    @Override
     public void close() {
         client.close();
     }
-    
+
 }

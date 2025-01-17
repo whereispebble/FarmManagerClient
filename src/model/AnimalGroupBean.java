@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 
 @XmlRootElement
-public class AnimalGroup implements Serializable {
+public class AnimalGroupBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private Long id;
@@ -24,8 +24,8 @@ public class AnimalGroup implements Serializable {
     private String area;
     private String description;
     private Date creationDate;
-    private List<Animal> animals;
-    private List<Manager> managers;
+    private List<AnimalBean> animals;
+    private List<ManagerBean> managers;
 
     public Long getId() {
         return id;
@@ -67,11 +67,11 @@ public class AnimalGroup implements Serializable {
         this.creationDate = creationDate;
     }
 
-    public List<Animal> getAnimals() {
+    public List<AnimalBean> getAnimals() {
         return animals;
     }
 
-    public void setAnimals(List<Animal> animals) {
+    public void setAnimals(List<AnimalBean> animals) {
         this.animals = animals;
     }
 //
@@ -83,11 +83,11 @@ public class AnimalGroup implements Serializable {
 //        this.consumes = consumes;
 //    }
 
-    public List<Manager> getManagers() {
+    public List<ManagerBean> getManagers() {
         return managers;
     }
 
-    public void setManagers(List<Manager> managers) {
+    public void setManagers(List<ManagerBean> managers) {
         this.managers = managers;
     }
 
@@ -101,10 +101,10 @@ public class AnimalGroup implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof AnimalGroup)) {
+        if (!(object instanceof AnimalGroupBean)) {
             return false;
         }
-        AnimalGroup other = (AnimalGroup) object;
+        AnimalGroupBean other = (AnimalGroupBean) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }

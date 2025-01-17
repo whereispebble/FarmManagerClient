@@ -12,13 +12,24 @@ import javax.ws.rs.WebApplicationException;
  * @author Ander
  */
 public interface IAnimalGroup {
-    public <T> T getAnimalGroupsByName(Class<T> responseType, String name) throws WebApplicationException;
-
-    public void updateAnimalGroup(Object requestEntity) throws WebApplicationException;
-
+    
+    //CREATE
     public void createAnimalGroup(Object requestEntity) throws WebApplicationException;
 
-    public void deleteAnimalGroup(Object requestEntity) throws WebApplicationException;
+    //GETS
+    public <T> T getAnimalGroupByName(Class<T> responseType, String name, String managerId) throws WebApplicationException;
+
+    public <T> T getAnimalGroupsByManager(Class<T> responseType, String managerId) throws WebApplicationException;
+    
+    // public <T> T getAnimalGroups(Class<T> responseType) throws WebApplicationException;
+    
+    //UPDATE
+    public void updateAnimalGroup(Object requestEntity) throws WebApplicationException;
+
+    //DELETE
+    public void deleteAnimalGroupById(String id) throws WebApplicationException;
+    
+    // public void deleteAnimalGroup(Object requestEntity) throws WebApplicationException;
     
     public void close();
 }

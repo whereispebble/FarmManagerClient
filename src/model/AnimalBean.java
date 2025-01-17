@@ -9,6 +9,6 @@ package model;
  *
  * @author Ander
  */
-class Manager {
+class AnimalBean {
     
 }
