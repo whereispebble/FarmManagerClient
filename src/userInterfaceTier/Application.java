@@ -6,6 +6,7 @@
 package userInterfaceTier;
 
 import DTO.AnimalBean;
+import DTO.SpeciesBean;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +18,7 @@ import javafx.stage.Stage;
 import javax.ws.rs.core.GenericType;
 import userLogicTier.AnimalController;
 import userLogicTier.AnimalManagerFactory;
+import userLogicTier.SpeciesManagerFactory;
 
 /**
  * The main application class responsible for initializing and displaying the Sign In window.
@@ -58,6 +60,9 @@ public class Application extends javafx.application.Application {
         stage.setResizable(false);
         stage.setTitle("Animals");
         stage.show();
+
+        
+
     }
 
     /**
@@ -69,6 +74,8 @@ public class Application extends javafx.application.Application {
      */
     public static void main(String[] args) {
         launch(args);
+        
+        
     }
     
 }

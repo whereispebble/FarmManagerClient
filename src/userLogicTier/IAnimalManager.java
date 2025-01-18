@@ -5,9 +5,7 @@
  */
 package userLogicTier;
 
-import DTO.AnimalBean;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
@@ -20,7 +18,6 @@ public interface IAnimalManager {
     public void createAnimal(Object requestEntity) throws WebApplicationException;
     public <T> T getAnimalsBySubespecies(GenericType<T> responseType, String subespecies) throws WebApplicationException;
     public <T> T getAnimalsByBirthdateTo(GenericType<T> responseType, String dateTo) throws WebApplicationException;
-//    public void deleteAnimal(Object requestEntity) throws WebApplicationException;
     public void deleteAnimalById(String id) throws WebApplicationException;
     public <T> T getAnimalsByBirthdateFrom(GenericType<T> responseType, String dateFrom) throws WebApplicationException;
     public <T> T getAnimalByName(GenericType<T> responseType, String name) throws WebApplicationException;

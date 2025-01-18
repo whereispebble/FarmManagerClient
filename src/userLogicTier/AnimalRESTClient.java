@@ -22,7 +22,7 @@ import javax.ws.rs.core.GenericType;
  *        client.close();
  * </pre>
  *
- * @author Usuario
+ * @author Aitziber
  */
 public class AnimalRESTClient implements IAnimalManager{
 
@@ -61,10 +61,6 @@ public class AnimalRESTClient implements IAnimalManager{
         resource = resource.path(java.text.MessageFormat.format("to/{0}", new Object[]{dateTo}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
-//    public void deleteAnimal(Object requestEntity) throws WebApplicationException {
-//        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).delete(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
-//    }
 
     public void deleteAnimalById(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("delete/{0}", new Object[]{id})).request().delete(AnimalBean.class);
