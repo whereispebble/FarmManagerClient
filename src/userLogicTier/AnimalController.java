@@ -24,10 +24,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
+import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.ws.rs.WebApplicationException;
@@ -133,6 +136,26 @@ public class AnimalController implements Initializable {
     //
 
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
+            
+        
+            tcName.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
+            tcName.setOnEditCommit((CellEditEvent<AnimalBean, String> event) -> {
+                TablePosition<AnimalBean, String> pos = event.getTablePosition();
+                String newName = event.getNewValue();
+//                if (newName == null || newName.trim().isEmpty()) {
+//                    System.err.println("El nombre ingresado no es válido.");
+//                    return;
+//                }
+                int row = pos.getRow();
+                AnimalBean animal = event.getTableView().getItems().get(row);
+                animal.setName(newName);
+
+                AnimalManagerFactory.get().updateAnimal(animal);
+
+                event.getTableView().refresh();    
+            });
+
+
             tcBirthdate.setCellValueFactory(new PropertyValueFactory<>("birthdate"));
             // Formatear la fecha en dd/MM/yyyy
             tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, javafx.scene.control.TableCell<AnimalBean, Date>>() {
@@ -152,6 +175,17 @@ public class AnimalController implements Initializable {
                     };
                 }
             });
+//             tcDate.setCellValueFactory(
+//                new Callback<TableColumn.CellDataFeatures<Movement, String>, ObservableValue<String>>() {
+//                    @Override
+//                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Movement, String> movement) {
+//                       SimpleStringProperty property = new SimpleStringProperty();
+//                       DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+//                       property.setValue(dateFormat.format(((Movement)movement.getValue()).getTimestamp()));
+//                       return property;
+//                    }
+//            });
+             
             tcBirthdate.setStyle("-fx-alignment: center;");
 
     //        Animal Group y Species: combo no editable con el valor del nombre 
@@ -159,6 +193,9 @@ public class AnimalController implements Initializable {
     //        seleccionados. Edición ComboBoxTableCell
 
             tcAnimalGroup.setCellValueFactory(new PropertyValueFactory<>("animalGroup"));
+            
+            // esperar a moreno
+            
             tcSubespecies.setCellValueFactory(new PropertyValueFactory<>("subespecies"));
 
 
@@ -167,6 +204,21 @@ public class AnimalController implements Initializable {
             speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});             
             ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
             tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));
+            
+//             genderCol.setCellFactory(ComboBoxTableCell.forTableColumn(genderList));
+//
+//            genderCol.setOnEditCommit((CellEditEvent<Person, Gender> event) -> {
+//                TablePosition<Person, Gender> pos = event.getTablePosition();
+//
+//                Gender newGender = event.getNewValue();
+//
+//                int row = pos.getRow();
+//                Person person = event.getTableView().getItems().get(row);
+//
+//                person.setGender(newGender.getCode());
+//            });
+//            
+            
 
     //       tcSpecies.setOnEditCommit(event -> {
     //           AnimalBean animal = event.getRowValue();
