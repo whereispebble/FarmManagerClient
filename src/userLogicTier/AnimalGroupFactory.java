@@ -10,10 +10,13 @@ package userLogicTier;
  * @author Ander
  */
 public class AnimalGroupFactory {
-    
-    // private static IAnimalGroup iAnimalGroup;
+
+    private static IAnimalGroup animalGroupManager;
 
     public static IAnimalGroup get() {
-        return new AnimalGroupRESTClient();
+        if (animalGroupManager == null) {
+            animalGroupManager = new AnimalGroupRESTClient();
+        }
+        return animalGroupManager;
     }
 }
