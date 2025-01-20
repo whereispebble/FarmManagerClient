@@ -7,7 +7,6 @@ package userLogicTier;
 
 import DTO.AnimalBean;
 import DTO.SpeciesBean;
-
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,7 +18,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
@@ -71,10 +72,10 @@ public class AnimalController implements Initializable {
     private DatePicker dpSearchTo;
     
     @FXML
-    private TableView tbAnimal;
+    private TableView<AnimalBean> tbAnimal;
     
     @FXML
-    private TableColumn tcName;
+    private TableColumn<AnimalBean,String> tcName;
     @FXML
     private TableColumn tcBirthdate;
     @FXML
@@ -137,22 +138,42 @@ public class AnimalController implements Initializable {
 
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
             
-        
             tcName.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
-            tcName.setOnEditCommit((CellEditEvent<AnimalBean, String> event) -> {
-                TablePosition<AnimalBean, String> pos = event.getTablePosition();
-                String newName = event.getNewValue();
-//                if (newName == null || newName.trim().isEmpty()) {
-//                    System.err.println("El nombre ingresado no es válido.");
-//                    return;
-//                }
-                int row = pos.getRow();
-                AnimalBean animal = event.getTableView().getItems().get(row);
-                animal.setName(newName);
-
-                AnimalManagerFactory.get().updateAnimal(animal);
-
-                event.getTableView().refresh();    
+            tcName.setOnEditCommit((CellEditEvent<AnimalBean, String> event )-> {
+                try{
+                        TablePosition<AnimalBean, String> pos = event.getTablePosition();
+                        String oldName = event.getOldValue();
+                        String newName = event.getNewValue();
+                      if (newName == null || newName.trim().isEmpty()) {
+                          throw new Error("El nombre ingresado no es válido.");
+                    
+                         
+                      }
+                        int row = pos.getRow();
+                        AnimalBean animal = event.getTableView().getItems().get(row);
+                        AnimalBean animalCopy= animal.clone();
+                        animalCopy.setName(newName);
+                        AnimalManagerFactory.get().updateAnimal(animalCopy);
+                        System.out.println(animal.getName());
+                        animal.setName(newName);
+                        System.out.println(animal.getName());
+//                        System.out.println(animal.getName());
+//                        
+//                      
+//                        AnimalBean updatedAnimal = AnimalManagerFactory.get().getAnimalByName(new GenericType<AnimalBean>() {}, animal.getName());
+//                        if (!updatedAnimal.getName().equals(animal.getName())){
+//                            animal.setName(oldName);
+//                        }
+//                        System.out.println("updated animal from request "+ updatedAnimal.toString());
+                        
+                        event.getTableView().refresh();
+                }
+                catch (Exception e){
+                     Alert alert=new Alert(Alert.AlertType.ERROR,
+                                        e.getMessage(),
+                                        ButtonType.OK,ButtonType.CANCEL);
+                    event.consume();
+                }                
             });
 
 
@@ -269,6 +290,8 @@ public class AnimalController implements Initializable {
 //            // Mostrar el campo de búsqueda de texto
 //            tfSearch.setVisible(true);
 //        }
+
+   
     }
     
 //    private void onSearchButtonClicked() {
