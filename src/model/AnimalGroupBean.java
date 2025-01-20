@@ -14,8 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Ander
  */
-
-@XmlRootElement
+@XmlRootElement(name = "animalGroup")
 public class AnimalGroupBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -26,6 +25,19 @@ public class AnimalGroupBean implements Serializable {
     private Date creationDate;
     private List<AnimalBean> animals;
     private List<ManagerBean> managers;
+
+    public AnimalGroupBean() {
+    }
+
+    public AnimalGroupBean(Long id, String name, String area, String description, Date creationDate, List<AnimalBean> animals, List<ManagerBean> managers) {
+        this.id = id;
+        this.name = name;
+        this.area = area;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.animals = animals;
+        this.managers = managers;
+    }
 
     public Long getId() {
         return id;
@@ -113,7 +125,7 @@ public class AnimalGroupBean implements Serializable {
 
     @Override
     public String toString() {
-        return "AnimalGroup[ id=" + id + ", name=" + name + " ]";
+        return "AnimalGroup[ id=" + id + ", name=" + name + ", area " + area + ", creation date " + creationDate + "]";
     }
 
 }

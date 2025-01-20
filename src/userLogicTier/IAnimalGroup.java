@@ -6,6 +6,7 @@
 package userLogicTier;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 
 /**
  *
@@ -17,11 +18,11 @@ public interface IAnimalGroup {
     public void createAnimalGroup(Object requestEntity) throws WebApplicationException;
 
     //GETS
-    public <T> T getAnimalGroupByName(Class<T> responseType, String name, String managerId) throws WebApplicationException;
+    public <T> T getAnimalGroupByName(GenericType<T> responseType, String name, String managerId) throws WebApplicationException;
 
-    public <T> T getAnimalGroupsByManager(Class<T> responseType, String managerId) throws WebApplicationException;
+    public <T> T getAnimalGroupsByManager(GenericType<T> responseType, String managerId) throws WebApplicationException;
     
-    // public <T> T getAnimalGroups(Class<T> responseType) throws WebApplicationException;
+    // public <T> T getAnimalGroups(GenericType<T> responseType) throws WebApplicationException;
     
     //UPDATE
     public void updateAnimalGroup(Object requestEntity) throws WebApplicationException;

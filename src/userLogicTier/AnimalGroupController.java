@@ -5,19 +5,24 @@
  */
 package userLogicTier;
 
-import java.awt.Button;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 import model.AnimalGroupBean;
 
 /**
@@ -27,7 +32,14 @@ import model.AnimalGroupBean;
  */
 public class AnimalGroupController implements Initializable {
 
+    /**
+     * Logger to track the class activity and handle debugging information.
+     */
+    private static final Logger logger = Logger.getLogger(AnimalGroupController.class.getName());
+
     private Stage stage;
+
+    private String managerId;
 
     @FXML
     private Button btnCreate;
@@ -55,14 +67,11 @@ public class AnimalGroupController implements Initializable {
 
     @FXML
     private TableColumn tcDate;
+    
+    @FXML
+    private TableColumn tcArea;
 
     private ObservableList<AnimalGroupBean> groupData;
-
-    protected IAnimalGroup groupManager;
-
-    public void setGroups(IAnimalGroup groupManager) {
-        this.groupManager = groupManager;
-    }
 
     /**
      * Initializes the controller class.
@@ -70,16 +79,56 @@ public class AnimalGroupController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
-        tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
-        tcDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        try {
+            logger.log(Level.INFO, "Initilizing Animal Group controller");
 
-//        List<AnimalGroupBean> groupList = new ArrayList<>();
-//        groupData = FXCollections.observableArrayList(groupManager.getAnimalGroupsByManager(responseType, 1));
-        tbAnimalGroup.setItems(groupData);
-        tbAnimalGroup.setEditable(false);
+            //Uncomment next lines when necessary
+//        // Establecer el título de la ventana
+//        stage.setTitle("Animal Groups");
+//        
+//        // Establecer dimensiones fijas
+//        stage.setWidth(1024);
+//        stage.setHeight(720);
+//        
+//        // Deshabilitar la redimensión de la ventana
+//        stage.setResizable(false);
+            logger.log(Level.INFO, "Setting cell value factories");
+
+            tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
+            tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
+            tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
+            tcDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+            tcArea.setCellValueFactory(new PropertyValueFactory<>("area"));
+
+            List<AnimalGroupBean> groupList = new ArrayList<AnimalGroupBean>();
+            managerId = "1";
+
+            logger.log(Level.INFO, "Sending request");
+
+            groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
+            }, managerId);
+
+            logger.log(Level.INFO, "Request sent");
+
+            // for testing purposes
+            logger.log(Level.INFO, "Printing list");
+            for (AnimalGroupBean agb : groupList) {
+                System.out.println(agb.toString());
+            }
+
+            groupData = FXCollections.observableArrayList(groupList);
+            tbAnimalGroup.setItems(groupData);
+            tbAnimalGroup.setEditable(false);
+
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("Animal Group data not found");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
 }

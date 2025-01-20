@@ -6,19 +6,21 @@
 package userLogicTier;
 
 import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 import model.AnimalGroupBean;
 
 /**
  * Jersey REST client generated for REST resource:AnimalGroupFacadeREST [animalgroup]<br>
  * USAGE:
  * <pre>
-        AnimalGroupRESTClient client = new AnimalGroupRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ * AnimalGroupRESTClient client = new AnimalGroupRESTClient();
+ * Object response = client.XXX(...);
+ * // do whatever with response
+ * client.close();
+ * </pre>
  *
  * @author Ander
  */
@@ -35,15 +37,15 @@ public class AnimalGroupRESTClient implements IAnimalGroup {
 
     //CREATE
     @Override
-    public void createAnimalGroup(Object requestEntity) throws ClientErrorException {
+    public void createAnimalGroup(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), AnimalGroupBean.class);
     }
 
     //GET
     @Override
-    public <T> T getAnimalGroupsByManager(Class<T> responseType, String managerId) throws ClientErrorException {
+    public <T> T getAnimalGroupsByManager(GenericType<T> responseType, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("managerId/{0}", new Object[]{managerId}));
+        resource = resource.path(java.text.MessageFormat.format("search/{0}", new Object[]{managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
@@ -52,9 +54,8 @@ public class AnimalGroupRESTClient implements IAnimalGroup {
 //        WebTarget resource = webTarget;
 //        return resource.get(responseType);
 //    }
-
     @Override
-    public <T> T getAnimalGroupByName(Class<T> responseType, String name, String managerId) throws ClientErrorException {
+    public <T> T getAnimalGroupByName(GenericType<T> responseType, String name, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("search/{0}/{1}", new Object[]{name, managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -62,13 +63,13 @@ public class AnimalGroupRESTClient implements IAnimalGroup {
 
     //UPDATE
     @Override
-    public void updateAnimalGroup(Object requestEntity) throws ClientErrorException {
+    public void updateAnimalGroup(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), AnimalGroupBean.class);
     }
 
     //DELETE
     @Override
-    public void deleteAnimalGroupById(String id) throws ClientErrorException {
+    public void deleteAnimalGroupById(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("delete/{0}", new Object[]{id})).request().delete(AnimalGroupBean.class);
     }
 
@@ -76,7 +77,6 @@ public class AnimalGroupRESTClient implements IAnimalGroup {
 //    public void deleteAnimalGroup(Object requestEntity) throws ClientErrorException {
 //        webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).delete(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
 //    }
-
     @Override
     public void close() {
         client.close();
