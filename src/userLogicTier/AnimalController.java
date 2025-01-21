@@ -81,9 +81,9 @@ public class AnimalController implements Initializable {
     @FXML
     private TableColumn tcAnimalGroup;
     @FXML
-    private TableColumn tcSubespecies;
+    private TableColumn<AnimalBean,String> tcSubespecies;
     @FXML
-    private TableColumn tcSpecies;
+    private TableColumn<AnimalBean, SpeciesBean> tcSpecies;
     @FXML
     private TableColumn tcConsume;
 
@@ -135,48 +135,14 @@ public class AnimalController implements Initializable {
     //        // Establecer "Search" como el botón por defecto
     //        btnSearch.setDefaultButton(true);
     //
-
+    
+       
+        
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
-            
+//            tcName.setCellFactory(TextFieldTableCell.forTableColumn());
             tcName.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
-            tcName.setOnEditCommit((CellEditEvent<AnimalBean, String> event )-> {
-                try{
-                        TablePosition<AnimalBean, String> pos = event.getTablePosition();
-                        String oldName = event.getOldValue();
-                        String newName = event.getNewValue();
-                      if (newName == null || newName.trim().isEmpty()) {
-                          throw new Error("El nombre ingresado no es válido.");
-                    
-                         
-                      }
-                        int row = pos.getRow();
-                        AnimalBean animal = event.getTableView().getItems().get(row);
-                        AnimalBean animalCopy= animal.clone();
-                        animalCopy.setName(newName);
-                        AnimalManagerFactory.get().updateAnimal(animalCopy);
-                        System.out.println(animal.getName());
-                        animal.setName(newName);
-                        System.out.println(animal.getName());
-//                        System.out.println(animal.getName());
-//                        
-//                      
-//                        AnimalBean updatedAnimal = AnimalManagerFactory.get().getAnimalByName(new GenericType<AnimalBean>() {}, animal.getName());
-//                        if (!updatedAnimal.getName().equals(animal.getName())){
-//                            animal.setName(oldName);
-//                        }
-//                        System.out.println("updated animal from request "+ updatedAnimal.toString());
-                        
-                        event.getTableView().refresh();
-                }
-                catch (Exception e){
-                     Alert alert=new Alert(Alert.AlertType.ERROR,
-                                        e.getMessage(),
-                                        ButtonType.OK,ButtonType.CANCEL);
-                    event.consume();
-                }                
-            });
-
-
+            tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
+            
             tcBirthdate.setCellValueFactory(new PropertyValueFactory<>("birthdate"));
             // Formatear la fecha en dd/MM/yyyy
             tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, javafx.scene.control.TableCell<AnimalBean, Date>>() {
@@ -214,10 +180,14 @@ public class AnimalController implements Initializable {
     //        seleccionados. Edición ComboBoxTableCell
 
             tcAnimalGroup.setCellValueFactory(new PropertyValueFactory<>("animalGroup"));
-            
             // esperar a moreno
             
             tcSubespecies.setCellValueFactory(new PropertyValueFactory<>("subespecies"));
+            tcSubespecies.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
+            tcSubespecies.setOnEditCommit(event -> handleEditCommit(event, "subespecies"));
+
+
+
 
 
             tcSpecies.setCellValueFactory(new PropertyValueFactory<>("species"));
@@ -225,27 +195,9 @@ public class AnimalController implements Initializable {
             speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});             
             ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
             tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));
+            tcSpecies.setOnEditCommit(event -> handleEditCommit(event, "species"));
             
-//             genderCol.setCellFactory(ComboBoxTableCell.forTableColumn(genderList));
-//
-//            genderCol.setOnEditCommit((CellEditEvent<Person, Gender> event) -> {
-//                TablePosition<Person, Gender> pos = event.getTablePosition();
-//
-//                Gender newGender = event.getNewValue();
-//
-//                int row = pos.getRow();
-//                Person person = event.getTableView().getItems().get(row);
-//
-//                person.setGender(newGender.getCode());
-//            });
-//            
-            
-
-    //       tcSpecies.setOnEditCommit(event -> {
-    //           AnimalBean animal = event.getRowValue();
-    //           animal.setSpecies(event.getNewValue());
-    //           System.out.printf("Species updated for %s to %s%n", animal.getName(), event.getNewValue());
-    //       });
+   
 
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("monthlyConsume"));
             tcConsume.setStyle("-fx-alignment: center-right;");
@@ -264,7 +216,135 @@ public class AnimalController implements Initializable {
         } catch (WebApplicationException e) {
             System.err.println("Error fetching animals: " + e.getMessage());
         }
+        
+        
     }    
+    private <T> void handleEditCommit(CellEditEvent<AnimalBean, T> event, String fieldName) {
+    try {
+        TablePosition<AnimalBean, T> pos = event.getTablePosition();
+        T newValue = event.getNewValue();
+
+        if (newValue == null || (newValue instanceof String && ((String) newValue).trim().isEmpty())) {
+            throw new IllegalArgumentException("El valor ingresado no es válido.");
+        }
+
+        int row = pos.getRow();
+        AnimalBean animal = event.getTableView().getItems().get(row);
+        AnimalBean animalCopy = animal.clone();
+
+        // actualiza en la capa lógica y también en el objeto original
+        switch (fieldName) {
+            case "name":
+                if (newValue instanceof String) {
+                    animalCopy.setName((String) newValue);
+                    AnimalManagerFactory.get().updateAnimal(animalCopy);
+                    animal.setName((String) newValue);
+                }
+                break;
+            case "subespecies":
+                if (newValue instanceof String) {
+                    animalCopy.setSubespecies((String) newValue);
+                    AnimalManagerFactory.get().updateAnimal(animalCopy);
+                    animal.setSubespecies((String) newValue);
+                }
+                break;
+            case "species":
+                if (newValue instanceof SpeciesBean) {
+                    animalCopy.setSpecies((SpeciesBean) newValue);
+                    AnimalManagerFactory.get().updateAnimal(animalCopy);
+                    animal.setSpecies((SpeciesBean) newValue);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Campo desconocido: " + fieldName);
+        }
+
+        event.getTableView().refresh();
+
+    } catch (Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+        alert.showAndWait();
+        event.consume();
+    }
+}
+
+//    private void handleStringEditCommit(CellEditEvent<AnimalBean, String> event, String fieldName) {
+//         
+//        try {       
+//        
+//            TablePosition<AnimalBean, String> pos = event.getTablePosition();
+//            String newValue = event.getNewValue();
+//
+//            if (newValue == null || newValue.trim().isEmpty()) {
+//                throw new IllegalArgumentException("El valor ingresado no es válido.");
+//            }
+//
+//            int row = pos.getRow();
+//            AnimalBean animal = event.getTableView().getItems().get(row);
+//            AnimalBean animalCopy = animal.clone();
+//
+//            switch (fieldName) {
+//                case "name":
+//                    animalCopy.setName(newValue);
+//                    break;
+//                case "subespecies":
+//                    animalCopy.setSubespecies(newValue);
+//                    break;
+//                default:
+//                    throw new IllegalArgumentException("Campo desconocido: " + fieldName);
+//            }
+//
+//            // actualizar en la capa lógica
+//            AnimalManagerFactory.get().updateAnimal(animalCopy);
+//
+//            // aplicar el cambio al objeto original
+//            if ("name".equals(fieldName)) {
+//                animal.setName(newValue);
+//            } else if ("subespecies".equals(fieldName)) {
+//                animal.setSubespecies(newValue);
+//            }
+//
+//            event.getTableView().refresh();
+//            
+//        } catch (Exception e) {
+//            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+////            alert.showAndWait();
+//            event.consume();
+//        }
+//    }
+//    private void handleSpeciesEditCommit(CellEditEvent<AnimalBean, SpeciesBean> event) {
+//    try {
+//   
+//        TablePosition<AnimalBean, SpeciesBean> pos = event.getTablePosition();
+//        SpeciesBean newSpecies = event.getNewValue();
+//        
+//        if (newSpecies == null) {
+//            throw new IllegalArgumentException("Debe seleccionar una especie válida.");
+//        }
+//
+//        int row = pos.getRow();
+//        AnimalBean animal = event.getTableView().getItems().get(row);
+//        AnimalBean animalCopy = animal.clone();
+// 
+//        animalCopy.setSpecies(newSpecies);
+//
+//        AnimalManagerFactory.get().updateAnimal(animalCopy);
+//
+//        animal.setSpecies(newSpecies);
+//
+//    
+//        event.getTableView().refresh();
+//
+//    } catch (Exception e) {
+//      
+//        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+//        alert.showAndWait();
+//        event.consume();
+//    }
+//}
+
+
+
     
 //    Manejador de cambios en el ComboBox
 //    private void handleComboBoxChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
