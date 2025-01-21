@@ -22,5 +22,6 @@ public interface IAnimalManager {
     public <T> T getAnimalsByBirthdateFrom(GenericType<T> responseType, String dateFrom) throws WebApplicationException;
     public <T> T getAnimalByName(GenericType<T> responseType, String name) throws WebApplicationException;
     public <T> T getAnimalsByBirthdate(GenericType<T> responseType, String dateFrom, String dateTo) throws WebApplicationException;
+    public <T> T getAllAnimals(GenericType<T> responseType, String managerId) throws WebApplicationException;
     public void close();
 }

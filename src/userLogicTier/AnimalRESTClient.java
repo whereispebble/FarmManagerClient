@@ -83,6 +83,11 @@ public class AnimalRESTClient implements IAnimalManager{
         resource = resource.path(java.text.MessageFormat.format("between/{0}/{1}", new Object[]{dateFrom, dateTo}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
+    public <T> T getAllAnimals(GenericType<T> responseType, String managerId) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path(java.text.MessageFormat.format("all/{0}", new Object[]{managerId}));
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
 
     public void close() {
         client.close();

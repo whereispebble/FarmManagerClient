@@ -16,6 +16,7 @@ import java.util.ResourceBundle;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -92,8 +93,7 @@ public class AnimalController implements Initializable {
      * Initializes the controller class.
      */
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        try {  
+    public void initialize(URL url, ResourceBundle rb) { 
     //        // Establecer el título de la ventana
     //        stage.setTitle("Animals");
     //
@@ -113,27 +113,28 @@ public class AnimalController implements Initializable {
     //        dpSearchTo.setVisible(false);
 
             // Cargar los elementos en el combo de búsqueda
-    //        comboSearch.getItems().addAll("Subespecies", "Animal Group", "Birthdate");
+            comboSearch.getItems().addAll("Subespecies", "Animal Group", "Birthdate");
     //
     //        // Seleccionar por defecto "Animal Group"
-    //        comboSearch.setValue("Animal Group");
+            comboSearch.setValue("Animal Group");
     //        
     //        // Escuchar cambios en el ComboBox
-    ////        comboSearch.valueProperty().addListener(this::handleComboBoxChange);
+            comboSearch.valueProperty().addListener(this::handleComboBoxChange);
     //
     //        // Limpiar y habilitar el campo tfSearch
     //        tfSearch.clear();
     //        tfSearch.setDisable(false);
     //        
     //        // Enfocar el campo de búsqueda
-    //        tfSearch.requestFocus();  
+            tfSearch.requestFocus();  
     //        
     //         // Habilitar los botones
-    //        btnSearch.setDisable(false);
+            btnSearch.setDisable(false);
     //        btnAdd.setDisable(false);
     //
     //        // Establecer "Search" como el botón por defecto
-    //        btnSearch.setDefaultButton(true);
+            btnSearch.setDefaultButton(true);
+            btnSearch.setOnAction(this::onSearchButtonClicked);
     //
     
        
@@ -162,16 +163,7 @@ public class AnimalController implements Initializable {
                     };
                 }
             });
-//             tcDate.setCellValueFactory(
-//                new Callback<TableColumn.CellDataFeatures<Movement, String>, ObservableValue<String>>() {
-//                    @Override
-//                    public ObservableValue<String> call(TableColumn.CellDataFeatures<Movement, String> movement) {
-//                       SimpleStringProperty property = new SimpleStringProperty();
-//                       DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//                       property.setValue(dateFormat.format(((Movement)movement.getValue()).getTimestamp()));
-//                       return property;
-//                    }
-//            });
+
              
             tcBirthdate.setStyle("-fx-alignment: center;");
 
@@ -186,10 +178,6 @@ public class AnimalController implements Initializable {
             tcSubespecies.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
             tcSubespecies.setOnEditCommit(event -> handleEditCommit(event, "subespecies"));
 
-
-
-
-
             tcSpecies.setCellValueFactory(new PropertyValueFactory<>("species"));
             List<SpeciesBean> speciesList = new ArrayList<SpeciesBean>();
             speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});             
@@ -202,23 +190,13 @@ public class AnimalController implements Initializable {
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("monthlyConsume"));
             tcConsume.setStyle("-fx-alignment: center-right;");
 
-            List<AnimalBean> animalList = new ArrayList<AnimalBean>();
-            animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
-    //        for (AnimalBean ab:animalList){
-    //            System.out.println(ab.toString());
-    //        }
-            ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(animalList);
-            tbAnimal.setItems(animalData);
-
             tbAnimal.setEditable(true);
             //        stage.show(); 
-         
-        } catch (WebApplicationException e) {
-            System.err.println("Error fetching animals: " + e.getMessage());
-        }
-        
-        
+            
+            
+            showAllAnimals();
     }    
+    
     private <T> void handleEditCommit(CellEditEvent<AnimalBean, T> event, String fieldName) {
     try {
         TablePosition<AnimalBean, T> pos = event.getTablePosition();
@@ -267,140 +245,95 @@ public class AnimalController implements Initializable {
         event.consume();
     }
 }
-
-//    private void handleStringEditCommit(CellEditEvent<AnimalBean, String> event, String fieldName) {
-//         
-//        try {       
-//        
-//            TablePosition<AnimalBean, String> pos = event.getTablePosition();
-//            String newValue = event.getNewValue();
-//
-//            if (newValue == null || newValue.trim().isEmpty()) {
-//                throw new IllegalArgumentException("El valor ingresado no es válido.");
-//            }
-//
-//            int row = pos.getRow();
-//            AnimalBean animal = event.getTableView().getItems().get(row);
-//            AnimalBean animalCopy = animal.clone();
-//
-//            switch (fieldName) {
-//                case "name":
-//                    animalCopy.setName(newValue);
-//                    break;
-//                case "subespecies":
-//                    animalCopy.setSubespecies(newValue);
-//                    break;
-//                default:
-//                    throw new IllegalArgumentException("Campo desconocido: " + fieldName);
-//            }
-//
-//            // actualizar en la capa lógica
-//            AnimalManagerFactory.get().updateAnimal(animalCopy);
-//
-//            // aplicar el cambio al objeto original
-//            if ("name".equals(fieldName)) {
-//                animal.setName(newValue);
-//            } else if ("subespecies".equals(fieldName)) {
-//                animal.setSubespecies(newValue);
-//            }
-//
-//            event.getTableView().refresh();
-//            
-//        } catch (Exception e) {
-//            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-////            alert.showAndWait();
-//            event.consume();
-//        }
-//    }
-//    private void handleSpeciesEditCommit(CellEditEvent<AnimalBean, SpeciesBean> event) {
-//    try {
-//   
-//        TablePosition<AnimalBean, SpeciesBean> pos = event.getTablePosition();
-//        SpeciesBean newSpecies = event.getNewValue();
-//        
-//        if (newSpecies == null) {
-//            throw new IllegalArgumentException("Debe seleccionar una especie válida.");
-//        }
-//
-//        int row = pos.getRow();
-//        AnimalBean animal = event.getTableView().getItems().get(row);
-//        AnimalBean animalCopy = animal.clone();
-// 
-//        animalCopy.setSpecies(newSpecies);
-//
-//        AnimalManagerFactory.get().updateAnimal(animalCopy);
-//
-//        animal.setSpecies(newSpecies);
-//
-//    
-//        event.getTableView().refresh();
-//
-//    } catch (Exception e) {
-//      
-//        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-//        alert.showAndWait();
-//        event.consume();
-//    }
-//}
-
-
-
-    
-//    Manejador de cambios en el ComboBox
-//    private void handleComboBoxChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-//        if ("Birthdate".equals(newValue)) {
-//            // Ocultar el campo de búsqueda de texto
-//            tfSearch.setVisible(false);
-//            tfSearch.clear();
-//            
-//            // Mostrar los campos de fecha
+   
+    private void handleComboBoxChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        if ("Birthdate".equals(newValue)) {
+            // Ocultar el campo de búsqueda de texto
+            tfSearch.setVisible(false);
+            tfSearch.clear();
+            
+            // Mostrar los campos de fecha
 //            lblFrom.setVisible(true);
 //            lblTo.setVisible(true);
 //            dpSearchFrom.setVisible(true);
 //            dpSearchTo.setVisible(true);
-//        } else {            
-//            // Ocultar los campos de fecha
+        } else if ("Subespecies".equals(newValue)|| "Animal Group".equals(newValue)) {            
+            // Ocultar los campos de fecha
 //            lblFrom.setVisible(false);
 //            lblTo.setVisible(false);
 //            dpSearchFrom.setVisible(false);
 //            dpSearchTo.setVisible(false);
-////            dpSearchFrom.clear();
-////            dpSearchTo.clear();
-//            
-//            // Mostrar el campo de búsqueda de texto
-//            tfSearch.setVisible(true);
-//        }
-
-   
+//            dpSearchFrom.clear();
+//            dpSearchTo.clear();
+            
+            // Mostrar el campo de búsqueda de texto
+            tfSearch.setVisible(true);
+            tfSearch.clear();
+        }
     }
     
-//    private void onSearchButtonClicked() {
-//        String searchType = comboSearch.getValue();
-//        try {
-//            List<AnimalBean> animalList = null;
-//
-//            switch (searchType) {
-//                case "Animal Group":
-//                    animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(AnimalBean.class, tfSearch.getText());
-//                    break;
-//                case "Subespecies":
-//                    animalList = AnimalManagerFactory.get().getAnimalsBySubespecies(AnimalBean.class, tfSearch.getText());
-//                    break;
-//                case "Birthdate":
-//                    String from = dpSearchFrom.getValue().toString();
-//                    String to = dpSearchTo.getValue().toString();
-//                    animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(AnimalBean.class, from, to);
-//                    break;
-//            }
-//
-//            if (animalList != null) {
-//                ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(animalList);
-//                tbAnimal.setItems(animalData);
-//            }
-//        } catch (Exception e) {
-//            System.err.println("Error fetching data: " + e.getMessage());
-//        }
-//    }
+    private void onSearchButtonClicked(ActionEvent event) {
+        String searchType = comboSearch.getValue();
+        try {
+            List<AnimalBean> animalList = null;
 
+            switch (searchType) {
+                case "Animal Group":
+                    if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
+                        animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
+//                    animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
+                    }
+                    else{
+                         showAllAnimals();
+                    }
+                    
+                    break;
+                case "Subespecies":
+                    if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
+                        animalList = AnimalManagerFactory.get().getAnimalsBySubespecies(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
+                    }
+                    else{
+                         showAllAnimals();
+                    }
+                    
+                    break;
+                case "Birthdate":
+                    String from = (!dpSearchFrom.getValue().toString().isEmpty()) ? dpSearchFrom.getValue().toString() : null;
+                    String to = (!dpSearchTo.getValue().toString().isEmpty()) ? dpSearchTo.getValue().toString() : null;
     
+                    if (from != null && to != null){
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(new GenericType<List<AnimalBean>>() {}, from, to);
+                    }
+                    else if(from != null){
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateFrom(new GenericType<List<AnimalBean>>() {}, from);
+                    }
+                    else if(to != null){
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateTo(new GenericType<List<AnimalBean>>() {}, to);
+                    }
+                    else{
+                        showAllAnimals();
+                    }
+                    break;
+            }
 
+            if (animalList != null) {
+                ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(animalList);
+                tbAnimal.setItems(animalData);
+            }
+        } catch (WebApplicationException e) {
+            System.err.println("Error fetching animals: " + e.getMessage());
+        }
+    }
+    
+    private void showAllAnimals() {
+    try {
+        System.out.println("CAMBIAR showAllAnimals, id de manager estatico!!");
+        List<AnimalBean> allAnimals = AnimalManagerFactory.get().getAllAnimals(new GenericType<List<AnimalBean>>() {}, "1");
+        ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(allAnimals);
+        tbAnimal.setItems(animalData);
+    } catch (WebApplicationException e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, "Error al cargar los animales: " + e.getMessage(), ButtonType.OK);
+        alert.showAndWait();
+    }
+}
+}
