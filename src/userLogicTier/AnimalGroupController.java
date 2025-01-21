@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import model.AnimalGroupBean;
+import model.AnimalBean;
 
 /**
  * FXML Controller class
@@ -67,7 +68,7 @@ public class AnimalGroupController implements Initializable {
 
     @FXML
     private TableColumn tcDate;
-    
+
     @FXML
     private TableColumn tcArea;
 
@@ -82,16 +83,16 @@ public class AnimalGroupController implements Initializable {
         try {
             logger.log(Level.INFO, "Initilizing Animal Group controller");
 
-            //Uncomment next lines when necessary
+            //Uncomment next lanes when necessary
 //        // Establecer el título de la ventana
-//        stage.setTitle("Animal Groups");
-//        
-//        // Establecer dimensiones fijas
-//        stage.setWidth(1024);
-//        stage.setHeight(720);
-//        
-//        // Deshabilitar la redimensión de la ventana
-//        stage.setResizable(false);
+//            stage.setTitle("Animal Groups");
+//
+//            // Establecer dimensiones fijas
+//            stage.setWidth(1024);
+//            stage.setHeight(720);
+//
+//            // Deshabilitar la redimensión de la ventana
+//            stage.setResizable(false);
             logger.log(Level.INFO, "Setting cell value factories");
 
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -101,25 +102,29 @@ public class AnimalGroupController implements Initializable {
             tcDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
             tcArea.setCellValueFactory(new PropertyValueFactory<>("area"));
 
-            List<AnimalGroupBean> groupList = new ArrayList<AnimalGroupBean>();
-            managerId = "1";
+            List<AnimalGroupBean> groupList = new ArrayList<>();
 
             logger.log(Level.INFO, "Sending request");
 
+            managerId = "1";
             groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
             }, managerId);
+
+            List<AnimalBean> animalList = new ArrayList<>();
+            // Uncoment when AnimalManagerFactory, AnimmalRestClient are added
+//            animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
 
             logger.log(Level.INFO, "Request sent");
 
             // for testing purposes
-            logger.log(Level.INFO, "Printing list");
-            for (AnimalGroupBean agb : groupList) {
-                System.out.println(agb.toString());
-            }
-
+//            logger.log(Level.INFO, "Printing list");
+//            for (AnimalGroupBean agb : groupList) {
+//                System.out.println(agb.toString());
+//            }
             groupData = FXCollections.observableArrayList(groupList);
             tbAnimalGroup.setItems(groupData);
-            tbAnimalGroup.setEditable(false);
+            tcConsume.setEditable(false);
+            tcAnimals.setEditable(false);
 
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
@@ -130,5 +135,4 @@ public class AnimalGroupController implements Initializable {
             alert.showAndWait();
         }
     }
-
 }

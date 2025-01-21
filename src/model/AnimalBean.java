@@ -9,6 +9,6 @@ package model;
  *
  * @author Ander
  */
-class AnimalBean {
+public class AnimalBean {
     
 }
