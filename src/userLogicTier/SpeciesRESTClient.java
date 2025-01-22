@@ -26,7 +26,7 @@ public class SpeciesRESTClient implements ISpeciesManager{
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/FarmManagerServer/webresources";
+    private static final String BASE_URI = "http://localhost:8080/farmapp/webresources";
 
     public SpeciesRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
