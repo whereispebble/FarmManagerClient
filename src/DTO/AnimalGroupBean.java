@@ -8,33 +8,41 @@ package DTO;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
  * @author Ander
  */
-@XmlRootElement(name="group")
-public class AnimalGroupBean implements Serializable{
-    private static final long serialVersionUID = 1L;
-    
-     private Long id;
+@XmlRootElement(name="animalGroup")
+public class AnimalGroupBean implements Serializable, Cloneable {
 
+    private static final long serialVersionUID = 1L;
+    private Long id;
     private String name;
-  
     private String area;
-  
     private String description;
-    
     private Date creationDate;
- 
     private List<AnimalBean> animals;
-//    @OneToMany(cascade = ALL, mappedBy = "animalGroup")
-//    private List<ConsumeEntity> consumes;
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    private List<ManagerEntity> managers;
+    private List<ManagerBean> managers;
+
+    public AnimalGroupBean() {
+    }
+
+    public AnimalGroupBean(Long id, String name, String area, String description, Date creationDate, List<AnimalBean> animals, List<ManagerBean> managers) {
+        this.id = id;
+        this.name = name;
+        this.area = area;
+        this.description = description;
+        this.creationDate = creationDate;
+        this.animals = animals;
+        this.managers = managers;
+    }
+
+    public AnimalGroupBean clone() throws CloneNotSupportedException {
+
+        return (AnimalGroupBean) super.clone();
+    }
 
     public Long getId() {
         return id;
@@ -76,7 +84,6 @@ public class AnimalGroupBean implements Serializable{
         this.creationDate = creationDate;
     }
 
-    @XmlTransient
     public List<AnimalBean> getAnimals() {
         return animals;
     }
@@ -84,7 +91,7 @@ public class AnimalGroupBean implements Serializable{
     public void setAnimals(List<AnimalBean> animals) {
         this.animals = animals;
     }
-    
+//
 //    public List<ConsumeEntity> getConsumes() {
 //        return consumes;
 //    }
@@ -92,14 +99,15 @@ public class AnimalGroupBean implements Serializable{
 //    public void setConsumes(List<ConsumeEntity> consumes) {
 //        this.consumes = consumes;
 //    }
-//
-//    public List<ManagerEntity> getManagers() {
-//        return managers;
-//    }
-//
-//    public void setManagers(List<ManagerEntity> managers) {
-//        this.managers = managers;
-    
+
+    public List<ManagerBean> getManagers() {
+        return managers;
+    }
+
+    public void setManagers(List<ManagerBean> managers) {
+        this.managers = managers;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

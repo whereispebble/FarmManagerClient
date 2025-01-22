@@ -10,7 +10,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
-import model.AnimalGroupBean;
+import DTO.AnimalGroupBean;
 
 /**
  * Jersey REST client generated for REST resource:AnimalGroupFacadeREST [animalgroup]<br>

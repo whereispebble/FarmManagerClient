@@ -32,8 +32,8 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
-import model.AnimalGroupBean;
-import model.AnimalBean;
+import DTO.AnimalGroupBean;
+import DTO.AnimalBean;
 
 /**
  * FXML Controller class

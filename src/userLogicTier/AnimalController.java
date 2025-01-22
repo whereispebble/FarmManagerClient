@@ -6,6 +6,7 @@
 package userLogicTier;
 
 import DTO.AnimalBean;
+import DTO.AnimalGroupBean;
 import DTO.SpeciesBean;
 import cellFactories.DatePickerTableCell;
 import java.net.URL;
@@ -84,7 +85,7 @@ public class AnimalController implements Initializable {
     @FXML
     private TableColumn<AnimalBean,Date> tcBirthdate;
     @FXML
-    private TableColumn tcAnimalGroup;
+    private TableColumn<AnimalBean,AnimalGroupBean> tcAnimalGroup;
     @FXML
     private TableColumn<AnimalBean,String> tcSubespecies;
     @FXML
@@ -171,8 +172,13 @@ public class AnimalController implements Initializable {
     //        seleccionados. Edición ComboBoxTableCell
 
             tcAnimalGroup.setCellValueFactory(new PropertyValueFactory<>("animalGroup"));
-            // esperar a moreno
+            List<AnimalGroupBean> animalGroupList = new ArrayList<AnimalGroupBean>();
             
+            animalGroupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, "1");             
+//            ObservableList<AnimalGroupBean> animalGroupData = FXCollections.observableArrayList(animalGroupList);
+//            tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(animalGroupData));
+//            tcAnimalGroup.setOnEditCommit(event -> handleEditCommit(event, "animalGroup"));
+//            
             tcSubespecies.setCellValueFactory(new PropertyValueFactory<>("subespecies"));
             tcSubespecies.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
             tcSubespecies.setOnEditCommit(event -> handleEditCommit(event, "subespecies"));
