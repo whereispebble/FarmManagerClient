@@ -7,6 +7,7 @@ package userLogicTier;
 
 import DTO.AnimalBean;
 import DTO.SpeciesBean;
+import cellFactories.DatePickerTableCell;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
@@ -78,7 +80,7 @@ public class AnimalController implements Initializable {
     @FXML
     private TableColumn<AnimalBean,String> tcName;
     @FXML
-    private TableColumn tcBirthdate;
+    private TableColumn<AnimalBean,Date> tcBirthdate;
     @FXML
     private TableColumn tcAnimalGroup;
     @FXML
@@ -146,23 +148,33 @@ public class AnimalController implements Initializable {
             
             tcBirthdate.setCellValueFactory(new PropertyValueFactory<>("birthdate"));
             // Formatear la fecha en dd/MM/yyyy
-            tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, javafx.scene.control.TableCell<AnimalBean, Date>>() {
+//            tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, javafx.scene.control.TableCell<AnimalBean, Date>>() {
+//                @Override
+//                public javafx.scene.control.TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
+//                    return new javafx.scene.control.TableCell<AnimalBean, Date>() {
+//                        @Override
+//                        protected void updateItem(Date item, boolean empty) {
+//                            super.updateItem(item, empty);
+//                            if (empty || item == null) {
+//                                setText(null);
+//                            } else {
+//                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+//                                setText(sdf.format(item));
+//                            }
+//                        }
+//                    };
+//                }
+//            });
+            tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, TableCell<AnimalBean, Date>>() {
                 @Override
-                public javafx.scene.control.TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
-                    return new javafx.scene.control.TableCell<AnimalBean, Date>() {
-                        @Override
-                        protected void updateItem(Date item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) {
-                                setText(null);
-                            } else {
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                                setText(sdf.format(item));
-                            }
-                        }
-                    };
+                public TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
+                    return new DatePickerTableCell<>(param);
                 }
             });
+
+          
+                
+    
 
              
             tcBirthdate.setStyle("-fx-alignment: center;");
@@ -195,7 +207,20 @@ public class AnimalController implements Initializable {
             
             
             showAllAnimals();
-    }    
+    }  
+//    private void updateAnimalBirthdate(Date updatedDate) {
+//        AnimalBean animal = tbAnimal.getSelectionModel().getSelectedItem();
+//        if (animal != null && updatedDate != null) {
+//            animal.setBirthdate(updatedDate);
+//            try {
+//                AnimalManagerFactory.get().updateAnimal(animal);  // Actualiza el animal con la nueva fecha
+//            } catch (WebApplicationException e) {
+//                Alert alert = new Alert(Alert.AlertType.ERROR, "Error al actualizar el animal: " + e.getMessage(), ButtonType.OK);
+//                alert.showAndWait();
+//            }
+//        }
+//    }
+
     
     private <T> void handleEditCommit(CellEditEvent<AnimalBean, T> event, String fieldName) {
     try {
