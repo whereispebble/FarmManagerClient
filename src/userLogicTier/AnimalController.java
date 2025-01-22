@@ -147,36 +147,15 @@ public class AnimalController implements Initializable {
             tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
             
             tcBirthdate.setCellValueFactory(new PropertyValueFactory<>("birthdate"));
-            // Formatear la fecha en dd/MM/yyyy
-//            tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, javafx.scene.control.TableCell<AnimalBean, Date>>() {
-//                @Override
-//                public javafx.scene.control.TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
-//                    return new javafx.scene.control.TableCell<AnimalBean, Date>() {
-//                        @Override
-//                        protected void updateItem(Date item, boolean empty) {
-//                            super.updateItem(item, empty);
-//                            if (empty || item == null) {
-//                                setText(null);
-//                            } else {
-//                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//                                setText(sdf.format(item));
-//                            }
-//                        }
-//                    };
-//                }
-//            });
             tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, TableCell<AnimalBean, Date>>() {
                 @Override
                 public TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
-                    return new DatePickerTableCell<>(param);
+                    DatePickerTableCell<AnimalBean> cell = new DatePickerTableCell<>(param);
+                    cell.updateDateCallback = (Date updatedDate) -> updateAnimalBirthdate(updatedDate);
+                    return cell;
                 }
             });
 
-          
-                
-    
-
-             
             tcBirthdate.setStyle("-fx-alignment: center;");
 
     //        Animal Group y Species: combo no editable con el valor del nombre 
@@ -208,20 +187,24 @@ public class AnimalController implements Initializable {
             
             showAllAnimals();
     }  
-//    private void updateAnimalBirthdate(Date updatedDate) {
-//        AnimalBean animal = tbAnimal.getSelectionModel().getSelectedItem();
-//        if (animal != null && updatedDate != null) {
-//            animal.setBirthdate(updatedDate);
-//            try {
-//                AnimalManagerFactory.get().updateAnimal(animal);  // Actualiza el animal con la nueva fecha
-//            } catch (WebApplicationException e) {
-//                Alert alert = new Alert(Alert.AlertType.ERROR, "Error al actualizar el animal: " + e.getMessage(), ButtonType.OK);
-//                alert.showAndWait();
-//            }
-//        }
-//    }
-
     
+    private void updateAnimalBirthdate(Date updatedDate) throws CloneNotSupportedException {
+        AnimalBean animal = tbAnimal.getSelectionModel().getSelectedItem();
+        if (animal != null && updatedDate != null) {
+            AnimalBean animalCopy = animal.clone();
+            animalCopy.setBirthdate(updatedDate);
+            try {
+                AnimalManagerFactory.get().updateAnimal(animalCopy);
+                animal.setBirthdate(updatedDate);
+                
+                
+            } catch (WebApplicationException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+                alert.showAndWait();
+            }
+        }
+    }
+ 
     private <T> void handleEditCommit(CellEditEvent<AnimalBean, T> event, String fieldName) {
     try {
         TablePosition<AnimalBean, T> pos = event.getTablePosition();
@@ -351,14 +334,14 @@ public class AnimalController implements Initializable {
     }
     
     private void showAllAnimals() {
-    try {
-        System.out.println("CAMBIAR showAllAnimals, id de manager estatico!!");
-        List<AnimalBean> allAnimals = AnimalManagerFactory.get().getAllAnimals(new GenericType<List<AnimalBean>>() {}, "1");
-        ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(allAnimals);
-        tbAnimal.setItems(animalData);
-    } catch (WebApplicationException e) {
-        Alert alert = new Alert(Alert.AlertType.ERROR, "Error al cargar los animales: " + e.getMessage(), ButtonType.OK);
-        alert.showAndWait();
+        try {
+            System.out.println("CAMBIAR showAllAnimals, id de manager estatico!!");
+            List<AnimalBean> allAnimals = AnimalManagerFactory.get().getAllAnimals(new GenericType<List<AnimalBean>>() {}, "1");
+            ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(allAnimals);
+            tbAnimal.setItems(animalData);
+        } catch (WebApplicationException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error al cargar los animales: " + e.getMessage(), ButtonType.OK);
+            alert.showAndWait();
+        }
     }
-}
 }
