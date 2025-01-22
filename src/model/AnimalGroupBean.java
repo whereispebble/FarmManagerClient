@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ander
  */
 @XmlRootElement(name = "animalGroup")
-public class AnimalGroupBean implements Serializable {
+public class AnimalGroupBean implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
     private Long id;
@@ -37,6 +37,11 @@ public class AnimalGroupBean implements Serializable {
         this.creationDate = creationDate;
         this.animals = animals;
         this.managers = managers;
+    }
+
+    public AnimalGroupBean clone() throws CloneNotSupportedException {
+
+        return (AnimalGroupBean) super.clone();
     }
 
     public Long getId() {

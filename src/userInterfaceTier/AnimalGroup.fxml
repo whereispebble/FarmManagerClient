@@ -30,9 +30,9 @@
             <columns>
                <TableColumn fx:id="tcName" prefWidth="161.60003280639648" resizable="false" text="Name" />
                <TableColumn fx:id="tcDescription" prefWidth="337.5999755859375" resizable="false" text="Description" />
-               <TableColumn fx:id="tcAnimals" minWidth="0.0" prefWidth="92.00009155273438" resizable="false" text="Animals" />
+               <TableColumn fx:id="tcAnimals" editable="false" minWidth="0.0" prefWidth="92.00009155273438" resizable="false" text="Animals" />
                <TableColumn fx:id="tcArea" minWidth="0.0" prefWidth="152.800048828125" resizable="false" text="Area" />
-               <TableColumn fx:id="tcConsume" prefWidth="122.4000244140625" resizable="false" text="Consume (kg)" />
+               <TableColumn fx:id="tcConsume" editable="false" prefWidth="122.4000244140625" resizable="false" text="Consume (kg)" />
                <TableColumn fx:id="tcDate" prefWidth="120.0" resizable="false" text="Creation date" />
             </columns>
             <contextMenu>
