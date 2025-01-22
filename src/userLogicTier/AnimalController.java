@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -151,7 +153,13 @@ public class AnimalController implements Initializable {
                 @Override
                 public TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
                     DatePickerTableCell<AnimalBean> cell = new DatePickerTableCell<>(param);
-                    cell.updateDateCallback = (Date updatedDate) -> updateAnimalBirthdate(updatedDate);
+                    cell.updateDateCallback = (Date updatedDate) -> {
+                        try {
+                            updateAnimalBirthdate(updatedDate);
+                        } catch (CloneNotSupportedException ex) {
+                            Logger.getLogger(AnimalController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    };
                     return cell;
                 }
             });
