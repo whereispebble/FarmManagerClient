@@ -6,17 +6,19 @@
 package DTO;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Ander
  */
+@XmlRootElement(name = "farmUser")
 public class UserBean implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     protected Long id;
-    
+
     protected String name;
 
     protected String email;

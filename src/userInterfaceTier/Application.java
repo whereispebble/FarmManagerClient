@@ -52,13 +52,13 @@ public class Application extends javafx.application.Application {
 //        stage.setTitle("Sign In");
 //        stage.show();
 
-        Parent root = FXMLLoader.load(getClass().getResource("Animal.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("AnimalGroup.fxml"));
         
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         stage.setScene(scene);
         stage.setResizable(false);
-        stage.setTitle("Animals");
+        stage.setTitle("Animal Groups");
         stage.show();
 
         
