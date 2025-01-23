@@ -5,11 +5,15 @@
  */
 package userInterfaceTier;
 
+import java.util.List;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javax.ws.rs.core.GenericType;
+import model.ProductBean;
+import userLogicTier.ProductManagerFactory;
 
 /**
  * The main application class responsible for initializing and displaying the Sign In window.
@@ -33,14 +37,13 @@ public class Application extends javafx.application.Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("SignIn.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("Product.fxml"));
         
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
         stage.setScene(scene);
-        stage.getIcons().add(new Image("resources/logo.png"));
         stage.setResizable(false);
-        stage.setTitle("Sign In");
+        stage.setTitle("Product");
         stage.show();
     }
 
@@ -53,6 +56,7 @@ public class Application extends javafx.application.Application {
      */
     public static void main(String[] args) {
         launch(args);
+        //List<Product> products = ProductManagerFactory.get().findAll_XML(new GenericType<List<Product>>() {});
     }
     
 }
