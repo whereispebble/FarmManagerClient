@@ -109,7 +109,10 @@ public class AnimalGroupController implements Initializable {
 //            stage.setResizable(false);
             searchField.requestFocus();
             btnSearch.setDefaultButton(true);
+
+            // BUTTONS
             btnSearch.setOnAction(this::onSearchButtonClicked);
+            btnCreate.setOnAction(this::onCreateButtonClicked);
 
             logger.log(Level.INFO, "Setting cell value factories");
 
@@ -251,7 +254,8 @@ public class AnimalGroupController implements Initializable {
             List<AnimalGroupBean> groupList = null;
             if (searchField.getText() != null && !searchField.getText().isEmpty()) {
                 logger.log(Level.INFO, "Searching group/s by name and manager id");
-                groupList = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<List<AnimalGroupBean>>() {}, searchField.getText(), MANAGER_ID);
+                groupList = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<List<AnimalGroupBean>>() {
+                }, searchField.getText(), MANAGER_ID);
                 logger.log(Level.INFO, "Group/s gotten");
             } else {
                 showAnimalGroups();
@@ -267,11 +271,27 @@ public class AnimalGroupController implements Initializable {
         }
     }
 
+    @FXML
+    private void onCreateButtonClicked(ActionEvent event) {
+        try {
+            //TODO
+
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error creating animal group", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("ERROR");
+            alert.setHeaderText("Cannot create the animal group");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
+    }
+
     private void showAnimalGroups() {
         try {
             // Get animal groups
             logger.log(Level.INFO, "Getting animal groups");
-            List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, MANAGER_ID);
+            List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
+            }, MANAGER_ID);
             logger.log(Level.INFO, "Animal groups gotten");
             // for testing purposes
 //            logger.log(Level.INFO, "Printing list");
