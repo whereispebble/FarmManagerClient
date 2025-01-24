@@ -76,7 +76,6 @@ public class AnimalGroupController implements Initializable {
 
 //    @FXML
 //    private TableColumn tcAnimals;
-
     @FXML
     private TableColumn tcConsume;
 
@@ -90,6 +89,7 @@ public class AnimalGroupController implements Initializable {
 
     /**
      * Initializes the controller class.
+     *
      * @param url
      * @param rb
      */
@@ -137,7 +137,6 @@ public class AnimalGroupController implements Initializable {
             // Animals column
 //            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
 //            tcAnimals.setStyle("-fx-alignment: center;");
-
             // Consumes column
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
             tcConsume.setStyle("-fx-alignment: center;");
@@ -166,7 +165,6 @@ public class AnimalGroupController implements Initializable {
 //            for (AnimalBean ab : animalList) {
 //                logger.log(Level.INFO, ab.toString());
 //            }
-
             tbAnimalGroup.setEditable(true);
 
             showAnimalGroups();
@@ -241,13 +239,12 @@ public class AnimalGroupController implements Initializable {
     private void updateAnimalGroup(Date updatedDate) throws CloneNotSupportedException {
         AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
         if (group != null && updatedDate != null) {
-            AnimalGroupBean animalCopy = group.clone();
-            animalCopy.setCreationDate(updatedDate);
+            AnimalGroupBean groupCopy = group.clone();
+            groupCopy.setCreationDate(updatedDate);
             try {
-                logger.log(Level.INFO, "Date: " + updatedDate);
-                AnimalManagerFactory.get().updateAnimal(animalCopy);
+                AnimalGroupFactory.get().updateAnimalGroup(groupCopy);
                 group.setCreationDate(updatedDate);
-
+                logger.log(Level.INFO, "Animal group updated. New Date: {0}", group.getCreationDate());
             } catch (WebApplicationException e) {
                 logger.log(Level.SEVERE, "Error updating", e);
             }
