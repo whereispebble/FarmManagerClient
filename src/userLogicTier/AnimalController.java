@@ -10,7 +10,6 @@ import DTO.AnimalGroupBean;
 import DTO.SpeciesBean;
 import cellFactories.DatePickerTableCell;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,6 +42,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.ws.rs.WebApplicationException;
@@ -71,10 +72,10 @@ public class AnimalController implements Initializable {
     private Button btnAdd;
     
     @FXML
-    private Label lblFrom;
+    private Text txtFrom;
     
     @FXML
-    private Label lblTo;
+    private Text txtTo;
     
     @FXML
     private DatePicker dpSearchFrom;
@@ -100,6 +101,9 @@ public class AnimalController implements Initializable {
     
     @FXML
     private MenuItem miDelete;
+    
+    @FXML
+    private StackPane stack;
 
 
     /**
@@ -107,6 +111,8 @@ public class AnimalController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
+        stack.setPickOnBounds(false);
+        tfSearch.toFront();
         
         tbAnimal.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     //        // Establecer el título de la ventana
@@ -142,6 +148,13 @@ public class AnimalController implements Initializable {
     //        
     //        // Enfocar el campo de búsqueda
             tfSearch.requestFocus();  
+            
+            
+            txtFrom.setVisible(false);
+            txtTo.setVisible(false);
+            dpSearchFrom.setVisible(false);
+            dpSearchTo.setVisible(false);
+
     //        
     //         // Habilitar los botones
             btnSearch.setDisable(false);
@@ -170,7 +183,6 @@ public class AnimalController implements Initializable {
                     return cell;
                 }
             });
-
             tcBirthdate.setStyle("-fx-alignment: center;");
 
     //        Animal Group y Species: combo no editable con el valor del nombre 
@@ -195,11 +207,6 @@ public class AnimalController implements Initializable {
             ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
             tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));
             tcSpecies.setOnEditCommit(event -> handleEditCommit(event, "species"));
-           
-            ////////////////////////////////////////////////////////////////
-            tcConsume.setCellValueFactory(new PropertyValueFactory<>("monthlyConsume"));
-            tcConsume.setStyle("-fx-alignment: center-right;");
-            ////////////////////////////////////////////////////////////////
 
             miDelete.setDisable(true);
             tbAnimal.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalBean>) change -> {
@@ -207,10 +214,8 @@ public class AnimalController implements Initializable {
             });
             miDelete.setOnAction(this::onDeleteMenuItemClicked);
             
-          
-            //aqui crear una nueva linea para introducir un animal
             btnAdd.setDisable(false);
-            btnAdd.setOnAction(this::onAddBUttonClicked);
+            btnAdd.setOnAction(this::onAddButtonClicked);
 
             tbAnimal.setEditable(true);
             //        stage.show(); 
@@ -218,8 +223,7 @@ public class AnimalController implements Initializable {
             showAllAnimals();
     }  
     
-    private void onAddBUttonClicked(ActionEvent event){
-        //aqui crear una nueva linea para introducir un animal
+    private void onAddButtonClicked(ActionEvent event){
         AnimalBean newAnimal = new AnimalBean();
         
         newAnimal.setName("New Animal");
@@ -251,36 +255,20 @@ public class AnimalController implements Initializable {
         AnimalManagerFactory.get().createAnimal(newAnimal);
         
         showAllAnimals();
-      
-//        tbAnimal.refresh();
-        
+
         //poner en modo edicion la casilla que contenga en la columna name "New Animal"
         final int frow;
         for (int row = 0; row < tbAnimal.getItems().size(); row++) {
             AnimalBean animal = tbAnimal.getItems().get(row);
             if (animal.getName().equals("New Animal")) {                
 //                tbAnimal.edit(row, tcName);
-               
                 frow=row;
                 Platform.runLater(() -> tbAnimal.edit(frow, tcName));
-                        
-                System.out.println(tbAnimal.getEditingCell());
-                
-              
-//                tbAnimal.getEditingCell().startEdit();
-            
-//                tbAnimal.edit(row, TableColumn<AnimalBean, String> tcName);
                 tbAnimal.refresh();
                 break;
             }
         }
-        
-//        tbAnimal.refresh();
-        
     }
-    
- 
-
     
     private void onDeleteMenuItemClicked(ActionEvent event) {
         ObservableList<AnimalBean> selectedAnimals = tbAnimal.getSelectionModel().getSelectedItems();
@@ -390,29 +378,57 @@ public class AnimalController implements Initializable {
 }
    
     private void handleComboBoxChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-        if ("Birthdate".equals(newValue)) {
-            // Ocultar el campo de búsqueda de texto
-            tfSearch.setVisible(false);
-            tfSearch.clear();
-            
-            // Mostrar los campos de fecha
-//            lblFrom.setVisible(true);
-//            lblTo.setVisible(true);
+//        if ("Birthdate".equals(newValue)) {
+//            // Ocultar el campo de búsqueda de texto
+//            tfSearch.setVisible(false);
+//            tfSearch.clear();
+//            
+//            // Mostrar los campos de fecha
+//            txtFrom.setVisible(true);
+//            txtTo.setVisible(true);
 //            dpSearchFrom.setVisible(true);
 //            dpSearchTo.setVisible(true);
-        } else if ("Subespecies".equals(newValue)|| "Animal Group".equals(newValue)) {            
-            // Ocultar los campos de fecha
-//            lblFrom.setVisible(false);
-//            lblTo.setVisible(false);
+//        } else if ("Subespecies".equals(newValue)|| "Animal Group".equals(newValue)) {            
+//            // Ocultar los campos de fecha
+//            txtFrom.setVisible(false);
+//            txtTo.setVisible(false);
 //            dpSearchFrom.setVisible(false);
 //            dpSearchTo.setVisible(false);
-//            dpSearchFrom.clear();
-//            dpSearchTo.clear();
-            
-            // Mostrar el campo de búsqueda de texto
-            tfSearch.setVisible(true);
-            tfSearch.clear();
-        }
+////            dpSearchFrom.clear();
+////            dpSearchTo.clear();
+//            
+//            // Mostrar el campo de búsqueda de texto
+//            tfSearch.setVisible(true);
+//            tfSearch.clear();
+//        }
+ if ("Birthdate".equals(newValue)) {
+        // Ocultar el campo de búsqueda de texto
+        tfSearch.toBack();
+        tfSearch.setVisible(false);
+        tfSearch.setManaged(false);
+
+        // Mostrar los campos de fecha
+        txtFrom.setVisible(true);
+        txtTo.setVisible(true);
+        txtFrom.setMouseTransparent(true);
+        txtTo.setMouseTransparent(true);
+        dpSearchFrom.toFront();
+        dpSearchTo.toFront();
+        dpSearchFrom.setVisible(true);
+        dpSearchTo.setVisible(true);
+    
+    } else if ("Subespecies".equals(newValue) || "Animal Group".equals(newValue)) {
+        // Ocultar los campos de fecha
+        txtFrom.setVisible(false);
+        txtTo.setVisible(false);
+        dpSearchFrom.setVisible(false);
+        dpSearchTo.setVisible(false);
+
+        // Mostrar el campo de búsqueda de texto
+        tfSearch.toFront();
+        tfSearch.setVisible(true);
+        tfSearch.setManaged(true);
+    }
     }
     
     private void onSearchButtonClicked(ActionEvent event) {
