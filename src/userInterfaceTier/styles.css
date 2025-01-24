@@ -141,3 +141,9 @@ MenuBar {
 .menu-bar .label {
     -fx-text-fill: white;
 }
+
+/* deactivates blue border from first row when table view is focused */
+.table-view:focused .table-row-cell:focused {
+    -fx-background-color: -fx-table-cell-border-color, -fx-background;
+    -fx-background-insets: 0, 0 0 1 0;
+}
