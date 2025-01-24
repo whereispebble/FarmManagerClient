@@ -42,6 +42,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -104,6 +105,9 @@ public class AnimalController implements Initializable {
     
     @FXML
     private StackPane stack;
+    
+    @FXML
+    private HBox hboxDatePicker;
 
 
     /**
@@ -378,57 +382,32 @@ public class AnimalController implements Initializable {
 }
    
     private void handleComboBoxChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-//        if ("Birthdate".equals(newValue)) {
-//            // Ocultar el campo de búsqueda de texto
-//            tfSearch.setVisible(false);
-//            tfSearch.clear();
-//            
-//            // Mostrar los campos de fecha
-//            txtFrom.setVisible(true);
-//            txtTo.setVisible(true);
-//            dpSearchFrom.setVisible(true);
-//            dpSearchTo.setVisible(true);
-//        } else if ("Subespecies".equals(newValue)|| "Animal Group".equals(newValue)) {            
-//            // Ocultar los campos de fecha
-//            txtFrom.setVisible(false);
-//            txtTo.setVisible(false);
-//            dpSearchFrom.setVisible(false);
-//            dpSearchTo.setVisible(false);
-////            dpSearchFrom.clear();
-////            dpSearchTo.clear();
-//            
-//            // Mostrar el campo de búsqueda de texto
-//            tfSearch.setVisible(true);
-//            tfSearch.clear();
-//        }
- if ("Birthdate".equals(newValue)) {
-        // Ocultar el campo de búsqueda de texto
-        tfSearch.toBack();
-        tfSearch.setVisible(false);
-        tfSearch.setManaged(false);
 
-        // Mostrar los campos de fecha
-        txtFrom.setVisible(true);
-        txtTo.setVisible(true);
-        txtFrom.setMouseTransparent(true);
-        txtTo.setMouseTransparent(true);
-        dpSearchFrom.toFront();
-        dpSearchTo.toFront();
-        dpSearchFrom.setVisible(true);
-        dpSearchTo.setVisible(true);
-    
-    } else if ("Subespecies".equals(newValue) || "Animal Group".equals(newValue)) {
-        // Ocultar los campos de fecha
-        txtFrom.setVisible(false);
-        txtTo.setVisible(false);
-        dpSearchFrom.setVisible(false);
-        dpSearchTo.setVisible(false);
+        if ("Birthdate".equals(newValue)) {
+            // Ocultar el campo de búsqueda de texto
+            tfSearch.toBack();
+            tfSearch.setVisible(false);
 
-        // Mostrar el campo de búsqueda de texto
-        tfSearch.toFront();
-        tfSearch.setVisible(true);
-        tfSearch.setManaged(true);
-    }
+            // Mostrar los campos de fecha
+            hboxDatePicker.toFront();
+            txtFrom.setVisible(true);
+            txtTo.setVisible(true);
+            dpSearchFrom.setVisible(true);
+            dpSearchTo.setVisible(true);
+
+        } else if ("Subespecies".equals(newValue) || "Animal Group".equals(newValue)) {
+            // Ocultar los campos de fecha
+            hboxDatePicker.toBack();
+            txtFrom.setVisible(false);
+            txtTo.setVisible(false);
+            dpSearchFrom.setVisible(false);
+            dpSearchTo.setVisible(false);
+
+            // Mostrar el campo de búsqueda de texto
+            tfSearch.clear();
+            tfSearch.toFront();
+            tfSearch.setVisible(true);
+        }
     }
     
     private void onSearchButtonClicked(ActionEvent event) {

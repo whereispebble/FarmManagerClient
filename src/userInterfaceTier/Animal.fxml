@@ -68,7 +68,7 @@
                             <Cursor fx:constant="TEXT" />
                         </cursor>
                     </TextField>
-                    <HBox prefHeight="100.0" prefWidth="200.0">
+                    <HBox fx:id="hboxDatePicker" prefHeight="100.0" prefWidth="200.0">
                        <children>
                           <DatePicker fx:id="dpSearchFrom">
                              <HBox.margin>
@@ -82,7 +82,7 @@
                           </DatePicker>
                        </children>
                     </HBox>
-                    <HBox prefHeight="100.0" prefWidth="200.0">
+                    <HBox fx:id="hboxText" prefHeight="100.0" prefWidth="200.0">
                        <children>
                           <Text fx:id="txtFrom" strokeType="OUTSIDE" strokeWidth="0.0" text="Fom:">
                              <HBox.margin>
