@@ -35,6 +35,7 @@ import javax.ws.rs.core.GenericType;
 import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import cellFactories.DatePickerTableCell;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.control.SelectionMode;
 
@@ -97,12 +98,12 @@ public class AnimalGroupController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-    ////////////////////////////////////////////
+        ////////////////////////////////////////////
         manager = new ManagerBean();
         manager.setId(1L);
         System.out.println(manager.getId());
-    ////////////////////////////////////////////
-        
+        ////////////////////////////////////////////
+
         tbAnimalGroup.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         logger.log(Level.INFO, "Initilizing Animal Group controller");
 
@@ -278,7 +279,8 @@ public class AnimalGroupController implements Initializable {
             // Create new group
             AnimalGroupBean group = new AnimalGroupBean();
             // Set attributes
-            group.setName("Group " + (int) (Math.random() * 1000000));
+            String groupName = "Group " + (int) (Math.random() * 1000000);
+            group.setName(groupName);
             group.setDescription("New animal group");
             group.setArea("Not defined yet");
             // Make a list for the managers (just actual manager but has to be a list)
@@ -287,11 +289,30 @@ public class AnimalGroupController implements Initializable {
             group.setManagers(managers);
             // Actual date
             group.setCreationDate(new Date());
-            
+
             logger.log(Level.SEVERE, "Creating animal group: {0}", group.toString());
             AnimalGroupFactory.get().createAnimalGroup(group);
-            
+
             showAnimalGroups();
+
+            // Set in edition mode the new animal group (searched by the new name)
+            final int frow;
+            for (int row = 0; row < tbAnimalGroup.getItems().size(); row++) {
+                group = (AnimalGroupBean) tbAnimalGroup.getItems().get(row);
+                if (group.getName().equals(groupName)) {
+//                tbAnimalGroup.edit(row, tcName);
+
+                    frow = row;
+                    Platform.runLater(() -> tbAnimalGroup.edit(frow, tcName));
+
+                    System.out.println(tbAnimalGroup.getEditingCell());
+
+//                tbAnimalGroup.getEditingCell().startEdit();
+//                tbAnimalGroup.edit(row, TableColumn<AnimalGroupBean, String> tcName);
+                    tbAnimalGroup.refresh();
+                    break;
+                }
+            }
 
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error creating animal group", e);
