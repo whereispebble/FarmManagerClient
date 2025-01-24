@@ -14,11 +14,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -29,6 +31,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -92,6 +96,9 @@ public class AnimalController implements Initializable {
     private TableColumn<AnimalBean, SpeciesBean> tcSpecies;
     @FXML
     private TableColumn tcConsume;
+    
+    @FXML
+    private MenuItem miDelete;
 
 
     /**
@@ -99,6 +106,8 @@ public class AnimalController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
+        
+        tbAnimal.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     //        // Establecer el título de la ventana
     //        stage.setTitle("Animals");
     //
@@ -139,10 +148,7 @@ public class AnimalController implements Initializable {
     //
     //        // Establecer "Search" como el botón por defecto
             btnSearch.setDefaultButton(true);
-            btnSearch.setOnAction(this::onSearchButtonClicked);
-    //
-    
-       
+            btnSearch.setOnAction(this::onSearchButtonClicked);  
         
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
             tcName.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
@@ -190,16 +196,61 @@ public class AnimalController implements Initializable {
             tcSpecies.setOnEditCommit(event -> handleEditCommit(event, "species"));
             
    
-
+            
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("monthlyConsume"));
             tcConsume.setStyle("-fx-alignment: center-right;");
+
+            miDelete.setDisable(true);
+            tbAnimal.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalBean>) change -> {
+                miDelete.setDisable(tbAnimal.getSelectionModel().getSelectedItems().isEmpty());
+            });
+            miDelete.setOnAction(this::onDeleteMenuItemClicked);
+            
+          
 
             tbAnimal.setEditable(true);
             //        stage.show(); 
             
-            
             showAllAnimals();
     }  
+    
+ 
+     
+    
+    private void onDeleteMenuItemClicked(ActionEvent event) {
+        ObservableList<AnimalBean> selectedAnimals = tbAnimal.getSelectionModel().getSelectedItems();
+        List<AnimalBean> successfullyDeleted = new ArrayList<>();
+        
+        // no esta funcionando
+        
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected animals?", ButtonType.YES, ButtonType.NO);   
+        Optional<ButtonType> result = confirmationAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                for (AnimalBean selectedAnimal : selectedAnimals) {
+                    try {
+                        AnimalManagerFactory.get().deleteAnimalById(String.valueOf(selectedAnimal.getId()));
+                        successfullyDeleted.add(selectedAnimal);
+                
+                    } catch (WebApplicationException e) {
+                        System.err.println("Error deleting animal: " + selectedAnimal.getName() + " - " + e.getMessage());
+                    }
+                }
+
+                if (!successfullyDeleted.isEmpty()) {
+                    tbAnimal.getItems().removeAll(successfullyDeleted);
+                    tbAnimal.getSelectionModel().clearSelection();
+                    tbAnimal.refresh();
+                }
+
+            } catch (Exception e) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR, 
+                    "Unexpected error during deletion: " + e.getMessage(), 
+                    ButtonType.OK);
+                errorAlert.showAndWait();
+            }
+        }     
+    }
     
     private void updateAnimalBirthdate(Date updatedDate) throws CloneNotSupportedException {
         AnimalBean animal = tbAnimal.getSelectionModel().getSelectedItem();
@@ -313,7 +364,6 @@ public class AnimalController implements Initializable {
                     else{
                          showAllAnimals();
                     }
-                    
                     break;
                 case "Subespecies":
                     if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
@@ -322,7 +372,6 @@ public class AnimalController implements Initializable {
                     else{
                          showAllAnimals();
                     }
-                    
                     break;
                 case "Birthdate":
                     String from = (!dpSearchFrom.getValue().toString().isEmpty()) ? dpSearchFrom.getValue().toString() : null;
