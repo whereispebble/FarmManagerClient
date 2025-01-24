@@ -225,10 +225,15 @@ public class AnimalController implements Initializable {
         
         Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected animals?", ButtonType.YES, ButtonType.NO);   
         Optional<ButtonType> result = confirmationAlert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
+        System.out.println("click");
+        System.out.println(result.isPresent());
+        System.out.println(result.get());
+        if (result.isPresent() && result.get() == ButtonType.YES) {
+            System.out.println("hay result");
             try {
                 for (AnimalBean selectedAnimal : selectedAnimals) {
                     try {
+                        System.out.println(selectedAnimal.toString());
                         AnimalManagerFactory.get().deleteAnimalById(String.valueOf(selectedAnimal.getId()));
                         successfullyDeleted.add(selectedAnimal);
                 

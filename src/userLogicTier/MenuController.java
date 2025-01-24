@@ -22,6 +22,8 @@ public class MenuController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
+        // F1 para lanzar ayuda
+        // HelpController
     }    
     
 }
