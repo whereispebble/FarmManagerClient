@@ -145,7 +145,6 @@ public class AnimalController implements Initializable {
        
         
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
-//            tcName.setCellFactory(TextFieldTableCell.forTableColumn());
             tcName.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
             tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
             
@@ -175,10 +174,10 @@ public class AnimalController implements Initializable {
             List<AnimalGroupBean> animalGroupList = new ArrayList<AnimalGroupBean>();
             
             animalGroupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, "1");             
-//            ObservableList<AnimalGroupBean> animalGroupData = FXCollections.observableArrayList(animalGroupList);
-//            tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(animalGroupData));
-//            tcAnimalGroup.setOnEditCommit(event -> handleEditCommit(event, "animalGroup"));
-//            
+            ObservableList<AnimalGroupBean> animalGroupData = FXCollections.observableArrayList(animalGroupList);
+            tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(animalGroupData));
+            tcAnimalGroup.setOnEditCommit(event -> handleEditCommit(event, "animalGroup"));
+            
             tcSubespecies.setCellValueFactory(new PropertyValueFactory<>("subespecies"));
             tcSubespecies.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
             tcSubespecies.setOnEditCommit(event -> handleEditCommit(event, "subespecies"));
@@ -255,6 +254,13 @@ public class AnimalController implements Initializable {
                     animal.setSpecies((SpeciesBean) newValue);
                 }
                 break;
+            case "animalGroup":
+                if (newValue instanceof AnimalGroupBean) {
+                    animalCopy.setAnimalGroup((AnimalGroupBean) newValue);
+                    AnimalManagerFactory.get().updateAnimal(animalCopy);
+                    animal.setAnimalGroup((AnimalGroupBean) newValue);
+                }
+                break;
             default:
                 throw new IllegalArgumentException("Campo desconocido: " + fieldName);
         }
@@ -302,8 +308,7 @@ public class AnimalController implements Initializable {
             switch (searchType) {
                 case "Animal Group":
                     if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
-                        animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
-//                    animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
+                        animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
                     }
                     else{
                          showAllAnimals();

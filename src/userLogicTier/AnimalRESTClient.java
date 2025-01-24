@@ -28,7 +28,7 @@ public class AnimalRESTClient implements IAnimalManager{
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/FarmManagerServer/webresources";
+    private static final String BASE_URI = "http://localhost:8080/farmapp/webresources";
     
 
     public AnimalRESTClient() {
