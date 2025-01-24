@@ -23,22 +23,24 @@
    <children>
       <GridPane alignment="CENTER" hgap="10" layoutX="20.0" layoutY="28.0" prefHeight="550.0" prefWidth="984.0" vgap="10" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="28.0">
 
-         <Button fx:id="btnCreate" prefHeight="26.0" prefWidth="135.0" text="Add" onAction="#onCreateButtonClicked" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+         <Button fx:id="btnCreate" onAction="#onCreateButtonClicked" prefHeight="26.0" prefWidth="135.0" text="Add" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
          <Button fx:id="btnLogOut" prefHeight="26.0" prefWidth="106.0" text="Log out" GridPane.columnIndex="5" GridPane.valignment="BOTTOM" />
 
          <TableView fx:id="tbAnimalGroup" prefHeight="0.0" prefWidth="982.0" GridPane.columnSpan="6" GridPane.rowIndex="1">
             <columns>
                <TableColumn fx:id="tcName" prefWidth="161.60003280639648" resizable="false" text="Name" />
-               <TableColumn fx:id="tcDescription" prefWidth="337.5999755859375" resizable="false" text="Description" />
+               <TableColumn fx:id="tcDescription" prefWidth="411.2000274658203" resizable="false" text="Description" />
+               <!--
                <TableColumn fx:id="tcAnimals" editable="false" minWidth="0.0" prefWidth="92.00009155273438" resizable="false" text="Animals" />
-               <TableColumn fx:id="tcArea" minWidth="0.0" prefWidth="138.6666259765625" resizable="false" text="Area" />
-               <TableColumn fx:id="tcConsume" editable="false" prefWidth="113.06658935546875" resizable="false" text="Consume (kg)" />
-               <TableColumn fx:id="tcDate" prefWidth="137.33349609375" resizable="false" text="Creation date" />
+               -->
+               <TableColumn fx:id="tcArea" minWidth="0.0" prefWidth="140.79998779296875" resizable="false" text="Area" />
+               <TableColumn fx:id="tcConsume" editable="false" prefWidth="120.800048828125" resizable="false" text="Consume (kg)" />
+               <TableColumn fx:id="tcDate" prefWidth="145.60009765625" resizable="false" text="Creation date" />
             </columns>
             <contextMenu>
                <ContextMenu>
                  <items>
-                   <MenuItem fx:id="itemOpen" mnemonicParsing="false" text="Open" />
+                   <MenuItem fx:id="itemOpen" mnemonicParsing="false" text="View animals..." />
                      <MenuItem fx:id="itemDelete" mnemonicParsing="false" text="Delete" />
                  </items>
                </ContextMenu>

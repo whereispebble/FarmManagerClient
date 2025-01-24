@@ -74,8 +74,8 @@ public class AnimalGroupController implements Initializable {
     @FXML
     private TableColumn<AnimalGroupBean, String> tcDescription;
 
-    @FXML
-    private TableColumn tcAnimals;
+//    @FXML
+//    private TableColumn tcAnimals;
 
     @FXML
     private TableColumn tcConsume;
@@ -90,6 +90,8 @@ public class AnimalGroupController implements Initializable {
 
     /**
      * Initializes the controller class.
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -133,8 +135,8 @@ public class AnimalGroupController implements Initializable {
             tcArea.setOnEditCommit(event -> handleEditCommit(event, "area"));
 
             // Animals column
-            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
-            tcAnimals.setStyle("-fx-alignment: center;");
+//            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
+//            tcAnimals.setStyle("-fx-alignment: center;");
 
             // Consumes column
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
@@ -143,39 +145,27 @@ public class AnimalGroupController implements Initializable {
             // Creation date column
             tcDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
             tcDate.setStyle("-fx-alignment: center;");
-//            tcDate.setCellFactory(new Callback<TableColumn<AnimalGroupBean, Date>, TableCell<AnimalGroupBean, Date>>() {
-//                @Override
-//                public TableCell<AnimalGroupBean, Date> call(TableColumn<AnimalGroupBean, Date> param) {
-//                    return new TableCell<AnimalGroupBean, Date>() {
-//                        @Override
-//                        protected void updateItem(Date item, boolean empty) {
-//                            super.updateItem(item, empty);
-//                            if (empty || item == null) {
-//                                setText(null);
-//                            } else {
-//                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//                                setText(sdf.format(item));
-//                            }
-//                        }
-//                    };
-//                }
-//            });
-            tcDate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, TableCell<AnimalBean, Date>>() {
+            tcDate.setCellFactory(new Callback<TableColumn<AnimalGroupBean, Date>, TableCell<AnimalGroupBean, Date>>() {
                 @Override
-                public TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
-                    return new DatePickerTableCell<>(param);
+                public TableCell<AnimalGroupBean, Date> call(TableColumn<AnimalGroupBean, Date> param) {
+                    DatePickerTableCell<AnimalGroupBean> cell = new DatePickerTableCell<>(param);
+                    cell.updateDateCallback = (Date updatedDate) -> {
+                        try {
+                            updateAnimalGroup(updatedDate);
+                        } catch (CloneNotSupportedException ex) {
+                            logger.log(Level.SEVERE, "Error updating animal group: ", ex);
+                        }
+                    };
+                    return cell;
                 }
             });
 
             // Get animals
-            List<AnimalBean> animalList = new ArrayList<>();
-            animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {
-            }, "North Cows");
+            //List<AnimalBean> animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
 //            logger.log(Level.INFO, "Printing animal list");
 //            for (AnimalBean ab : animalList) {
 //                logger.log(Level.INFO, ab.toString());
 //            }
-            int animals = animalList.size();
 
             tbAnimalGroup.setEditable(true);
 
@@ -246,7 +236,22 @@ public class AnimalGroupController implements Initializable {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
+    }
 
+    private void updateAnimalGroup(Date updatedDate) throws CloneNotSupportedException {
+        AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
+        if (group != null && updatedDate != null) {
+            AnimalGroupBean animalCopy = group.clone();
+            animalCopy.setCreationDate(updatedDate);
+            try {
+                logger.log(Level.INFO, "Date: " + updatedDate);
+                AnimalManagerFactory.get().updateAnimal(animalCopy);
+                group.setCreationDate(updatedDate);
+
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error updating", e);
+            }
+        }
     }
 
     private void onSearchButtonClicked(ActionEvent event) {
@@ -262,9 +267,10 @@ public class AnimalGroupController implements Initializable {
             }
 
             if (groupList != null) {
-                logger.log(Level.WARNING, "No animal groups found");
                 ObservableList<AnimalGroupBean> groupData = FXCollections.observableArrayList(groupList);
                 tbAnimalGroup.setItems(groupData);
+            } else {
+                logger.log(Level.WARNING, "No animal groups found");
             }
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
@@ -304,12 +310,7 @@ public class AnimalGroupController implements Initializable {
             tbAnimalGroup.setItems(groupData);
 
         } catch (WebApplicationException e) {
-            logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText("Animal Group data not found");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            logger.log(Level.SEVERE, "Error fetching animal groups", e);
         }
     }
 }
