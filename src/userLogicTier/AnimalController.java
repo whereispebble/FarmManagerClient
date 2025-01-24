@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -194,11 +195,11 @@ public class AnimalController implements Initializable {
             ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
             tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));
             tcSpecies.setOnEditCommit(event -> handleEditCommit(event, "species"));
-            
-   
-            
+           
+            ////////////////////////////////////////////////////////////////
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("monthlyConsume"));
             tcConsume.setStyle("-fx-alignment: center-right;");
+            ////////////////////////////////////////////////////////////////
 
             miDelete.setDisable(true);
             tbAnimal.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalBean>) change -> {
@@ -207,6 +208,9 @@ public class AnimalController implements Initializable {
             miDelete.setOnAction(this::onDeleteMenuItemClicked);
             
           
+            //aqui crear una nueva linea para introducir un animal
+            btnAdd.setDisable(false);
+            btnAdd.setOnAction(this::onAddBUttonClicked);
 
             tbAnimal.setEditable(true);
             //        stage.show(); 
@@ -214,22 +218,77 @@ public class AnimalController implements Initializable {
             showAllAnimals();
     }  
     
+    private void onAddBUttonClicked(ActionEvent event){
+        //aqui crear una nueva linea para introducir un animal
+        AnimalBean newAnimal = new AnimalBean();
+        
+        newAnimal.setName("New Animal");
+        newAnimal.setSubespecies("Unknown");
+        newAnimal.setBirthdate(new Date());
+        newAnimal.setMonthlyConsume(0);
+        
+        // si tenemos un grupop animal filtrado asignara ese
+        // si no, traigo todos los grupos animales y asigno el primero
+        
+        List<AnimalGroupBean> availableAnimalGroups = new ArrayList<AnimalGroupBean>();
+        availableAnimalGroups = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, "1");
+        
+        if (availableAnimalGroups != null && !availableAnimalGroups.isEmpty()) {
+            newAnimal.setAnimalGroup(availableAnimalGroups.get(0));
+        } else {
+            System.out.println("No se encontraron grupos de animales para el managerId: 1");
+        }
+        
+        List<SpeciesBean> availableSpecies = new ArrayList<SpeciesBean>();
+        availableSpecies = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});
+       
+        if (availableSpecies != null && !availableSpecies.isEmpty()) {
+            newAnimal.setSpecies(availableSpecies.get(0));
+        } else {
+            System.out.println("No se encontraron especies");
+        }
+       
+        AnimalManagerFactory.get().createAnimal(newAnimal);
+        
+        showAllAnimals();
+      
+//        tbAnimal.refresh();
+        
+        //poner en modo edicion la casilla que contenga en la columna name "New Animal"
+        final int frow;
+        for (int row = 0; row < tbAnimal.getItems().size(); row++) {
+            AnimalBean animal = tbAnimal.getItems().get(row);
+            if (animal.getName().equals("New Animal")) {                
+//                tbAnimal.edit(row, tcName);
+               
+                frow=row;
+                Platform.runLater(() -> tbAnimal.edit(frow, tcName));
+                        
+                System.out.println(tbAnimal.getEditingCell());
+                
+              
+//                tbAnimal.getEditingCell().startEdit();
+            
+//                tbAnimal.edit(row, TableColumn<AnimalBean, String> tcName);
+                tbAnimal.refresh();
+                break;
+            }
+        }
+        
+//        tbAnimal.refresh();
+        
+    }
+    
  
-     
+
     
     private void onDeleteMenuItemClicked(ActionEvent event) {
         ObservableList<AnimalBean> selectedAnimals = tbAnimal.getSelectionModel().getSelectedItems();
         List<AnimalBean> successfullyDeleted = new ArrayList<>();
-        
-        // no esta funcionando
-        
+
         Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected animals?", ButtonType.YES, ButtonType.NO);   
         Optional<ButtonType> result = confirmationAlert.showAndWait();
-        System.out.println("click");
-        System.out.println(result.isPresent());
-        System.out.println(result.get());
         if (result.isPresent() && result.get() == ButtonType.YES) {
-            System.out.println("hay result");
             try {
                 for (AnimalBean selectedAnimal : selectedAnimals) {
                     try {
