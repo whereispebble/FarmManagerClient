@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Ander
  */
 @XmlRootElement(name = "manager")
-class ManagerBean extends UserBean implements Serializable {
+public class ManagerBean extends UserBean implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private boolean isActive;

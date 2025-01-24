@@ -33,9 +33,10 @@ import javafx.util.Callback;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import DTO.AnimalGroupBean;
-import DTO.AnimalBean;
+import DTO.ManagerBean;
 import cellFactories.DatePickerTableCell;
 import javafx.event.ActionEvent;
+import javafx.scene.control.SelectionMode;
 
 /**
  * FXML Controller class
@@ -51,7 +52,7 @@ public class AnimalGroupController implements Initializable {
 
     private Stage stage;
 
-    private static final String MANAGER_ID = "1";
+    private ManagerBean manager;
 
     @FXML
     private Button btnCreate;
@@ -96,10 +97,16 @@ public class AnimalGroupController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        try {
-            logger.log(Level.INFO, "Initilizing Animal Group controller");
+    ////////////////////////////////////////////
+        manager = new ManagerBean();
+        manager.setId(1L);
+        System.out.println(manager.getId());
+    ////////////////////////////////////////////
+        
+        tbAnimalGroup.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        logger.log(Level.INFO, "Initilizing Animal Group controller");
 
-            //Uncomment next lanes when necessary
+        //Uncomment next lanes when necessary
 //        // Establecer el título de la ventana
 //            stage.setTitle("Animal Groups");
 //
@@ -109,74 +116,65 @@ public class AnimalGroupController implements Initializable {
 //
 //            // Deshabilitar la redimensión de la ventana
 //            stage.setResizable(false);
-            searchField.requestFocus();
-            btnSearch.setDefaultButton(true);
+        searchField.requestFocus();
+        btnSearch.setDefaultButton(true);
 
-            // BUTTONS
-            btnSearch.setOnAction(this::onSearchButtonClicked);
-            btnCreate.setOnAction(this::onCreateButtonClicked);
+        // BUTTONS
+        btnSearch.setOnAction(this::onSearchButtonClicked);
+        btnCreate.setOnAction(this::onCreateButtonClicked);
 
-            logger.log(Level.INFO, "Setting cell value factories");
+        logger.log(Level.INFO, "Setting cell value factories");
 
-            // COLUMNS
-            // Name column
-            tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
-            tcName.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
-            tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
+        // COLUMNS
+        // Name column
+        tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tcName.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
+        tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
 
-            // Description column
-            tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-            tcDescription.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
-            tcDescription.setOnEditCommit(event -> handleEditCommit(event, "description"));
+        // Description column
+        tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        tcDescription.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
+        tcDescription.setOnEditCommit(event -> handleEditCommit(event, "description"));
 
-            // Area column
-            tcArea.setCellValueFactory(new PropertyValueFactory<>("area"));
-            tcArea.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
-            tcArea.setOnEditCommit(event -> handleEditCommit(event, "area"));
+        // Area column
+        tcArea.setCellValueFactory(new PropertyValueFactory<>("area"));
+        tcArea.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
+        tcArea.setOnEditCommit(event -> handleEditCommit(event, "area"));
 
-            // Animals column
+        // Animals column
 //            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
 //            tcAnimals.setStyle("-fx-alignment: center;");
-            // Consumes column
-            tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
-            tcConsume.setStyle("-fx-alignment: center;");
+        // Consumes column
+        tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
+        tcConsume.setStyle("-fx-alignment: center;");
 
-            // Creation date column
-            tcDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-            tcDate.setStyle("-fx-alignment: center;");
-            tcDate.setCellFactory(new Callback<TableColumn<AnimalGroupBean, Date>, TableCell<AnimalGroupBean, Date>>() {
-                @Override
-                public TableCell<AnimalGroupBean, Date> call(TableColumn<AnimalGroupBean, Date> param) {
-                    DatePickerTableCell<AnimalGroupBean> cell = new DatePickerTableCell<>(param);
-                    cell.updateDateCallback = (Date updatedDate) -> {
-                        try {
-                            updateAnimalGroup(updatedDate);
-                        } catch (CloneNotSupportedException ex) {
-                            logger.log(Level.SEVERE, "Error updating animal group: ", ex);
-                        }
-                    };
-                    return cell;
-                }
-            });
+        // Creation date column
+        tcDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+        tcDate.setStyle("-fx-alignment: center;");
+        tcDate.setCellFactory(new Callback<TableColumn<AnimalGroupBean, Date>, TableCell<AnimalGroupBean, Date>>() {
+            @Override
+            public TableCell<AnimalGroupBean, Date> call(TableColumn<AnimalGroupBean, Date> param) {
+                DatePickerTableCell<AnimalGroupBean> cell = new DatePickerTableCell<>(param);
+                cell.updateDateCallback = (Date updatedDate) -> {
+                    try {
+                        updateAnimalGroup(updatedDate);
+                    } catch (CloneNotSupportedException ex) {
+                        logger.log(Level.SEVERE, "Error updating animal group: ", ex);
+                    }
+                };
+                return cell;
+            }
+        });
 
-            // Get animals
-            //List<AnimalBean> animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
+        // Get animals
+        //List<AnimalBean> animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
 //            logger.log(Level.INFO, "Printing animal list");
 //            for (AnimalBean ab : animalList) {
 //                logger.log(Level.INFO, ab.toString());
 //            }
-            tbAnimalGroup.setEditable(true);
+        tbAnimalGroup.setEditable(true);
 
-            showAnimalGroups();
-
-        } catch (WebApplicationException e) {
-            logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText("Animal Group data not found");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-        }
+        showAnimalGroups();
     }
 
     private <T> void handleEditCommit(CellEditEvent<AnimalGroupBean, T> event, String column) {
@@ -257,7 +255,7 @@ public class AnimalGroupController implements Initializable {
             if (searchField.getText() != null && !searchField.getText().isEmpty()) {
                 logger.log(Level.INFO, "Searching group/s by name and manager id");
                 groupList = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<List<AnimalGroupBean>>() {
-                }, searchField.getText(), MANAGER_ID);
+                }, searchField.getText(), manager.getId().toString());
                 logger.log(Level.INFO, "Group/s gotten");
             } else {
                 showAnimalGroups();
@@ -277,7 +275,23 @@ public class AnimalGroupController implements Initializable {
     @FXML
     private void onCreateButtonClicked(ActionEvent event) {
         try {
-            //TODO
+            // Create new group
+            AnimalGroupBean group = new AnimalGroupBean();
+            // Set attributes
+            group.setName("Group " + (int) (Math.random() * 1000000));
+            group.setDescription("New animal group");
+            group.setArea("Not defined yet");
+            // Make a list for the managers (just actual manager but has to be a list)
+            List<ManagerBean> managers = new ArrayList<>();
+            managers.add(manager);
+            group.setManagers(managers);
+            // Actual date
+            group.setCreationDate(new Date());
+            
+            logger.log(Level.SEVERE, "Creating animal group: {0}", group.toString());
+            AnimalGroupFactory.get().createAnimalGroup(group);
+            
+            showAnimalGroups();
 
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error creating animal group", e);
@@ -294,7 +308,7 @@ public class AnimalGroupController implements Initializable {
             // Get animal groups
             logger.log(Level.INFO, "Getting animal groups");
             List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
-            }, MANAGER_ID);
+            }, manager.getId().toString());
             logger.log(Level.INFO, "Animal groups gotten");
             // for testing purposes
 //            logger.log(Level.INFO, "Printing list");
