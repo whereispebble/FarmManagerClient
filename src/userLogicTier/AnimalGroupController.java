@@ -35,8 +35,11 @@ import javax.ws.rs.core.GenericType;
 import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import cellFactories.DatePickerTableCell;
+import java.util.Optional;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 
 /**
@@ -85,6 +88,12 @@ public class AnimalGroupController implements Initializable {
     private TableColumn tcDate;
 
     @FXML
+    private MenuItem miDelete;
+
+    @FXML
+    private MenuItem miOpen;
+
+    @FXML
     private TableColumn<AnimalGroupBean, String> tcArea;
 
     private ObservableList<AnimalGroupBean> groupData;
@@ -123,6 +132,10 @@ public class AnimalGroupController implements Initializable {
         // BUTTONS
         btnSearch.setOnAction(this::onSearchButtonClicked);
         btnCreate.setOnAction(this::onCreateButtonClicked);
+
+        // MENUITEMS
+        miDelete.setOnAction(this::onDeleteMenuItemClicked);
+        miOpen.setOnAction(this::onOpenMenuItemClicked);
 
         logger.log(Level.INFO, "Setting cell value factories");
 
@@ -322,6 +335,28 @@ public class AnimalGroupController implements Initializable {
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
+    }
+
+    private void onDeleteMenuItemClicked(ActionEvent event) {
+        ObservableList<AnimalGroupBean> selectedGroups = tbAnimalGroup.getSelectionModel().getSelectedItems();
+
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected Animal Groups?", ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = confirmationAlert.showAndWait();
+
+        if (result.isPresent() && result.get() == ButtonType.YES) {
+            try {
+                for (AnimalGroupBean agb : selectedGroups) {
+                    AnimalGroupFactory.get().deleteAnimalGroupById(agb.getId().toString());
+                }
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error deleting animal/s", e);
+            }
+        }
+        showAnimalGroups();
+    }
+
+    private void onOpenMenuItemClicked(ActionEvent event) {
+
     }
 
     private void showAnimalGroups() {
