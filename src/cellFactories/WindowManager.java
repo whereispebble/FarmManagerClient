@@ -80,7 +80,7 @@ public class WindowManager {
             switch (view) {
                 case "AnimalGroup":
                     AnimalGroupController groupController = fxmlLoader.getController();
-                    // groupController.setManager(manager);
+                    groupController.setManager(manager);
                     break;
                 case "Animal":
                     AnimalController animalController = fxmlLoader.getController();

@@ -114,6 +114,10 @@ public class AnimalGroupController implements Initializable {
 
     private ObservableList<AnimalGroupBean> groupData;
 
+    public void setManager(ManagerBean manager) {
+        this.manager = manager;
+    }
+
     /**
      * Initializes the controller class.
      *
@@ -122,106 +126,98 @@ public class AnimalGroupController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        try {
 
-        ////////////////////////////////////////////
-        manager = new ManagerBean();
-        manager.setId(1L);
-        manager.setName("Manager 1");
-        logger.log(Level.INFO, "Manager: {0}", manager.getName());
-        ////////////////////////////////////////////
+            ////////////////////////////////////////////
+            manager = new ManagerBean();
+            manager.setId(1L);
+            manager.setName("Manager 1");
+            logger.log(Level.INFO, "Manager: {0}", manager.getName());
+            ////////////////////////////////////////////
 
-        tbAnimalGroup.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        logger.log(Level.INFO, "Initilizing Animal Group controller");
+            tbAnimalGroup.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+            logger.log(Level.INFO, "Initilizing Animal Group controller");
 
-        //Uncomment next lanes when necessary
-//        // Establecer el título de la ventana
-//            stage.setTitle("Animal Groups");
-//
-//            // Establecer dimensiones fijas
-//            stage.setWidth(1024);
-//            stage.setHeight(720);
-//
-//            // Deshabilitar la redimensión de la ventana
-//            stage.setResizable(false);
-        searchField.requestFocus();
-        btnSearch.setDefaultButton(true);
+            // Focus on searchField
+            searchField.requestFocus();
+            // Search button set to default button (when pressed intro)
+            btnSearch.setDefaultButton(true);
 
-        // BUTTONS
-        btnSearch.setOnAction(this::onSearchButtonClicked);
-        btnCreate.setOnAction(this::onCreateButtonClicked);
+            // BUTTONS
+            btnSearch.setOnAction(this::onSearchButtonClicked);
+            btnCreate.setOnAction(this::onCreateButtonClicked);
 
-        // MENUITEMS
-        miDelete.setDisable(true);
-        // Disabled until some item is selected
-        tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
-            miDelete.setDisable(tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty());
-        });
-        miDelete.setOnAction(this::onDeleteMenuItemClicked);
+            // MENUITEMS
+            miDelete.setDisable(true);
+            // Disabled until some item is selected
+            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+                miDelete.setDisable(tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty());
+            });
+            miDelete.setOnAction(this::onDeleteMenuItemClicked);
+            miOpen.setDisable(true);
+            // Disabled if there is no selection OR multiple selection
+            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+                if (tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty() || tbAnimalGroup.getSelectionModel().getSelectedItems().size() > 1) {
+                    miOpen.setDisable(true);
+                } else {
+                    miOpen.setDisable(false);
+                }
+            });
+            miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
+            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
+            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
+            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
 
-        miOpen.setDisable(true);
-        // Disabled if there is no selection OR multiple selection
-        tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
-            if (tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty() || tbAnimalGroup.getSelectionModel().getSelectedItems().size() > 1) {
-                miOpen.setDisable(true);
-            } else {
-                miOpen.setDisable(false);
-            }
-        });
-        miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
-        miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
-        miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
-        miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
+            // COLUMNS
+            // Name column
+            tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
+            tcName.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
+            tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
 
-        // COLUMNS
-        // Name column
-        tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        tcName.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
-        tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
+            // Description column
+            tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+            tcDescription.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
+            tcDescription.setOnEditCommit(event -> handleEditCommit(event, "description"));
 
-        // Description column
-        tcDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        tcDescription.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
-        tcDescription.setOnEditCommit(event -> handleEditCommit(event, "description"));
+            // Area column
+            tcArea.setCellValueFactory(new PropertyValueFactory<>("area"));
+            tcArea.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
+            tcArea.setOnEditCommit(event -> handleEditCommit(event, "area"));
 
-        // Area column
-        tcArea.setCellValueFactory(new PropertyValueFactory<>("area"));
-        tcArea.setCellFactory(TextFieldTableCell.<AnimalGroupBean>forTableColumn());
-        tcArea.setOnEditCommit(event -> handleEditCommit(event, "area"));
-
-        // Animals column
+            // Animals column
 //            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
 //            tcAnimals.setStyle("-fx-alignment: center;");
-        // Consumes column
-        tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
-        tcConsume.setStyle("-fx-alignment: center;");
 
-        // Creation date column
-        tcDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
-        tcDate.setStyle("-fx-alignment: center;");
-        tcDate.setCellFactory(new Callback<TableColumn<AnimalGroupBean, Date>, TableCell<AnimalGroupBean, Date>>() {
-            @Override
-            public TableCell<AnimalGroupBean, Date> call(TableColumn<AnimalGroupBean, Date> param) {
-                DatePickerTableCell<AnimalGroupBean> cell = new DatePickerTableCell<>(param);
-                cell.updateDateCallback = (Date updatedDate) -> {
-                    try {
-                        updateAnimalGroup(updatedDate);
-                    } catch (CloneNotSupportedException ex) {
-                        logger.log(Level.SEVERE, "Error updating animal group: ", ex);
-                    }
-                };
-                return cell;
-            }
-        });
+            // Consumes column
+            tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
+            tcConsume.setStyle("-fx-alignment: center;");
 
-        // Get animals
-        //List<AnimalBean> animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
-//            logger.log(Level.INFO, "Printing animal list");
-//            for (AnimalBean ab : animalList) {
-//                logger.log(Level.INFO, ab.toString());
-//            }
-        tbAnimalGroup.setEditable(true);
+            // Creation date column
+            tcDate.setCellValueFactory(new PropertyValueFactory<>("creationDate"));
+            tcDate.setStyle("-fx-alignment: center;");
+            tcDate.setCellFactory(new Callback<TableColumn<AnimalGroupBean, Date>, TableCell<AnimalGroupBean, Date>>() {
+                @Override
+                public TableCell<AnimalGroupBean, Date> call(TableColumn<AnimalGroupBean, Date> param) {
+                    DatePickerTableCell<AnimalGroupBean> cell = new DatePickerTableCell<>(param);
+                    cell.updateDateCallback = (Date updatedDate) -> {
+                        try {
+                            updateAnimalGroup(updatedDate);
+                        } catch (CloneNotSupportedException ex) {
+                            logger.log(Level.SEVERE, "Error updating animal group: ", ex);
+                        }
+                    };
+                    return cell;
+                }
+            });
 
-        showAnimalGroups();
+            // Table is editable
+            tbAnimalGroup.setEditable(true);
+
+            showAnimalGroups();
+        } catch (Exception e) {
+            // If something goes wrong
+            logger.log(Level.SEVERE, "Something went wrong: {0}", e);
+        }
     }
 
     private <T> void handleEditCommit(CellEditEvent<AnimalGroupBean, T> event, String column) {
@@ -271,7 +267,7 @@ public class AnimalGroupController implements Initializable {
 
             event.getTableView().refresh();
 
-        } catch (Exception e) {
+        } catch (CloneNotSupportedException | IllegalArgumentException | WebApplicationException e) {
             logger.log(Level.SEVERE, "Error editing Animal Group: ", e);
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERROR");
@@ -309,13 +305,18 @@ public class AnimalGroupController implements Initializable {
             }
 
             if (groupList != null) {
-                ObservableList<AnimalGroupBean> groupData = FXCollections.observableArrayList(groupList);
-                tbAnimalGroup.setItems(groupData);
+                ObservableList<AnimalGroupBean> filteredData = FXCollections.observableArrayList(groupList);
+                tbAnimalGroup.setItems(filteredData);
             } else {
-                logger.log(Level.WARNING, "No animal groups found");
+                logger.log(Level.INFO, "No animal groups found");
             }
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("SERVER ERROR");
+            alert.setHeaderText("Please contact with support");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         }
     }
 
@@ -435,11 +436,6 @@ public class AnimalGroupController implements Initializable {
             List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
             }, manager.getId().toString());
             logger.log(Level.INFO, "Animal groups gotten");
-            // for testing purposes
-//            logger.log(Level.INFO, "Printing list");
-//            for (AnimalGroupBean agb : groupList) {
-//                logger.log(Level.INFO, agb.toString());
-//            }
 
             // Show animal groups
             groupData = FXCollections.observableArrayList(groupList);
@@ -447,6 +443,11 @@ public class AnimalGroupController implements Initializable {
 
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups", e);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("SERVER ERROR");
+            alert.setHeaderText("Please contact with support");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
         }
     }
 }
