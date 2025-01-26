@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package userLogicTier;
+package ui.controller;
 
 import DTO.AnimalBean;
 import DTO.AnimalGroupBean;
 import DTO.SpeciesBean;
-import cellFactories.DatePickerTableCell;
+import ui.cellFactories.DatePickerTableCell;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
@@ -48,6 +48,11 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import businessLogic.animalGroup.AnimalGroupFactory;
+import businessLogic.animal.AnimalManagerFactory;
+import businessLogic.species.SpeciesManagerFactory;
+
+
 
 /**
  * FXML Controller class
@@ -91,7 +96,7 @@ public class AnimalController implements Initializable {
     @FXML
     private TableColumn<AnimalBean,Date> tcBirthdate;
     @FXML
-    private TableColumn<AnimalBean,AnimalGroupBean> tcAnimalGroup;
+    private TableColumn<AnimalBean, AnimalGroupBean> tcAnimalGroup;
     @FXML
     private TableColumn<AnimalBean,String> tcSubespecies;
     @FXML
@@ -198,7 +203,7 @@ public class AnimalController implements Initializable {
 
             tcSpecies.setCellValueFactory(new PropertyValueFactory<>("species"));
             List<SpeciesBean> speciesList = new ArrayList<SpeciesBean>();
-            speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});             
+            speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});     
             ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
             tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));
             tcSpecies.setOnEditCommit(event -> handleEditCommit(event, "species"));

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package cellFactories;
+package ui.cellFactories;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

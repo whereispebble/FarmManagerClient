@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package userInterfaceTier;
+package ui;
 
 import DTO.AnimalBean;
 import DTO.SpeciesBean;
@@ -16,9 +16,9 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javax.ws.rs.core.GenericType;
-import userLogicTier.AnimalController;
-import userLogicTier.AnimalManagerFactory;
-import userLogicTier.SpeciesManagerFactory;
+import ui.controller.AnimalController;
+import businessLogic.animal.AnimalManagerFactory;
+import businessLogic.species.SpeciesManagerFactory;
 
 /**
  * The main application class responsible for initializing and displaying the Sign In window.

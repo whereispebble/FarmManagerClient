@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package userLogicTier;
+package ui.controller;
 
+import businessLogic.animalGroup.AnimalGroupFactory;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
