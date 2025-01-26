@@ -98,6 +98,18 @@ public class AnimalGroupController implements Initializable {
     private MenuItem miOpen;
 
     @FXML
+    private MenuItem miAnimals;
+
+    @FXML
+    private MenuItem miConsumes;
+
+    @FXML
+    private MenuItem miProducts;
+
+    @FXML
+    private MenuItem miPrint;
+
+    @FXML
     private TableColumn<AnimalGroupBean, String> tcArea;
 
     private ObservableList<AnimalGroupBean> groupData;
@@ -141,23 +153,24 @@ public class AnimalGroupController implements Initializable {
         // MENUITEMS
         miDelete.setDisable(true);
         // Disabled until some item is selected
-            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
-                miDelete.setDisable(tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty());
-            });
+        tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+            miDelete.setDisable(tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty());
+        });
         miDelete.setOnAction(this::onDeleteMenuItemClicked);
-        
+
         miOpen.setDisable(true);
         // Disabled if there is no selection OR multiple selection
-            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
-                if (tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty() || tbAnimalGroup.getSelectionModel().getSelectedItems().size() > 1) {
-                    miOpen.setDisable(true);
-                } else {
-                    miOpen.setDisable(false);
-                }
-            });
-        miOpen.setOnAction(this::onOpenMenuItemClicked);
-
-        logger.log(Level.INFO, "Setting cell value factories");
+        tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+            if (tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty() || tbAnimalGroup.getSelectionModel().getSelectedItems().size() > 1) {
+                miOpen.setDisable(true);
+            } else {
+                miOpen.setDisable(false);
+            }
+        });
+        miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
+        miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
+        miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
+        miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
 
         // COLUMNS
         // Name column
@@ -374,14 +387,44 @@ public class AnimalGroupController implements Initializable {
         showAnimalGroups();
     }
 
-    private void onOpenMenuItemClicked(ActionEvent event) {
-        try {
-            AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
-            logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
-            ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-            WindowManager.openAnimalView("/userInterfaceTier/Animal.fxml", "Animal", manager, group);
-        } catch (NullPointerException e) {
-            logger.log(Level.INFO, "Error opening animal group: ", e);
+    private void onOpenWindowMenuItemClicked(ActionEvent event, String view) {
+        switch (view) {
+            case "AnimalByAnimalGroup":
+                try {
+                    AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
+                    logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openAnimalViewWithAnimalGroup("/userInterfaceTier/Animal.fxml", "Animal", manager, group);
+                } catch (NullPointerException e) {
+                    logger.log(Level.INFO, "Error opening animal group: ", e);
+                }
+                break;
+            case "Animal":
+                try {
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openWindowWithManager("/userInterfaceTier/Animal.fxml", "Animal", manager, view);
+                } catch (NullPointerException e) {
+                    logger.log(Level.INFO, "Error opening window: ", e);
+                }
+                break;
+            case "Consumes":
+                try {
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openWindowWithManager("/userInterfaceTier/Consumes.fxml", "Consumes", manager, view);
+                } catch (NullPointerException e) {
+                    logger.log(Level.INFO, "Error opening window: ", e);
+                }
+                break;
+            case "Product":
+                try {
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openWindowWithManager("/userInterfaceTier/Product.fxml", "Product", manager, view);
+                } catch (NullPointerException e) {
+                    logger.log(Level.INFO, "Error opening window: ", e);
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown or wrong view: " + view);
         }
     }
 
