@@ -35,9 +35,13 @@ import javax.ws.rs.core.GenericType;
 import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import cellFactories.DatePickerTableCell;
+import cellFactories.WindowManager;
 import java.util.Optional;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -110,7 +114,8 @@ public class AnimalGroupController implements Initializable {
         ////////////////////////////////////////////
         manager = new ManagerBean();
         manager.setId(1L);
-        System.out.println(manager.getId());
+        manager.setName("Manager 1");
+        logger.log(Level.INFO, "Manager: {0}", manager.getName());
         ////////////////////////////////////////////
 
         tbAnimalGroup.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -134,7 +139,22 @@ public class AnimalGroupController implements Initializable {
         btnCreate.setOnAction(this::onCreateButtonClicked);
 
         // MENUITEMS
+        miDelete.setDisable(true);
+        // Disabled until some item is selected
+            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+                miDelete.setDisable(tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty());
+            });
         miDelete.setOnAction(this::onDeleteMenuItemClicked);
+        
+        miOpen.setDisable(true);
+        // Disabled if there is no selection OR multiple selection
+            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+                if (tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty() || tbAnimalGroup.getSelectionModel().getSelectedItems().size() > 1) {
+                    miOpen.setDisable(true);
+                } else {
+                    miOpen.setDisable(false);
+                }
+            });
         miOpen.setOnAction(this::onOpenMenuItemClicked);
 
         logger.log(Level.INFO, "Setting cell value factories");
@@ -317,8 +337,7 @@ public class AnimalGroupController implements Initializable {
 
                     frow = row;
                     Platform.runLater(() -> tbAnimalGroup.edit(frow, tcName));
-
-                    System.out.println(tbAnimalGroup.getEditingCell());
+                    logger.log(Level.SEVERE, tbAnimalGroup.getEditingCell().toString());
 
 //                tbAnimalGroup.getEditingCell().startEdit();
 //                tbAnimalGroup.edit(row, TableColumn<AnimalGroupBean, String> tcName);
@@ -356,7 +375,14 @@ public class AnimalGroupController implements Initializable {
     }
 
     private void onOpenMenuItemClicked(ActionEvent event) {
-
+        try {
+            AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
+            logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
+            ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+            WindowManager.openAnimalView("/userInterfaceTier/Animal.fxml", "Animal", manager, group);
+        } catch (NullPointerException e) {
+            logger.log(Level.INFO, "Error opening animal group: ", e);
+        }
     }
 
     private void showAnimalGroups() {
