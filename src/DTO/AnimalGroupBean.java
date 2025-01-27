@@ -24,6 +24,7 @@ public class AnimalGroupBean implements Serializable, Cloneable {
     private String description;
     private Date creationDate;
     private Integer animals;
+    private Integer consume;
     private List<ManagerBean> managers;
 
     public AnimalGroupBean() {
@@ -40,8 +41,15 @@ public class AnimalGroupBean implements Serializable, Cloneable {
     }
 
     public AnimalGroupBean clone() throws CloneNotSupportedException {
-        
         return (AnimalGroupBean) super.clone();
+    }
+
+    public Integer getConsume() {
+        return consume;
+    }
+
+    public void setConsume(Integer consume) {
+        this.consume = consume;
     }
 
     public Long getId() {

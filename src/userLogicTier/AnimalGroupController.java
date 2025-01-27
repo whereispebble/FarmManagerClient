@@ -36,6 +36,9 @@ import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import cellFactories.DatePickerTableCell;
 import cellFactories.WindowManager;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
@@ -45,6 +48,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -165,6 +175,7 @@ public class AnimalGroupController implements Initializable {
             miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
             miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
             miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
+            miPrint.setOnAction(this::handlePrintAction);
 
             // COLUMNS
             // Name column
@@ -420,6 +431,35 @@ public class AnimalGroupController implements Initializable {
             }
         } catch (NullPointerException e) {
             logger.log(Level.INFO, "Error opening window: ", e);
+        }
+    }
+
+    private void handlePrintAction(ActionEvent event) {
+        try {
+            logger.info("Beginning printing action...");
+
+            JasperReport report
+                    = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/reports/AnimalGroupReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<AnimalGroupBean>) this.tbAnimalGroup.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+//            showErrorAlert("Error al imprimir:\n"+
+//                            ex.getMessage());
+
         }
     }
 
