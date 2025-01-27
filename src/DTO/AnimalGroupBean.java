@@ -14,7 +14,8 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author Ander
  */
-@XmlRootElement(name="animalGroup")
+
+@XmlRootElement(name = "animalGroup")
 public class AnimalGroupBean implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
@@ -23,13 +24,14 @@ public class AnimalGroupBean implements Serializable, Cloneable {
     private String area;
     private String description;
     private Date creationDate;
-    private List<AnimalBean> animals;
+    private Integer animals;
+    private Integer consume;
     private List<ManagerBean> managers;
 
     public AnimalGroupBean() {
     }
 
-    public AnimalGroupBean(Long id, String name, String area, String description, Date creationDate, List<AnimalBean> animals, List<ManagerBean> managers) {
+    public AnimalGroupBean(Long id, String name, String area, String description, Date creationDate, Integer animals, List<ManagerBean> managers) {
         this.id = id;
         this.name = name;
         this.area = area;
@@ -40,8 +42,15 @@ public class AnimalGroupBean implements Serializable, Cloneable {
     }
 
     public AnimalGroupBean clone() throws CloneNotSupportedException {
-
         return (AnimalGroupBean) super.clone();
+    }
+
+    public Integer getConsume() {
+        return consume;
+    }
+
+    public void setConsume(Integer consume) {
+        this.consume = consume;
     }
 
     public Long getId() {
@@ -84,11 +93,11 @@ public class AnimalGroupBean implements Serializable, Cloneable {
         this.creationDate = creationDate;
     }
 
-    public List<AnimalBean> getAnimals() {
+    public Integer getAnimals() {
         return animals;
     }
 
-    public void setAnimals(List<AnimalBean> animals) {
+    public void setAnimals(Integer animals) {
         this.animals = animals;
     }
 //
@@ -130,6 +139,7 @@ public class AnimalGroupBean implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return name;
+        return "AnimalGroup[ id=" + id + ", name=" + name + ", area " + area + ", creation date " + creationDate + "]";
     }
+
 }
