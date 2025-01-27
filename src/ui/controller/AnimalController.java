@@ -203,6 +203,7 @@ public class AnimalController implements Initializable {
 
             tcSpecies.setCellValueFactory(new PropertyValueFactory<>("species"));
             List<SpeciesBean> speciesList = new ArrayList<SpeciesBean>();
+          
             speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});     
             ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
             tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));

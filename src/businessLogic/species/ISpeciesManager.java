@@ -12,7 +12,7 @@ import javax.ws.rs.core.GenericType;
  *
  * @author Aitziber
  */
-interface ISpeciesManager {
+public interface ISpeciesManager {
     public <T> T getAllSpecies(GenericType<T> responseType) throws WebApplicationException;
     public void close();
 }

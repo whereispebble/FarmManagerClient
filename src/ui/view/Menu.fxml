@@ -7,7 +7,7 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="35.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="userLogicTier.MenuController">
+<AnchorPane id="AnchorPane" prefHeight="35.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="ui.controller.MenuController">
     <stylesheets>
         <URL value="@styles.css" />
     </stylesheets>      
