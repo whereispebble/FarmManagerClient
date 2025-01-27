@@ -528,7 +528,7 @@ public class AnimalController implements Initializable {
            
             JasperReport report=
                 JasperCompileManager.compileReport(getClass()
-                    .getResourceAsStream("/reports/AnimalReport.jrxml"));
+                    .getResourceAsStream("/ui/reports/animalReport.jrxml"));
             //Data for the report: a collection of UserBean passed as a JRDataSource 
             //implementation 
             JRBeanCollectionDataSource dataItems=
