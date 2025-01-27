@@ -47,6 +47,7 @@ public class Application extends javafx.application.Application {
         
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
+        stage.getIcons().add(new Image("resources/logo.png"));
         stage.setScene(scene);
         stage.setResizable(false);
         stage.setTitle("Sign in");
