@@ -83,7 +83,7 @@ public class AnimalGroupController implements Initializable {
     private TextField searchField;
 
     @FXML
-    private TableView tbAnimalGroup;
+    private TableView<AnimalGroupBean> tbAnimalGroup;
 
     @FXML
     private TableColumn<AnimalGroupBean, String> tcName;
