@@ -12,6 +12,7 @@ import cellFactories.DatePickerTableCell;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -48,6 +49,15 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
+import java.util.Collection;
+import java.util.Map;
+import net.sf.jasperreports.engine.JasperPrint;
 
 /**
  * FXML Controller class
@@ -55,6 +65,11 @@ import javax.ws.rs.core.GenericType;
  * @author Aitziber
  */
 public class AnimalController implements Initializable {
+    
+    /**
+     * Logger to track the class activity and handle debugging information.
+     */
+    private static final Logger logger = Logger.getLogger(AnimalController.class.getName());
     
     
     private Stage stage;
@@ -70,6 +85,9 @@ public class AnimalController implements Initializable {
 
     @FXML
     private Button btnAdd;
+    
+    @FXML
+    private Button btnPrint;
     
     @FXML
     private Text txtFrom;
@@ -216,6 +234,8 @@ public class AnimalController implements Initializable {
             //        stage.show(); 
             
             showAllAnimals();
+            
+            btnPrint.setOnAction(this::handlePrintAction); 
     }
     
     private void handleComboBoxChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -494,6 +514,35 @@ public class AnimalController implements Initializable {
         } catch (WebApplicationException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Error al cargar los animales: " + e.getMessage(), ButtonType.OK);
             alert.showAndWait();
+        }
+    }
+    
+    private void handlePrintAction(ActionEvent event){
+        try {
+            logger.info("Beginning printing action...");
+           
+            JasperReport report=
+                JasperCompileManager.compileReport(getClass()
+                    .getResourceAsStream("/reports/AnimalReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems=
+                    new JRBeanCollectionDataSource((Collection<AnimalBean>)this.tbAnimal.getItems());
+            //Map of parameter to be passed to the report
+            Map<String,Object> parameters=new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report,parameters,dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint,false);
+            jasperViewer.setVisible(true);
+           // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+//            showErrorAlert("Error al imprimir:\n"+
+//                            ex.getMessage());
+            
         }
     }
 }
