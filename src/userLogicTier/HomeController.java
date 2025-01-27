@@ -5,6 +5,7 @@
  */
 package userLogicTier;
 
+import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import cellFactories.WindowManager;
 import java.util.logging.Level;
@@ -16,6 +17,8 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.util.Optional;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -97,6 +100,9 @@ public class HomeController {
     @FXML
     private Text lblUserCity;
 
+    @FXML
+    private Button btnView;
+
     /**
      * User object containing the data to be displayed in the Home view.
      */
@@ -130,6 +136,8 @@ public class HomeController {
 
             // Set the "Log out" button as the default button
             btnLogOut.setDefaultButton(true);
+
+            btnView.setOnAction(this::handleViewButtonClicked);
 
             configureContextMenu();
 
@@ -294,6 +302,11 @@ public class HomeController {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error handling key press", e);
         }
+    }
+
+    private void handleViewButtonClicked(ActionEvent event) {
+        ((Node) event.getSource()).getScene().getWindow().hide();
+        WindowManager.openWindowWithManager("/userInterfaceTier/AnimalGroup.fxml", "Animal Group", manager, "AnimalGroup");
     }
 
     /**
