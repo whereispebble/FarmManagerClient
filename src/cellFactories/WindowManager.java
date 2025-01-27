@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import userLogicTier.AnimalController;
 import userLogicTier.AnimalGroupController;
+import userLogicTier.HomeController;
 
 /**
  * Utility class for managing the opening of new windows in the application. This class provides methods to open different windows (scenes) based on the provided FXML file path and title. It also allows passing a user object to the new window for context.
@@ -31,6 +32,30 @@ public class WindowManager {
      * Logger to track the activity and handle debugging information.
      */
     private static final Logger logger = Logger.getLogger(WindowManager.class.getName());
+
+    /**
+     * Opens a new window with the provided FXML file and title. This method does not pass any user context to the new window.
+     *
+     * @param fxmlFilePath the path to the FXML file to load for the new window.
+     * @param title the title to set for the new window.
+     */
+    public static void openWindow(String fxmlFilePath, String title) {
+        try {
+            // Load the FXML file
+            FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
+            Parent root = fxmlLoader.load();
+
+            // Set up the stage (window)
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.getIcons().add(new Image("resources/logo.png"));
+            stage.setScene(new Scene(root));
+            stage.setResizable(false);
+            stage.show();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Error opening window: {0}", e.getMessage());
+        }
+    }
 
     /**
      * Opens a new window with the provided FXML file, title, and user context. The manager and animalGroup objects are passed to the controller of the new window.
@@ -93,6 +118,10 @@ public class WindowManager {
                 case "Product":
                     // ProductController productController = fxmlLoader.getController();
                     // productController.setManager(manager);
+                    break;
+                case "Home":
+                    HomeController homeController = fxmlLoader.getController();
+                    homeController.setManager(manager);
                     break;
                 default:
                     throw new IllegalArgumentException("Wrong view: " + view);

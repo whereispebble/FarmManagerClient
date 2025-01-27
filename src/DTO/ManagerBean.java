@@ -25,10 +25,10 @@ public class ManagerBean extends UserBean implements Serializable {
     public ManagerBean() {
     }
 
-    public ManagerBean(boolean isActive, String password, List<AnimalGroupBean> animalGroups) {
+    public ManagerBean(boolean isActive, String password, String name, String email, String phone, String city, String zip, String street) {
+        super(name, email, phone, city, zip, street);
         this.isActive = isActive;
         this.password = password;
-        this.animalGroups = animalGroups;
     }
 
     @Override
@@ -95,7 +95,7 @@ public class ManagerBean extends UserBean implements Serializable {
 
     @Override
     public String toString() {
-        return "Manager[ id=" + id + " ]";
+        return "Manager[ id=" + id + " name=" + name + " email=" + email + " password=" + password + " address=" + street + " city=" + city + " zip=" + zip + "]";
     }
 
 }
