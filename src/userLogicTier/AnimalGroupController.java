@@ -58,8 +58,6 @@ public class AnimalGroupController implements Initializable {
      */
     private static final Logger logger = Logger.getLogger(AnimalGroupController.class.getName());
 
-    private Stage stage;
-
     private ManagerBean manager;
 
     @FXML
@@ -127,7 +125,6 @@ public class AnimalGroupController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-
             ////////////////////////////////////////////
             manager = new ManagerBean();
             manager.setId(1L);
@@ -146,6 +143,7 @@ public class AnimalGroupController implements Initializable {
             // BUTTONS
             btnSearch.setOnAction(this::onSearchButtonClicked);
             btnCreate.setOnAction(this::onCreateButtonClicked);
+            btnLogOut.setOnAction(this::onLogOutButtonClicked);
 
             // MENUITEMS
             miDelete.setDisable(true);
@@ -187,7 +185,6 @@ public class AnimalGroupController implements Initializable {
             // Animals column
 //            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
 //            tcAnimals.setStyle("-fx-alignment: center;");
-
             // Consumes column
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
             tcConsume.setStyle("-fx-alignment: center;");
@@ -201,7 +198,7 @@ public class AnimalGroupController implements Initializable {
                     DatePickerTableCell<AnimalGroupBean> cell = new DatePickerTableCell<>(param);
                     cell.updateDateCallback = (Date updatedDate) -> {
                         try {
-                            updateAnimalGroup(updatedDate);
+                            updateAnimalGroupByDate(updatedDate);
                         } catch (CloneNotSupportedException ex) {
                             logger.log(Level.SEVERE, "Error updating animal group: ", ex);
                         }
@@ -241,9 +238,20 @@ public class AnimalGroupController implements Initializable {
             switch (column) {
                 case "name":
                     if (newValue instanceof String) {
-                        groupCopy.setName((String) newValue);
-                        AnimalGroupFactory.get().updateAnimalGroup(groupCopy);
-                        group.setName((String) newValue);
+                        try {
+                            // Checks if the name already exists
+                            List<AnimalGroupBean> groupList = tbAnimalGroup.getItems();
+                            for (AnimalGroupBean ag : groupList) {
+                                if (ag.getName().equalsIgnoreCase(newValue.toString())) {
+                                    throw new Exception("An animal group with the same name already exists, please try another name");
+                                }
+                            }
+                            groupCopy.setName((String) newValue);
+                            AnimalGroupFactory.get().updateAnimalGroup(groupCopy);
+                            group.setName((String) newValue);
+                        } catch (Exception e) {
+                            showErrorAlert("ERROR", "Animal group already exists", e.getMessage());
+                        }
                     }
                     break;
                 case "description":
@@ -260,34 +268,39 @@ public class AnimalGroupController implements Initializable {
                         group.setArea((String) newValue);
                     }
                     break;
-
                 default:
-                    throw new IllegalArgumentException("Campo desconocido: " + column);
+                    throw new IllegalArgumentException("The value is not valid: " + column);
             }
 
             event.getTableView().refresh();
 
-        } catch (CloneNotSupportedException | IllegalArgumentException | WebApplicationException e) {
+        } catch (CloneNotSupportedException | IllegalArgumentException e) {
             logger.log(Level.SEVERE, "Error editing Animal Group: ", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText("Error editing Animal Group");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
     }
 
-    private void updateAnimalGroup(Date updatedDate) throws CloneNotSupportedException {
+    private void updateAnimalGroupByDate(Date updatedDate) throws CloneNotSupportedException {
         AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
         if (group != null && updatedDate != null) {
-            AnimalGroupBean groupCopy = group.clone();
-            groupCopy.setCreationDate(updatedDate);
             try {
+                // Check that the updated date is before the actual date
+                if (updatedDate.after(new Date())) {
+                    throw new Exception("The new date can not be after the actual date. Please insert a valid date");
+                }
+                AnimalGroupBean groupCopy = group.clone();
+                groupCopy.setCreationDate(updatedDate);
                 AnimalGroupFactory.get().updateAnimalGroup(groupCopy);
                 group.setCreationDate(updatedDate);
                 logger.log(Level.INFO, "Animal group updated. New Date: {0}", group.getCreationDate());
             } catch (WebApplicationException e) {
                 logger.log(Level.SEVERE, "Error updating", e);
+                showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
+            } catch (Exception ex) {
+                showErrorAlert("ERROR", "Invalid date", ex.getMessage());
             }
         }
     }
@@ -312,11 +325,7 @@ public class AnimalGroupController implements Initializable {
             }
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("SERVER ERROR");
-            alert.setHeaderText("Please contact with support");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
     }
 
@@ -328,16 +337,17 @@ public class AnimalGroupController implements Initializable {
             // Set attributes
             String groupName = "Group " + (int) (Math.random() * 1000000);
             group.setName(groupName);
-            group.setDescription("New animal group");
-            group.setArea("Not defined yet");
+            group.setDescription("Group of animals");
+            group.setArea("Undefined zone");
             // Make a list for the managers (just actual manager but has to be a list)
             List<ManagerBean> managers = new ArrayList<>();
             managers.add(manager);
             group.setManagers(managers);
             // Actual date
             group.setCreationDate(new Date());
+            // group.setConsumes(0);
 
-            logger.log(Level.SEVERE, "Creating animal group: {0}", group.toString());
+            logger.log(Level.INFO, "Creating animal group: {0}", group.toString());
             AnimalGroupFactory.get().createAnimalGroup(group);
 
             showAnimalGroups();
@@ -347,14 +357,9 @@ public class AnimalGroupController implements Initializable {
             for (int row = 0; row < tbAnimalGroup.getItems().size(); row++) {
                 group = (AnimalGroupBean) tbAnimalGroup.getItems().get(row);
                 if (group.getName().equals(groupName)) {
-//                tbAnimalGroup.edit(row, tcName);
-
                     frow = row;
                     Platform.runLater(() -> tbAnimalGroup.edit(frow, tcName));
                     logger.log(Level.SEVERE, tbAnimalGroup.getEditingCell().toString());
-
-//                tbAnimalGroup.getEditingCell().startEdit();
-//                tbAnimalGroup.edit(row, TableColumn<AnimalGroupBean, String> tcName);
                     tbAnimalGroup.refresh();
                     break;
                 }
@@ -362,71 +367,65 @@ public class AnimalGroupController implements Initializable {
 
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error creating animal group", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText("Cannot create the animal group");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
     }
 
     private void onDeleteMenuItemClicked(ActionEvent event) {
-        ObservableList<AnimalGroupBean> selectedGroups = tbAnimalGroup.getSelectionModel().getSelectedItems();
+        try {
+            ObservableList<AnimalGroupBean> selectedGroups = tbAnimalGroup.getSelectionModel().getSelectedItems();
 
-        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected Animal Groups?", ButtonType.YES, ButtonType.NO);
-        Optional<ButtonType> result = confirmationAlert.showAndWait();
+            Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected Animal Groups?", ButtonType.YES, ButtonType.NO);
+            Optional<ButtonType> result = confirmationAlert.showAndWait();
 
-        if (result.isPresent() && result.get() == ButtonType.YES) {
-            try {
-                for (AnimalGroupBean agb : selectedGroups) {
-                    AnimalGroupFactory.get().deleteAnimalGroupById(agb.getId().toString());
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                try {
+                    for (AnimalGroupBean agb : selectedGroups) {
+                        AnimalGroupFactory.get().deleteAnimalGroupById(agb.getId().toString());
+                    }
+                } catch (WebApplicationException e) {
+                    logger.log(Level.SEVERE, "Error deleting animal/s", e);
                 }
-            } catch (WebApplicationException e) {
-                logger.log(Level.SEVERE, "Error deleting animal/s", e);
             }
+            showAnimalGroups();
+
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error creating animal group", e);
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
-        showAnimalGroups();
     }
 
     private void onOpenWindowMenuItemClicked(ActionEvent event, String view) {
-        switch (view) {
-            case "AnimalByAnimalGroup":
-                try {
+        try {
+            switch (view) {
+                case "AnimalByAnimalGroup":
                     AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
                     logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
                     WindowManager.openAnimalViewWithAnimalGroup("/userInterfaceTier/Animal.fxml", "Animal", manager, group);
-                } catch (NullPointerException e) {
-                    logger.log(Level.INFO, "Error opening animal group: ", e);
-                }
-                break;
-            case "Animal":
-                try {
+                    break;
+                case "Animal":
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
                     WindowManager.openWindowWithManager("/userInterfaceTier/Animal.fxml", "Animal", manager, view);
-                } catch (NullPointerException e) {
-                    logger.log(Level.INFO, "Error opening window: ", e);
-                }
-                break;
-            case "Consumes":
-                try {
+                    break;
+                case "Consumes":
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
                     WindowManager.openWindowWithManager("/userInterfaceTier/Consumes.fxml", "Consumes", manager, view);
-                } catch (NullPointerException e) {
-                    logger.log(Level.INFO, "Error opening window: ", e);
-                }
-                break;
-            case "Product":
-                try {
+                    break;
+                case "Product":
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
                     WindowManager.openWindowWithManager("/userInterfaceTier/Product.fxml", "Product", manager, view);
-                } catch (NullPointerException e) {
-                    logger.log(Level.INFO, "Error opening window: ", e);
-                }
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown or wrong view: " + view);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown or wrong view: " + view);
+            }
+        } catch (NullPointerException e) {
+            logger.log(Level.INFO, "Error opening window: ", e);
         }
+    }
+
+    private void onLogOutButtonClicked(ActionEvent event) {
+        
     }
 
     private void showAnimalGroups() {
@@ -443,11 +442,22 @@ public class AnimalGroupController implements Initializable {
 
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("SERVER ERROR");
-            alert.setHeaderText("Please contact with support");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
+    }
+
+    /**
+     * Helper method to display an error alert with a custom title and message.
+     *
+     * @param head the error type.
+     * @param title title of the alert dialog.
+     * @param message message content of the alert dialog.
+     */
+    private void showErrorAlert(String head, String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(head);
+        alert.setHeaderText(title);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
