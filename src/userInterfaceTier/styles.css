@@ -65,7 +65,6 @@
 
 /* Buttons */
 Button {
-    -fx-background-color: #28a745;
     -fx-text-fill: white;
     -fx-font-weight: bold;
     -fx-cursor: hand;

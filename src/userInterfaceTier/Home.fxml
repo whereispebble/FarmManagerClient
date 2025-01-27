@@ -24,15 +24,15 @@
                <children>
                   <HBox prefHeight="49.0" prefWidth="600.0">
                      <children>
-                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                        <StackPane prefHeight="58.0" prefWidth="162.0">
                            <children>
                               <Text id="lblWelcome" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="lblTitle" text="Welcome" />
                            </children>
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0" />
-                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                        <StackPane prefHeight="58.0" prefWidth="277.0">
                            <children>
-                              <Button id="btnLogOut" fx:id="btnLogOut" mnemonicParsing="false" styleClass="btnSignIn" text="LogOut" />
+                              <Button id="btnLogOut" fx:id="btnLogOut" alignment="CENTER" mnemonicParsing="false" styleClass="btnSignIn" text="LogOut" textAlignment="CENTER" StackPane.alignment="CENTER_RIGHT" />
                            </children>
                         </StackPane>
                      </children>
@@ -45,7 +45,6 @@
                <children>
                   <VBox prefHeight="219.0" prefWidth="135.0">
                      <children>
-                        <StackPane prefHeight="150.0" prefWidth="200.0" />
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
                               <ImageView id="imgProfile" fitHeight="106.0" fitWidth="108.0" pickOnBounds="true" preserveRatio="true">
@@ -56,11 +55,15 @@
                                      <Circle centerX="50" centerY="50" radius="50" />
                                  </clip>
                               </ImageView>
+                           </children></StackPane>
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Text fx:id="lblUserName" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="lblTitle" text="name" />
                            </children>
                         </StackPane>
                         <StackPane prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <Text fx:id="lblUserName" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="lblTitle" text="name" />
+                              <Button id="btnView" fx:id="btnView" mnemonicParsing="false" prefHeight="26.0" prefWidth="143.0" styleClass="btnSignIn" text="Enter Farm" />
                            </children>
                         </StackPane>
                      </children></VBox>
