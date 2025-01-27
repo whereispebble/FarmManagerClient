@@ -34,7 +34,27 @@ import javafx.util.Callback;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import DTO.AnimalGroupBean;
-import DTO.AnimalBean;
+import DTO.ManagerBean;
+import ui.cellFactories.DatePickerTableCell;
+import ui.utilities.WindowManager;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
+import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SelectionMode;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 
 /**
  * FXML Controller class
@@ -48,9 +68,7 @@ public class AnimalGroupController implements Initializable {
      */
     private static final Logger logger = Logger.getLogger(AnimalGroupController.class.getName());
 
-    private Stage stage;
-
-    private String managerId;
+    private ManagerBean manager;
 
     @FXML
     private Button btnCreate;
@@ -65,7 +83,7 @@ public class AnimalGroupController implements Initializable {
     private TextField searchField;
 
     @FXML
-    private TableView tbAnimalGroup;
+    private TableView<AnimalGroupBean> tbAnimalGroup;
 
     @FXML
     private TableColumn<AnimalGroupBean, String> tcName;
@@ -73,9 +91,8 @@ public class AnimalGroupController implements Initializable {
     @FXML
     private TableColumn<AnimalGroupBean, String> tcDescription;
 
-    @FXML
-    private TableColumn tcAnimals;
-
+//    @FXML
+//    private TableColumn tcAnimals;
     @FXML
     private TableColumn tcConsume;
 
@@ -83,32 +100,80 @@ public class AnimalGroupController implements Initializable {
     private TableColumn tcDate;
 
     @FXML
+    private MenuItem miDelete;
+
+    @FXML
+    private MenuItem miOpen;
+
+    @FXML
+    private MenuItem miAnimals;
+
+    @FXML
+    private MenuItem miConsumes;
+
+    @FXML
+    private MenuItem miProducts;
+
+    @FXML
+    private MenuItem miPrint;
+
+    @FXML
     private TableColumn<AnimalGroupBean, String> tcArea;
 
     private ObservableList<AnimalGroupBean> groupData;
 
+    public void setManager(ManagerBean manager) {
+        this.manager = manager;
+        logger.log(Level.INFO, "Manager {0}", manager.toString());
+
+        if (this.manager != null) {
+            showAnimalGroups();
+        }
+    }
+
     /**
      * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-
         try {
+            tbAnimalGroup.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             logger.log(Level.INFO, "Initilizing Animal Group controller");
 
-            //Uncomment next lanes when necessary
-//        // Establecer el título de la ventana
-//            stage.setTitle("Animal Groups");
-//
-//            // Establecer dimensiones fijas
-//            stage.setWidth(1024);
-//            stage.setHeight(720);
-//
-//            // Deshabilitar la redimensión de la ventana
-//            stage.setResizable(false);
+            // Focus on searchField
             searchField.requestFocus();
+            // Search button set to default button (when pressed intro)
+            btnSearch.setDefaultButton(true);
 
-            logger.log(Level.INFO, "Setting cell value factories");
+            // BUTTONS
+            btnSearch.setOnAction(this::onSearchButtonClicked);
+            btnCreate.setOnAction(this::onCreateButtonClicked);
+            btnLogOut.setOnAction(this::onLogOutButtonClicked);
+
+            // MENUITEMS
+            miDelete.setDisable(true);
+            // Disabled until some item is selected
+            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+                miDelete.setDisable(tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty());
+            });
+            miDelete.setOnAction(this::onDeleteMenuItemClicked);
+            miOpen.setDisable(true);
+            // Disabled if there is no selection OR multiple selection
+            tbAnimalGroup.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalGroupBean>) change -> {
+                if (tbAnimalGroup.getSelectionModel().getSelectedItems().isEmpty() || tbAnimalGroup.getSelectionModel().getSelectedItems().size() > 1) {
+                    miOpen.setDisable(true);
+                } else {
+                    miOpen.setDisable(false);
+                }
+            });
+            miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
+            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
+            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
+            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
+            miPrint.setOnAction(this::handlePrintAction);
 
             // COLUMNS
             // Name column
@@ -127,10 +192,9 @@ public class AnimalGroupController implements Initializable {
             tcArea.setOnEditCommit(event -> handleEditCommit(event, "area"));
 
             // Animals column
-            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
-            tcAnimals.setStyle("-fx-alignment: center;");
-
-            // Consume column
+//            tcAnimals.setCellValueFactory(new PropertyValueFactory<>("animals"));
+//            tcAnimals.setStyle("-fx-alignment: center;");
+            // Consumes column
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
             tcConsume.setStyle("-fx-alignment: center;");
 
@@ -140,52 +204,25 @@ public class AnimalGroupController implements Initializable {
             tcDate.setCellFactory(new Callback<TableColumn<AnimalGroupBean, Date>, TableCell<AnimalGroupBean, Date>>() {
                 @Override
                 public TableCell<AnimalGroupBean, Date> call(TableColumn<AnimalGroupBean, Date> param) {
-                    return new TableCell<AnimalGroupBean, Date>() {
-                        @Override
-                        protected void updateItem(Date item, boolean empty) {
-                            super.updateItem(item, empty);
-                            if (empty || item == null) {
-                                setText(null);
-                            } else {
-                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                                setText(sdf.format(item));
-                            }
+                    DatePickerTableCell<AnimalGroupBean> cell = new DatePickerTableCell<>(param);
+                    cell.updateDateCallback = (Date updatedDate) -> {
+                        try {
+                            updateAnimalGroupByDate(updatedDate);
+                        } catch (CloneNotSupportedException ex) {
+                            logger.log(Level.SEVERE, "Error updating animal group: ", ex);
                         }
                     };
+                    return cell;
                 }
             });
 
-            List<AnimalGroupBean> groupList = new ArrayList<>();
-
-            logger.log(Level.INFO, "Sending request");
-
-            managerId = "2";
-            groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
-            }, managerId);
-
-            List<AnimalBean> animalList = new ArrayList<>();
-            // Uncoment when AnimalManagerFactory, AnimmalRestClient are added
-//            animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, "North Cows");
-
-            logger.log(Level.INFO, "Request sent");
-
-            // for testing purposes
-//            logger.log(Level.INFO, "Printing list");
-//            for (AnimalGroupBean agb : groupList) {
-//                System.out.println(agb.toString());
-//            }
-            groupData = FXCollections.observableArrayList(groupList);
-            tbAnimalGroup.setItems(groupData);
-
+            // Table is editable
             tbAnimalGroup.setEditable(true);
 
-        } catch (WebApplicationException e) {
-            logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText("Animal Group data not found");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+            showAnimalGroups();
+        } catch (Exception e) {
+            // If something goes wrong
+            logger.log(Level.SEVERE, "Something went wrong: ", e);
         }
     }
 
@@ -210,9 +247,20 @@ public class AnimalGroupController implements Initializable {
             switch (column) {
                 case "name":
                     if (newValue instanceof String) {
-                        groupCopy.setName((String) newValue);
-                        AnimalGroupFactory.get().updateAnimalGroup(groupCopy);
-                        group.setName((String) newValue);
+                        try {
+                            // Checks if the name already exists
+                            List<AnimalGroupBean> groupList = tbAnimalGroup.getItems();
+                            for (AnimalGroupBean ag : groupList) {
+                                if (ag.getName().equalsIgnoreCase(newValue.toString())) {
+                                    throw new Exception("An animal group with the same name already exists, please try another name");
+                                }
+                            }
+                            groupCopy.setName((String) newValue);
+                            AnimalGroupFactory.get().updateAnimalGroup(groupCopy);
+                            group.setName((String) newValue);
+                        } catch (Exception e) {
+                            showErrorAlert("ERROR", "Animal group already exists", e.getMessage());
+                        }
                     }
                     break;
                 case "description":
@@ -229,19 +277,263 @@ public class AnimalGroupController implements Initializable {
                         group.setArea((String) newValue);
                     }
                     break;
-
                 default:
-                    throw new IllegalArgumentException("Campo desconocido: " + column);
+                    throw new IllegalArgumentException("The value is not valid: " + column);
             }
 
             event.getTableView().refresh();
 
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("ERROR");
-            alert.setHeaderText("Error editing Animal Group");
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
+        } catch (CloneNotSupportedException | IllegalArgumentException e) {
+            logger.log(Level.SEVERE, "Error editing Animal Group: ", e);
+
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
+    }
+
+    private void updateAnimalGroupByDate(Date updatedDate) throws CloneNotSupportedException {
+        AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
+        if (group != null && updatedDate != null) {
+            try {
+                // Check that the updated date is before the actual date
+                if (updatedDate.after(new Date())) {
+                    throw new Exception("The new date can not be after the actual date. Please insert a valid date");
+                }
+                AnimalGroupBean groupCopy = group.clone();
+                groupCopy.setCreationDate(updatedDate);
+                AnimalGroupFactory.get().updateAnimalGroup(groupCopy);
+                group.setCreationDate(updatedDate);
+                logger.log(Level.INFO, "Animal group updated. New Date: {0}", group.getCreationDate());
+            } catch (WebApplicationException e) {
+                logger.log(Level.SEVERE, "Error updating", e);
+                showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
+            } catch (Exception ex) {
+                showErrorAlert("ERROR", "Invalid date", ex.getMessage());
+            }
+        }
+    }
+
+    private void onSearchButtonClicked(ActionEvent event) {
+        try {
+            List<AnimalGroupBean> groupList = null;
+            if (searchField.getText() != null && !searchField.getText().isEmpty()) {
+                logger.log(Level.INFO, "Searching group/s by name and manager id");
+                groupList = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<List<AnimalGroupBean>>() {
+                }, searchField.getText(), manager.getId().toString());
+                logger.log(Level.INFO, "Group/s gotten");
+            } else {
+                showAnimalGroups();
+            }
+
+            if (groupList != null) {
+                ObservableList<AnimalGroupBean> filteredData = FXCollections.observableArrayList(groupList);
+                tbAnimalGroup.setItems(filteredData);
+            } else {
+                logger.log(Level.INFO, "No animal groups found");
+            }
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
+        }
+    }
+
+    @FXML
+    private void onCreateButtonClicked(ActionEvent event) {
+        try {
+            // Create new group
+            AnimalGroupBean group = new AnimalGroupBean();
+            // Set attributes
+            String groupName = "Group " + (int) (Math.random() * 1000000);
+            group.setName(groupName);
+            group.setDescription("Group of animals");
+            group.setArea("Undefined zone");
+            // Make a list for the managers (just actual manager but has to be a list)
+            List<ManagerBean> managers = new ArrayList<>();
+            managers.add(manager);
+            group.setManagers(managers);
+            // Actual date
+            group.setCreationDate(new Date());
+            // group.setConsumes(0);
+
+            logger.log(Level.INFO, "Creating animal group: {0}", group.toString());
+            AnimalGroupFactory.get().createAnimalGroup(group);
+
+            showAnimalGroups();
+
+            // Set in edition mode the new animal group (searched by the new name)
+            final int NEW_GROUP_ROW;
+            for (int row = 0; row < tbAnimalGroup.getItems().size(); row++) {
+                group = (AnimalGroupBean) tbAnimalGroup.getItems().get(row);
+                if (group.getName().equals(groupName)) {
+                    NEW_GROUP_ROW = row;
+                    Platform.runLater(() -> tbAnimalGroup.edit(NEW_GROUP_ROW, tcName));
+                    logger.log(Level.SEVERE, tbAnimalGroup.getEditingCell().toString());
+                    tbAnimalGroup.refresh();
+                    break;
+                }
+            }
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error creating animal group", e);
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
+        }
+    }
+
+    private void onDeleteMenuItemClicked(ActionEvent event) {
+        try {
+            ObservableList<AnimalGroupBean> selectedGroups = tbAnimalGroup.getSelectionModel().getSelectedItems();
+
+            Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure you want to delete the selected Animal Groups?", ButtonType.YES, ButtonType.NO);
+            Optional<ButtonType> result = confirmationAlert.showAndWait();
+
+            if (result.isPresent() && result.get() == ButtonType.YES) {
+                try {
+                    for (AnimalGroupBean agb : selectedGroups) {
+                        AnimalGroupFactory.get().deleteAnimalGroupById(agb.getId().toString());
+                    }
+                } catch (WebApplicationException e) {
+                    logger.log(Level.SEVERE, "Error deleting animal/s", e);
+                }
+            }
+            showAnimalGroups();
+
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error creating animal group", e);
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
+        }
+    }
+
+    private void onOpenWindowMenuItemClicked(ActionEvent event, String view) {
+        try {
+            switch (view) {
+                case "AnimalByAnimalGroup":
+                    AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
+                    logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openAnimalViewWithAnimalGroup("/userInterfaceTier/Animal.fxml", "Animal", manager, group);
+                    break;
+                case "Animal":
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openWindowWithManager("/userInterfaceTier/Animal.fxml", "Animal", manager, view);
+                    break;
+                case "Consumes":
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openWindowWithManager("/userInterfaceTier/Consumes.fxml", "Consumes", manager, view);
+                    break;
+                case "Product":
+                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+                    WindowManager.openWindowWithManager("/userInterfaceTier/Product.fxml", "Product", manager, view);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown or wrong view: " + view);
+            }
+        } catch (NullPointerException e) {
+            logger.log(Level.INFO, "Error opening window: ", e);
+        }
+    }
+
+    private void handlePrintAction(ActionEvent event) {
+        try {
+            logger.info("Beginning printing action...");
+
+            JasperReport report
+                    = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/reports/AnimalGroupReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<AnimalGroupBean>) this.tbAnimalGroup.getItems());
+            //Map of parameter to be passed to the report
+            Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
+        } catch (JRException ex) {
+            //If there is an error show message and
+            //log it.
+//            showErrorAlert("Error al imprimir:\n"+
+//                            ex.getMessage());
+
+        }
+    }
+
+    private void onLogOutButtonClicked(ActionEvent event) {
+        logger.log(Level.INFO, "Log out action initiated");
+
+        if (showLogoutConfirmation()) {
+            try {
+                Stage home = (Stage) btnLogOut.getScene().getWindow();
+                home.close();
+                WindowManager.openWindow("/userInterfaceTier/SignIn.fxml", "SignIn");
+
+                logger.log(Level.INFO, "Successfully navigated to Sign In screen.");
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Unexpected error during logout process.", e);
+            }
+        } else {
+            logger.log(Level.INFO, "Log out cancelled by user.");
+        }
+    }
+
+    /**
+     * Displays a confirmation dialog for the logout action.
+     *
+     * @return {@code true} if the user confirms the logout, {@code false} otherwise
+     */
+    private boolean showLogoutConfirmation() {
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Log Out");
+            alert.setHeaderText("This window will be closed.");
+            alert.setContentText("Are you sure you want to log out?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            return result.isPresent() && result.get() == ButtonType.OK;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error showing logout confirmation", e);
+            return false;
+        }
+    }
+
+    private void showAnimalGroups() {
+        try {
+            // Get animal groups
+            logger.log(Level.INFO, "Getting animal groups");
+            if (manager != null) {
+                List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
+                }, manager.getId().toString());
+                logger.log(Level.INFO, "Animal groups gotten");
+                // Show animal groups
+                groupData = FXCollections.observableArrayList(groupList);
+                tbAnimalGroup.setItems(groupData);
+            } else {
+                logger.log(Level.WARNING, "Manager is null");
+            }
+
+        } catch (WebApplicationException e) {
+            logger.log(Level.SEVERE, "Error fetching animal groups", e);
+            showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
+        } catch (NullPointerException e) {
+            logger.log(Level.SEVERE, "Something is null: ", e);
+        }
+    }
+
+    /**
+     * Helper method to display an error alert with a custom title and message.
+     *
+     * @param head the error type.
+     * @param title title of the alert dialog.
+     * @param message message content of the alert dialog.
+     */
+    private void showErrorAlert(String head, String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(head);
+        alert.setHeaderText(title);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
