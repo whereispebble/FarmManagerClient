@@ -353,18 +353,17 @@ public class AnimalGroupController implements Initializable {
             showAnimalGroups();
 
             // Set in edition mode the new animal group (searched by the new name)
-            final int frow;
+            final int NEW_GROUP_ROW;
             for (int row = 0; row < tbAnimalGroup.getItems().size(); row++) {
                 group = (AnimalGroupBean) tbAnimalGroup.getItems().get(row);
                 if (group.getName().equals(groupName)) {
-                    frow = row;
-                    Platform.runLater(() -> tbAnimalGroup.edit(frow, tcName));
+                    NEW_GROUP_ROW = row;
+                    Platform.runLater(() -> tbAnimalGroup.edit(NEW_GROUP_ROW, tcName));
                     logger.log(Level.SEVERE, tbAnimalGroup.getEditingCell().toString());
                     tbAnimalGroup.refresh();
                     break;
                 }
             }
-
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error creating animal group", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
@@ -425,7 +424,7 @@ public class AnimalGroupController implements Initializable {
     }
 
     private void onLogOutButtonClicked(ActionEvent event) {
-        
+
     }
 
     private void showAnimalGroups() {
