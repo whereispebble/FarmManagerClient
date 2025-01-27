@@ -124,6 +124,11 @@ public class AnimalGroupController implements Initializable {
 
     public void setManager(ManagerBean manager) {
         this.manager = manager;
+        logger.log(Level.INFO, "Manager {0}", manager.toString());
+
+        if (this.manager != null) {
+            showAnimalGroups();
+        }
     }
 
     /**
@@ -135,13 +140,6 @@ public class AnimalGroupController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
-            ////////////////////////////////////////////
-            manager = new ManagerBean();
-            manager.setId(1L);
-            manager.setName("Manager 1");
-            logger.log(Level.INFO, "Manager: {0}", manager.getName());
-            ////////////////////////////////////////////
-
             tbAnimalGroup.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
             logger.log(Level.INFO, "Initilizing Animal Group controller");
 
@@ -224,7 +222,7 @@ public class AnimalGroupController implements Initializable {
             showAnimalGroups();
         } catch (Exception e) {
             // If something goes wrong
-            logger.log(Level.SEVERE, "Something went wrong: {0}", e);
+            logger.log(Level.SEVERE, "Something went wrong: ", e);
         }
     }
 
@@ -471,17 +469,22 @@ public class AnimalGroupController implements Initializable {
         try {
             // Get animal groups
             logger.log(Level.INFO, "Getting animal groups");
-            List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
-            }, manager.getId().toString());
-            logger.log(Level.INFO, "Animal groups gotten");
-
-            // Show animal groups
-            groupData = FXCollections.observableArrayList(groupList);
-            tbAnimalGroup.setItems(groupData);
+            if (manager != null) {
+                List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
+                }, manager.getId().toString());
+                logger.log(Level.INFO, "Animal groups gotten");
+                // Show animal groups
+                groupData = FXCollections.observableArrayList(groupList);
+                tbAnimalGroup.setItems(groupData);
+            } else {
+                logger.log(Level.WARNING, "Manager is null");
+            }
 
         } catch (WebApplicationException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
+        } catch (NullPointerException e) {
+            logger.log(Level.SEVERE, "Something is null: ", e);
         }
     }
 
