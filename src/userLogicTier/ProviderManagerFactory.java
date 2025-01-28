@@ -11,10 +11,10 @@ import DTO.ProductBean;
  *
  * @author InigoFreire
  */
-public class ProductManagerFactory {
+public class ProviderManagerFactory {
  
-    public static ProductRESTClient get(){
-        return new ProductRESTClient();
+    public static ProviderRESTClient get(){
+        return new ProviderRESTClient();
     }
     
 }

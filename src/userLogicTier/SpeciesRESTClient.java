@@ -11,29 +11,29 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 
 /**
- * Jersey REST client generated for REST resource:ProviderEntityFacadeREST [providerentity]<br>
+ * Jersey REST client generated for REST resource:SpeciesREST [species]<br>
  * USAGE:
  * <pre>
- *        ProviderBean client = new ProviderBean();
+ *        SpeciesRESTClient client = new SpeciesRESTClient();
  *        Object response = client.XXX(...);
  *        // do whatever with response
  *        client.close();
  * </pre>
  *
- * @author InigoFreire
+ * @author Aitziber
  */
-public class ProviderRESTClient {
+public class SpeciesRESTClient implements ISpeciesManager{
 
     private WebTarget webTarget;
     private Client client;
     private static final String BASE_URI = "http://localhost:8080/farmapp/webresources";
 
-    public ProviderRESTClient() {
+    public SpeciesRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
-        webTarget = client.target(BASE_URI).path("providerentity");
+        webTarget = client.target(BASE_URI).path("species");
     }
 
-    public <T> T getAllProviders(GenericType<T> responseType) throws WebApplicationException {
+    public <T> T getAllSpecies(GenericType<T> responseType) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path("all");
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
@@ -42,4 +42,5 @@ public class ProviderRESTClient {
     public void close() {
         client.close();
     }
+    
 }

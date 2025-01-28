@@ -3,18 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package userLogicTier;
-
-import DTO.ProductBean;
+package DTO;
 
 /**
  *
- * @author InigoFreire
+ * @author Ander
  */
-public class ProductManagerFactory {
- 
-    public static ProductRESTClient get(){
-        return new ProductRESTClient();
-    }
+class ManagerBean {
     
 }

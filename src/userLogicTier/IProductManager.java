@@ -5,24 +5,19 @@
  */
 package userLogicTier;
 
-import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.GenericType;
 
 /**
  *
  * @author InigoFreire
  */
 public interface IProductManager {
-    public void deleteProductById(String id) throws ClientErrorException;
-    
-    public void updateProduct(Object requestEntity) throws ClientErrorException;
-
-    public void createProduct(Object requestEntity) throws ClientErrorException ;
-    
-    public <T> T searchByDate(Class<T> responseType, String date) throws ClientErrorException;
-    
-    public <T> T getProductByName(Class<T> responseType, String name) throws ClientErrorException;
-    
+    public void deleteProductById(String id) throws WebApplicationException;
+    public void updateProduct(Object requestEntity) throws WebApplicationException;
+    public void createProduct(Object requestEntity) throws WebApplicationException;
+    public <T> T getProductsByCreatedDate(GenericType<T> responseType, String date) throws WebApplicationException;
+    public <T> T getProductByName(GenericType<T> responseType, String name) throws WebApplicationException;
+    public <T> T getAllProducts(GenericType<T> responseType, String managerId) throws WebApplicationException;
     public void close();
 }

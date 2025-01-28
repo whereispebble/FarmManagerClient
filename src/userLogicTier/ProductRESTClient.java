@@ -8,21 +8,23 @@ package userLogicTier;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
-import model.ProductBean;
+import DTO.ProductBean;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericType;
 
 /**
  * Jersey REST client generated for REST resource:ProductEntityFacadeREST [productentity]<br>
  * USAGE:
  * <pre>
-        ProductRESTClient client = new ProductRESTClient();
-        Object response = client.XXX(...);
-        // do whatever with response
-        client.close();
- </pre>
+ * ProductRESTClient client = new ProductRESTClient();
+ * Object response = client.XXX(...);
+ * // do whatever with response
+ * client.close();
+ * </pre>
  *
  * @author InigoFreire
  */
-public class ProductRESTClient implements IProductManager{
+public class ProductRESTClient implements IProductManager {
 
     private WebTarget webTarget;
     private Client client;
@@ -50,16 +52,26 @@ public class ProductRESTClient implements IProductManager{
                         javax.ws.rs.core.MediaType.APPLICATION_XML), ProductBean.class);
     }
 
-    public <T> T searchByDate(Class<T> responseType, String date) throws ClientErrorException {
+    public <T> T getProductsByCreatedDate(GenericType<T> responseType, String date) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("date/{0}", new Object[]{date}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    @Override
+    public <T> T getProductByName(GenericType<T> responseType, String name) throws WebApplicationException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public <T> T getProductByName(Class<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("name/{0}", new Object[]{name}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+    }
+
+    @Override
+    public <T> T getAllProducts(GenericType<T> responseType, String managerId) throws WebApplicationException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     public void close() {

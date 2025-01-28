@@ -1,48 +1,32 @@
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package DTO;
 
 import java.io.Serializable;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 /**
  *
  * @author Ander
  */
-@Entity
-@Table(name = "farmUser", schema = "farmdb")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "USER_TYPE", discriminatorType = DiscriminatorType.STRING)
 public class UserBean implements Serializable {
-
+    
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    
     protected Long id;
-    @NotNull
+    
     protected String name;
-    @NotNull
+
     protected String email;
-    @NotNull
+
     protected String phone;
-    @NotNull
+
     protected String city;
-    @NotNull
+
     protected int zip;
-    @NotNull
+
     protected String street;
 
     public Long getId() {
@@ -123,7 +107,7 @@ public class UserBean implements Serializable {
 
     @Override
     public String toString() {
-        return "entities.UserEntity[ id=" + id + " ]";
+        return "User[ id=" + id + " ]";
     }
 
 }
