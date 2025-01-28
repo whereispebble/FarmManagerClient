@@ -84,7 +84,7 @@
                                                         <graphic>
                                                             <ImageView fitHeight="10.0" fitWidth="20.0">
                                                                 <image>
-                                                                    <Image url="@../resources/ojoAbierto.png" />
+                                                                    <Image url="@/resources/ojoAbierto.png" />
                                                                 </image>
                                                             </ImageView>
                                                         </graphic>

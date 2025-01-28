@@ -71,21 +71,6 @@
                 <RowConstraints maxHeight="393.79998168945315" minHeight="0.0" prefHeight="15.199987792968727" />
             </rowConstraints>
         </GridPane>
-        <MenuBar prefHeight="36.0" prefWidth="1024.0">
-            <menus>
-                <Menu mnemonicParsing="false" text="Navigate to">
-                    <items>
-                        <MenuItem fx:id="miAnimals" mnemonicParsing="false" text="Animals" />
-                        <MenuItem fx:id="miConsumes" mnemonicParsing="false" text="Consumes" />
-                        <MenuItem fx:id="miProducts" mnemonicParsing="false" text="Products" />
-                    </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Report">
-                    <items>
-                        <MenuItem fx:id="miPrint" mnemonicParsing="false" text="Print" />
-                    </items>
-                </Menu>
-            </menus>
-        </MenuBar>
+        <fx:include fx:id="menuBar" source="Menu.fxml" />
     </children>
 </AnchorPane>

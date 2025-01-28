@@ -40,7 +40,7 @@
                     <graphic>
                         <ImageView fitHeight="16.0" fitWidth="31.0">
                             <image>
-                                <Image url="@../resources/ojoAbierto.png" />
+                                <Image url="@/resources/ojoAbierto.png" />
                             </image>
                         </ImageView>
                     </graphic>

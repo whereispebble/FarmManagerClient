@@ -171,7 +171,7 @@ public class SignInController {
         } else {
             try {
                 lblError.setText("");
-                
+
                 logger.log(Level.INFO, "{0} {1}", new Object[]{username, password});
                 List<ManagerBean> managers = ManagerFactory.get().getManager(new GenericType<List<ManagerBean>>() {
                 }, username, password);
@@ -183,7 +183,7 @@ public class SignInController {
                 }
                 // Successfully authenticated; proceed to home screen
                 ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-                WindowManager.openWindowWithManager("/userInterfaceTier/Home.fxml", "Home", managers.get(0), "Home");
+                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
             } catch (UserCredentialException ex) {
                 lblError.setText("Incorrect username or password.");
                 logger.log(Level.SEVERE, "Credential error", ex);
@@ -203,28 +203,14 @@ public class SignInController {
      * @param actionEvent action event triggered by the Sign Up hyperlink.
      */
     public void handleSignUpHyperlinkAction(ActionEvent actionEvent) {
-        try {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Confirmation");
-            alert.setHeaderText("You are about to exit");
-            alert.setContentText("Are you sure you want to leave the sign in window and open the sign up window?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-
-                FXMLLoader FXMLLoader = new FXMLLoader(getClass().getResource("/userInterfaceTier/SignUp.fxml"));
-                Parent mainView = FXMLLoader.load();
-                Stage stage = new Stage();
-                stage.setResizable(false);
-                stage.getIcons().add(new Image("resources/logo.png"));
-                stage.setTitle("SignUp");
-                stage.setScene(new Scene(mainView));
-                stage.show();
-            }
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, null, e);
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmation");
+        alert.setHeaderText("You are about to exit");
+        alert.setContentText("Are you sure you want to leave the sign in window and open the sign up window?");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            ((Node) actionEvent.getSource()).getScene().getWindow().hide();
+            WindowManager.openWindow("/ui/view/SignUp.fxml", "Sign Up");
         }
     }
 

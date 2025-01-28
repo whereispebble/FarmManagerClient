@@ -276,7 +276,7 @@ public class SignUpController {
                 ((Node) (actionEvent.getSource())).getScene().getWindow().hide();
                 logger.log(Level.INFO, "Closing SignUp window");
 
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/userInterfaceTier/SignIn.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/view/SignIn.fxml"));
                 Parent root = loader.load();
                 Stage stage = new Stage();
                 stage.setResizable(false);
@@ -314,7 +314,7 @@ public class SignUpController {
             logger.log(Level.INFO, "Manager signed up successfully");
 
             ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-            WindowManager.openWindow("/userInterfaceTier/SignIn.fxml", "SignIn");
+            WindowManager.openWindow("/ui/view/SignIn.fxml", "SignIn");
         } catch (ExistingUserException ex) {
             lblErrorSignUp.setText("User already exists");
             logger.log(Level.INFO, "User already exists: ", ex);
