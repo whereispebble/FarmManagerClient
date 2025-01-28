@@ -170,10 +170,10 @@ public class AnimalGroupController implements Initializable {
                 }
             });
             miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
-            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
-            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
-            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
-            miPrint.setOnAction(this::handlePrintAction);
+//            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
+//            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
+//            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
+//            miPrint.setOnAction(this::handlePrintAction);
 
             // COLUMNS
             // Name column
@@ -218,8 +218,6 @@ public class AnimalGroupController implements Initializable {
 
             // Table is editable
             tbAnimalGroup.setEditable(true);
-
-            showAnimalGroups();
         } catch (Exception e) {
             // If something goes wrong
             logger.log(Level.SEVERE, "Something went wrong: ", e);
@@ -368,7 +366,6 @@ public class AnimalGroupController implements Initializable {
                 if (group.getName().equals(groupName)) {
                     NEW_GROUP_ROW = row;
                     Platform.runLater(() -> tbAnimalGroup.edit(NEW_GROUP_ROW, tcName));
-                    logger.log(Level.SEVERE, tbAnimalGroup.getEditingCell().toString());
                     tbAnimalGroup.refresh();
                     break;
                 }
@@ -410,19 +407,19 @@ public class AnimalGroupController implements Initializable {
                     AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
                     logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openAnimalViewWithAnimalGroup("/userInterfaceTier/Animal.fxml", "Animal", manager, group);
+                    WindowManager.openAnimalViewWithAnimalGroup("/ui/view/Animal.fxml", "Animal", manager, group);
                     break;
                 case "Animal":
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/userInterfaceTier/Animal.fxml", "Animal", manager, view);
+                    WindowManager.openWindowWithManager("/ui/view/Animal.fxml", "Animal", manager, view);
                     break;
                 case "Consumes":
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/userInterfaceTier/Consumes.fxml", "Consumes", manager, view);
+                    WindowManager.openWindowWithManager("/ui/view/Consumes.fxml", "Consumes", manager, view);
                     break;
                 case "Product":
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/userInterfaceTier/Product.fxml", "Product", manager, view);
+                    WindowManager.openWindowWithManager("/ui/view/Product.fxml", "Product", manager, view);
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown or wrong view: " + view);
@@ -468,7 +465,7 @@ public class AnimalGroupController implements Initializable {
             try {
                 Stage home = (Stage) btnLogOut.getScene().getWindow();
                 home.close();
-                WindowManager.openWindow("/userInterfaceTier/SignIn.fxml", "SignIn");
+                WindowManager.openWindow("/ui/view/SignIn.fxml", "SignIn");
 
                 logger.log(Level.INFO, "Successfully navigated to Sign In screen.");
             } catch (Exception e) {
