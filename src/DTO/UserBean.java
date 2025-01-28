@@ -6,17 +6,19 @@
 package DTO;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Ander
  */
+@XmlRootElement(name = "farmUser")
 public class UserBean implements Serializable {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     protected Long id;
-    
+
     protected String name;
 
     protected String email;
@@ -25,10 +27,23 @@ public class UserBean implements Serializable {
 
     protected String city;
 
-    protected int zip;
+    protected String zip;
 
     protected String street;
 
+    public UserBean() {
+    }
+
+    public UserBean(String name, String email, String phone, String city, String zip, String street) {
+        super();
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.city = city;
+        this.zip = zip;
+        this.street = street;
+    }
+    
     public Long getId() {
         return id;
     }
@@ -69,11 +84,11 @@ public class UserBean implements Serializable {
         this.city = city;
     }
 
-    public int getZip() {
+    public String getZip() {
         return zip;
     }
 
-    public void setZip(int zip) {
+    public void setZip(String zip) {
         this.zip = zip;
     }
 
