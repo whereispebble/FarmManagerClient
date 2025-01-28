@@ -22,7 +22,7 @@ import javax.ws.rs.core.GenericType;
  *
  * @author InigoFreire
  */
-public class ProviderRESTClient {
+public class ProviderRESTClient implements IProviderManager {
 
     private WebTarget webTarget;
     private Client client;

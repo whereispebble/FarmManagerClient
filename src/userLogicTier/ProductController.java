@@ -28,6 +28,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import DTO.ProductBean;
 import DTO.ProviderBean;
 import cellFactories.DatePickerTableCell;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javafx.beans.value.ObservableValue;
@@ -71,10 +72,10 @@ public class ProductController implements Initializable {
     private TableColumn tcMonthlyConsume;
 
     @FXML
-    private TableColumn<ProductBean, Integer>  tcStock;
+    private TableColumn<ProductBean, Integer> tcStock;
 
     @FXML
-    private TableColumn<ProductBean, ProviderBean>  tcProviders;
+    private TableColumn<ProductBean, ProviderBean> tcProviders;
 
     @FXML
     private TableColumn tcCreatedDate;
@@ -90,14 +91,6 @@ public class ProductController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // Establecer los siguientes parámetros de la ventana:
-        // Título: “Product”
-        // Dimensiones: 1024x720
-        // stage.setTitle("Product");
-        // stage.setWidth(1024);
-        // stage.setHeight(720);
-        // La ventana no debe ser redimensionable.
-        // stage.setResizable(false);
 
         // Cargar los elementos en el ComboBox de búsqueda
         comboSearch.getItems().addAll("Product", "Created date");
@@ -144,15 +137,19 @@ public class ProductController implements Initializable {
         tcStock.setOnEditCommit(event -> handleEditCommit(event, "stock"));
 
         // Providers: List<Providers> | Editable (como ComboBox)
-        tcProviders.setCellValueFactory(new PropertyValueFactory<>("providerId"));
-        List<ProviderBean> providerList = ProviderManagerFactory.get()
-                .getAllProviders(new GenericType<List<ProviderBean>>() {
-                });
-        providerList = ProviderManagerFactory.get().getAllProviders(new GenericType<List<ProviderBean>>() {
-        });
-        ObservableList<ProviderBean> providerData = FXCollections.observableArrayList(providerList);
-        tcProviders.setCellFactory(ComboBoxTableCell.forTableColumn(providerData));
-        tcProviders.setOnEditCommit(event -> handleEditCommit(event, "providers"));
+        try {
+            tcProviders.setCellValueFactory(new PropertyValueFactory<>("providerId"));
+            List<ProviderBean> providerList = ProviderManagerFactory.get().getAllProviders(new GenericType<List<ProviderBean>>() {
+            });
+            if (providerList == null) {
+                providerList = new ArrayList<>();
+            }
+            ObservableList<ProviderBean> providerData = FXCollections.observableArrayList(providerList);
+            tcProviders.setCellFactory(ComboBoxTableCell.forTableColumn(providerData));
+            tcProviders.setOnEditCommit(event -> handleEditCommit(event, "providers"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Created date: Date Picker | No editable
         tcCreatedDate.setCellValueFactory(new PropertyValueFactory<>("createDate"));
@@ -228,23 +225,22 @@ public class ProductController implements Initializable {
         }
     }
 
-   private void handleComboBoxChange(ObservableValue<? extends String> observable, Object oldValue, Object newValue) {
-    if ("createDate".equals(newValue)) {
-        // Ocultar el campo de búsqueda de texto
-        tfSearch.setVisible(false);
-        tfSearch.clear();
+    private void handleComboBoxChange(ObservableValue<? extends String> observable, Object oldValue, Object newValue) {
+        if ("createDate".equals(newValue)) {
+            // Ocultar el campo de búsqueda de texto
+            tfSearch.setVisible(false);
+            tfSearch.clear();
 
-        // Mostrar los campos de fecha
-        //dpSearch.setVisible(true);
-    } else if ("Product".equals(newValue)) {
-        // Ocultar los campos de fecha
-        //dpSearch.setVisible(false);
-        // Mostrar el campo de búsqueda de texto
-        tfSearch.setVisible(true);
-        tfSearch.clear();
+            // Mostrar los campos de fecha
+            //dpSearch.setVisible(true);
+        } else if ("Product".equals(newValue)) {
+            // Ocultar los campos de fecha
+            //dpSearch.setVisible(false);
+            // Mostrar el campo de búsqueda de texto
+            tfSearch.setVisible(true);
+            tfSearch.clear();
+        }
     }
-}
-
 
     private void onSearchButtonClicked(ActionEvent event) {
         String searchType = comboSearch.getValue().toString();
@@ -300,7 +296,7 @@ public class ProductController implements Initializable {
         try {
             List<ProductBean> allProducts = ProductManagerFactory.get()
                     .getAllProducts(new GenericType<List<ProductBean>>() {
-                    }, "1");
+                    });
             ObservableList<ProductBean> productData = FXCollections.observableArrayList(allProducts);
             tbProduct.setItems(productData);
         } catch (WebApplicationException e) {

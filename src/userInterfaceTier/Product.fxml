@@ -66,7 +66,7 @@
                 <TableColumn fx:id="tcPrice" minWidth="2.39996337890625" prefWidth="148.0" text="Price (€/Kg)" />
                   <TableColumn fx:id="tcMonthlyConsume" prefWidth="149.60003662109375" text="Mensual consume (Kg)" />
                   <TableColumn fx:id="tcStock" prefWidth="132.79995727539062" text="Stock (Kg)" />
-                  <TableColumn fx:id="tcProvider" prefWidth="111.199951171875" text="Providers" />
+                  <TableColumn fx:id="tcProviders" prefWidth="111.199951171875" text="Providers" />
                   <TableColumn fx:id="tcCreatedDate" prefWidth="159.19989013671875" text="Created date" />
               </columns>
                <contextMenu>

@@ -5,16 +5,19 @@
  */
 package userLogicTier;
 
-import DTO.ProductBean;
-
 /**
  *
  * @author InigoFreire
  */
 public class ProviderManagerFactory {
  
-    public static ProviderRESTClient get(){
-        return new ProviderRESTClient();
-    }
+    private static IProviderManager providerManager;
+    
+    public static IProviderManager get(){
+        if(providerManager==null){
+           providerManager=new ProviderRESTClient();
+        }
+        return providerManager;
+    }      
     
 }

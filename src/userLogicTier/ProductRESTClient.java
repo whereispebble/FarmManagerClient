@@ -5,7 +5,7 @@
  */
 package userLogicTier;
 
-import javax.ws.rs.ClientErrorException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import DTO.ProductBean;
@@ -35,18 +35,18 @@ public class ProductRESTClient implements IProductManager {
         webTarget = client.target(BASE_URI).path("productentity");
     }
 
-    public void deleteProductById(String id) throws ClientErrorException {
+    public void deleteProductById(String id) throws WebApplicationException {
         webTarget.path(java.text.MessageFormat.format("delete/{0}", new Object[]{id}))
                 .request().delete(ProductBean.class);
     }
 
-    public void updateProduct(Object requestEntity) throws ClientErrorException {
+    public void updateProduct(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .put(javax.ws.rs.client.Entity.entity(requestEntity,
                         javax.ws.rs.core.MediaType.APPLICATION_XML), ProductBean.class);
     }
 
-    public void createProduct(Object requestEntity) throws ClientErrorException {
+    public void createProduct(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML)
                 .post(javax.ws.rs.client.Entity.entity(requestEntity,
                         javax.ws.rs.core.MediaType.APPLICATION_XML), ProductBean.class);
@@ -60,18 +60,16 @@ public class ProductRESTClient implements IProductManager {
 
     @Override
     public <T> T getProductByName(GenericType<T> responseType, String name) throws WebApplicationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public <T> T getProductByName(Class<T> responseType, String name) throws ClientErrorException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("name/{0}", new Object[]{name}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);    
     }
 
     @Override
-    public <T> T getAllProducts(GenericType<T> responseType, String managerId) throws WebApplicationException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <T> T getAllProducts(GenericType<T> responseType) throws WebApplicationException {
+        WebTarget resource = webTarget;
+        resource = resource.path("all/{0}");
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     public void close() {

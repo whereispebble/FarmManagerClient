@@ -18,6 +18,6 @@ public interface IProductManager {
     public void createProduct(Object requestEntity) throws WebApplicationException;
     public <T> T getProductsByCreatedDate(GenericType<T> responseType, String date) throws WebApplicationException;
     public <T> T getProductByName(GenericType<T> responseType, String name) throws WebApplicationException;
-    public <T> T getAllProducts(GenericType<T> responseType, String managerId) throws WebApplicationException;
+    public <T> T getAllProducts(GenericType<T> responseType) throws WebApplicationException;
     public void close();
 }
