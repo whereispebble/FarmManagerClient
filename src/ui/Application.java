@@ -13,39 +13,26 @@ import javafx.scene.image.Image;
 
 /**
  * The main application class responsible for initializing and displaying the Sign In window.
- * 
- * This class extends {@link javafx.application.Application} and overrides the {@code start} method
- * to set up the primary stage with the Sign In interface.
+ *
+ * This class extends {@link javafx.application.Application} and overrides the {@code start} method to set up the primary stage with the Sign In interface.
  *
  * @author Aitziber
  * @author Ander
  */
 public class Application extends javafx.application.Application {
-    
+
     /**
      * Starts the application by setting up the primary stage.
-     * 
-     * Loads the SignIn FXML layout, applies the stylesheet, sets the application icon,
-     * and displays the stage to the user.
+     *
+     * Loads the SignIn FXML layout, applies the stylesheet, sets the application icon, and displays the stage to the user.
      *
      * @param stage the primary stage for this application
      * @throws Exception if an error occurs during loading of the FXML file
      */
     @Override
     public void start(Stage stage) throws Exception {
-//        Parent root = FXMLLoader.load(getClass().getResource("SignIn.fxml"));
-//        
-//        Scene scene = new Scene(root);
-//        scene.getStylesheets().add(getClass().getResource("view/styles.css").toExternalForm());
-//        stage.getIcons().add(new Image("resources/logo.png"));
-//        stage.setScene(scene);
-//        stage.setResizable(false);
-//        stage.setTitle("Sign in");
-//        stage.show();
-
-
         Parent root = FXMLLoader.load(getClass().getResource("view/SignIn.fxml"));
-        
+
         Scene scene = new Scene(root);
         scene.getStylesheets().add(getClass().getResource("view/styles.css").toExternalForm());
         stage.getIcons().add(new Image("resources/logo.png"));
@@ -54,9 +41,10 @@ public class Application extends javafx.application.Application {
         stage.setTitle("Sign in");
         stage.show();
     }
+
     /**
      * The main entry point for the application.
-     * 
+     *
      * Launches the application with the given command line arguments.
      *
      * @param args the command line arguments

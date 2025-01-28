@@ -105,17 +105,17 @@ public class AnimalGroupController implements Initializable {
     @FXML
     private MenuItem miOpen;
 
-    @FXML
-    private MenuItem miAnimals;
-
-    @FXML
-    private MenuItem miConsumes;
-
-    @FXML
-    private MenuItem miProducts;
-
-    @FXML
-    private MenuItem miPrint;
+//    @FXML
+//    private MenuItem miAnimals;
+//
+//    @FXML
+//    private MenuItem miConsumes;
+//
+//    @FXML
+//    private MenuItem miProducts;
+//
+//    @FXML
+//    private MenuItem miPrint;
 
     @FXML
     private TableColumn<AnimalGroupBean, String> tcArea;
