@@ -105,17 +105,17 @@ public class AnimalGroupController implements Initializable {
     @FXML
     private MenuItem miOpen;
 
-    @FXML
-    private MenuItem miAnimals;
-
-    @FXML
-    private MenuItem miConsumes;
-
-    @FXML
-    private MenuItem miProducts;
-
-    @FXML
-    private MenuItem miPrint;
+//    @FXML
+//    private MenuItem miAnimals;
+//
+//    @FXML
+//    private MenuItem miConsumes;
+//
+//    @FXML
+//    private MenuItem miProducts;
+//
+//    @FXML
+//    private MenuItem miPrint;
 
     @FXML
     private TableColumn<AnimalGroupBean, String> tcArea;
@@ -170,10 +170,10 @@ public class AnimalGroupController implements Initializable {
                 }
             });
             miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
-            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
-            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
-            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
-            miPrint.setOnAction(this::handlePrintAction);
+//            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
+//            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
+//            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
+//            miPrint.setOnAction(this::handlePrintAction);
 
             // COLUMNS
             // Name column
@@ -412,18 +412,18 @@ public class AnimalGroupController implements Initializable {
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
                     WindowManager.openAnimalViewWithAnimalGroup("/userInterfaceTier/Animal.fxml", "Animal", manager, group);
                     break;
-                case "Animal":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/userInterfaceTier/Animal.fxml", "Animal", manager, view);
-                    break;
-                case "Consumes":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/userInterfaceTier/Consumes.fxml", "Consumes", manager, view);
-                    break;
-                case "Product":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/userInterfaceTier/Product.fxml", "Product", manager, view);
-                    break;
+//                case "Animal":
+//                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+//                    WindowManager.openWindowWithManager("/userInterfaceTier/Animal.fxml", "Animal", manager, view);
+//                    break;
+//                case "Consumes":
+//                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+//                    WindowManager.openWindowWithManager("/userInterfaceTier/Consumes.fxml", "Consumes", manager, view);
+//                    break;
+//                case "Product":
+//                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+//                    WindowManager.openWindowWithManager("/userInterfaceTier/Product.fxml", "Product", manager, view);
+//                    break;
                 default:
                     throw new IllegalArgumentException("Unknown or wrong view: " + view);
             }
