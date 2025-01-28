@@ -211,7 +211,7 @@ public class HomeController {
 
                 Stage home = (Stage) btnLogOut.getScene().getWindow();
                 home.close();
-                WindowManager.openWindow("/userInterfaceTier/SignIn.fxml", "SignIn");
+                WindowManager.openWindow("/ui/view/SignIn.fxml", "SignIn");
 
                 logger.log(Level.INFO, "Successfully navigated to Sign In screen.");
             } catch (Exception e) {
@@ -306,7 +306,7 @@ public class HomeController {
 
     private void handleViewButtonClicked(ActionEvent event) {
         ((Node) event.getSource()).getScene().getWindow().hide();
-        WindowManager.openWindowWithManager("/userInterfaceTier/AnimalGroup.fxml", "Animal Group", manager, "AnimalGroup");
+        WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", manager, "AnimalGroup");
     }
 
     /**
