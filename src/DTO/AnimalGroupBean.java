@@ -139,7 +139,7 @@ public class AnimalGroupBean implements Serializable, Cloneable {
 
     @Override
     public String toString() {
-        return "AnimalGroup[ id=" + id + ", name=" + name + ", area " + area + ", creation date " + creationDate + "]";
+        return name;
     }
 
 }
