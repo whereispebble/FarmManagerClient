@@ -174,6 +174,8 @@ public class SignInController {
                 lblError.setText("");
 
                 logger.log(Level.INFO, "{0} {1}", new Object[]{username, password});
+                
+                // por qué es una coleccion? el email era unico no?  
                 List<ManagerBean> managers = ManagerFactory.get().getManager(new GenericType<List<ManagerBean>>() {
                 }, username, password);
                 if (managers.isEmpty()) {
@@ -186,9 +188,10 @@ public class SignInController {
 //                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
 //                MenuController.setManager(managers.get(0));
 //                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
-                  
+                
                 MenuController.setManager(managers.get(0));
-                WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Home", managers.get(0), "AnimalGroup");
+                AnimalGroupController.setManager(managers.get(0));
+                WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", managers.get(0), "AnimalGroup");
                 
             } catch (UserCredentialException ex) {
                 lblError.setText("Incorrect username or password.");

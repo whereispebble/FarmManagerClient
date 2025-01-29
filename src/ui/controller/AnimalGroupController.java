@@ -68,8 +68,6 @@ public class AnimalGroupController implements Initializable {
      */
     private static final Logger logger = Logger.getLogger(AnimalGroupController.class.getName());
 
-    private ManagerBean manager;
-
     @FXML
     private Button btnCreate;
 
@@ -122,14 +120,16 @@ public class AnimalGroupController implements Initializable {
 
     private ObservableList<AnimalGroupBean> groupData;
 
-    public void setManager(ManagerBean manager) {
-        this.manager = manager;
-        logger.log(Level.INFO, "Manager {0}", manager.toString());
-
-        if (this.manager != null) {
-            showAnimalGroups();
-        }
+    private static ManagerBean manager;
+    
+    public static void setManager(ManagerBean manager) {
+        AnimalGroupController.manager = manager;
     }
+
+    public static ManagerBean getManager() {
+        return manager;
+    }
+    
 
     /**
      * Initializes the controller class.
@@ -218,6 +218,11 @@ public class AnimalGroupController implements Initializable {
 
             // Table is editable
             tbAnimalGroup.setEditable(true);
+            
+            if (manager != null) {
+                showAnimalGroups();
+            }
+            
         } catch (Exception e) {
             // If something goes wrong
             logger.log(Level.SEVERE, "Something went wrong: ", e);
