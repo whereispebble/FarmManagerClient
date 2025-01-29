@@ -8,6 +8,7 @@ package ui.utilities;
 import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
@@ -67,14 +68,16 @@ public class WindowManager {
      */
     public static void openAnimalViewWithAnimalGroup(String fxmlFilePath, String title, ManagerBean manager, AnimalGroupBean animalGroup) {
         try {
+         
+            if (AnimalController.getManager() == null){
+                AnimalController.setManager(manager); 
+            }
+            AnimalController.setConditionalAnimalGroup(animalGroup);
+
+                          
             // Load the FXML file and its controller
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
-
-            // Get the controller and set the user context
-            AnimalController animalController = fxmlLoader.getController();
-            animalController.setManager(manager);
-            animalController.setAnimalGroup(animalGroup);
 
             // Set up the stage (window)
             Stage stage = new Stage();

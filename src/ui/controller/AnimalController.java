@@ -129,20 +129,28 @@ public class AnimalController implements Initializable {
     @FXML
     private HBox hboxDatePicker;
     
- 
-    
-  
-    
     private static ManagerBean manager;
     
     public static void setManager(ManagerBean manager) {
         AnimalController.manager = manager;
     }
-   
-    private AnimalGroupBean conditionalAnimalGroup;
-    public void setAnimalGroup(AnimalGroupBean conditionalAnimalGroup) {
-        this.conditionalAnimalGroup = conditionalAnimalGroup;
+
+    public static ManagerBean getManager() {
+        return manager;
     }
+    
+   
+    private static AnimalGroupBean conditionalAnimalGroup;
+
+    public static AnimalGroupBean getConditionalAnimalGroup() {
+        return conditionalAnimalGroup;
+    }
+
+    public static void setConditionalAnimalGroup(AnimalGroupBean conditionalAnimalGroup) {
+        AnimalController.conditionalAnimalGroup = conditionalAnimalGroup;
+    }
+    
+    
 
     /**
      * Initializes the controller class.

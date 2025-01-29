@@ -50,19 +50,20 @@ public class MenuController implements Initializable {
         MenuController.manager = manager;
     }
     
-    
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         miAnimalGroup.setOnAction(this::handleAnimalGroup);
         miAnimal.setOnAction(this::handleAnimal);
-        miConsume.setOnAction(this::handleConsume);
-        miProduct.setOnAction(this::handleProduct);
+//        miConsume.setOnAction(this::handleConsume);
+//        miProduct.setOnAction(this::handleProduct);
     }
      private void handleAnimalGroup(ActionEvent event) {      
         try {
-            
-            openWindow("AnimalGroup.fxml", "Animal Group");
+//            Stage stage = (Stage) menuBar.getScene().getWindow();
+//            stage.hide();
+//            AnimalGroupController.setManager(manager);
+//            WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", manager, "AnimalGroup");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,62 +73,27 @@ public class MenuController implements Initializable {
         try {
             Stage stage = (Stage) menuBar.getScene().getWindow();
             stage.hide();
-            
             AnimalController.setManager(manager);
-            
             WindowManager.openWindowWithManager("/ui/view/Animal.fxml", "Animal", manager, "Animal");
 
-          
-//            FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource("/ui/view/Animal.fxml"));
-//            Parent root = fxmlLoader.load();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    
+//    private void handleConsume(ActionEvent event) {
+//        try {
 //
-//         
-//            Stage s = new Stage();
-//            s.setTitle("Animal");
-//            s.getIcons().add(new Image("resources/logo.png"));
-//            s.setScene(new Scene(root));
-//            s.setResizable(false);
-//            s.show();
-//            
-            
-//            openWindow("Animal.fxml", "Animal");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private void handleConsume(ActionEvent event) {
-        try {
-            openWindow("Consume.fxml", "Consume");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    private void handleProduct(ActionEvent event) {
-        try {
-            openWindow("Product.fxml", "Product");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void openWindow(String fxmlFile, String windowTitle) throws Exception {
-        
-        Stage stage = (Stage) menuBar.getScene().getWindow();
-        stage.hide();
-        
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/view/" + fxmlFile));
-        Parent root = loader.load();
-        
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("/ui/view/styles.css").toExternalForm());
-        
-        Stage st = new Stage();
-        st.setScene(scene);
-        st.setResizable(false);
-        st.setTitle(windowTitle);
-        
-        st.show();
-    } 
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
+//    
+//    private void handleProduct(ActionEvent event) {
+//        try {
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
