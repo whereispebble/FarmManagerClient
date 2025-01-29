@@ -169,10 +169,9 @@ public class AnimalGroupController implements Initializable {
                     miOpen.setDisable(false);
                 }
             });
-            miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
-//            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
-//            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
-//            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
+
+            miOpen.setOnAction(this::onOpenMenuItemClicked);
+
 //            miPrint.setOnAction(this::handlePrintAction);
 
             // COLUMNS
@@ -405,17 +404,14 @@ public class AnimalGroupController implements Initializable {
         }
     }
 
-    private void onOpenWindowMenuItemClicked(ActionEvent event, String view) {
+    private void onOpenMenuItemClicked (ActionEvent event){
         try {
-            switch (view) {
-                case "AnimalByAnimalGroup":
-                    AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
-                    logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openAnimalViewWithAnimalGroup("/ui/view/Animal.fxml", "Animal", manager, group);
-                    break;
-               
-            }
+
+            AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
+            logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
+            ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+            WindowManager.openAnimalViewWithAnimalGroup("/ui/view/Animal.fxml", "Animal", manager, group);
+
         } catch (NullPointerException e) {
             logger.log(Level.INFO, "Error opening window: ", e);
         }
