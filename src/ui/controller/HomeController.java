@@ -306,7 +306,7 @@ public class HomeController {
 
     private void handleViewButtonClicked(ActionEvent event) {
         ((Node) event.getSource()).getScene().getWindow().hide();
-        WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", manager, "AnimalGroup");
+        WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", manager);
     }
 
     /**

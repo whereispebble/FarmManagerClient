@@ -68,8 +68,6 @@ public class AnimalGroupController implements Initializable {
      */
     private static final Logger logger = Logger.getLogger(AnimalGroupController.class.getName());
 
-    private ManagerBean manager;
-
     @FXML
     private Button btnCreate;
 
@@ -122,14 +120,16 @@ public class AnimalGroupController implements Initializable {
 
     private ObservableList<AnimalGroupBean> groupData;
 
-    public void setManager(ManagerBean manager) {
-        this.manager = manager;
-        logger.log(Level.INFO, "Manager {0}", manager.toString());
-
-        if (this.manager != null) {
-            showAnimalGroups();
-        }
+    private static ManagerBean manager;
+    
+    public static void setManager(ManagerBean manager) {
+        AnimalGroupController.manager = manager;
     }
+
+    public static ManagerBean getManager() {
+        return manager;
+    }
+    
 
     /**
      * Initializes the controller class.
@@ -169,10 +169,9 @@ public class AnimalGroupController implements Initializable {
                     miOpen.setDisable(false);
                 }
             });
-            miOpen.setOnAction(event -> onOpenWindowMenuItemClicked(event, "AnimalByAnimalGroup"));
-//            miAnimals.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Animal"));
-//            miConsumes.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Consumes"));
-//            miProducts.setOnAction(event -> onOpenWindowMenuItemClicked(event, "Product"));
+
+            miOpen.setOnAction(this::onOpenMenuItemClicked);
+
 //            miPrint.setOnAction(this::handlePrintAction);
 
             // COLUMNS
@@ -218,6 +217,11 @@ public class AnimalGroupController implements Initializable {
 
             // Table is editable
             tbAnimalGroup.setEditable(true);
+            
+            if (manager != null) {
+                showAnimalGroups();
+            }
+            
         } catch (Exception e) {
             // If something goes wrong
             logger.log(Level.SEVERE, "Something went wrong: ", e);
@@ -400,30 +404,14 @@ public class AnimalGroupController implements Initializable {
         }
     }
 
-    private void onOpenWindowMenuItemClicked(ActionEvent event, String view) {
+    private void onOpenMenuItemClicked (ActionEvent event){
         try {
-            switch (view) {
-                case "AnimalByAnimalGroup":
-                    AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
-                    logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openAnimalViewWithAnimalGroup("/ui/view/Animal.fxml", "Animal", manager, group);
-                    break;
-                case "Animal":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/ui/view/Animal.fxml", "Animal", manager, view);
-                    break;
-                case "Consumes":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/ui/view/Consumes.fxml", "Consumes", manager, view);
-                    break;
-                case "Product":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/ui/view/Product.fxml", "Product", manager, view);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown or wrong view: " + view);
-            }
+
+            AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
+            logger.log(Level.INFO, "Opening animal group: {0}", group.getName());
+            ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
+            WindowManager.openAnimalViewWithAnimalGroup("/ui/view/Animal.fxml", "Animal", manager, group);
+
         } catch (NullPointerException e) {
             logger.log(Level.INFO, "Error opening window: ", e);
         }
