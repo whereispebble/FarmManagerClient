@@ -8,7 +8,6 @@ package ui.utilities;
 import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
@@ -18,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ui.controller.AnimalController;
 import ui.controller.AnimalGroupController;
-import ui.controller.HomeController;
 
 /**
  * Utility class for managing the opening of new windows in the application. This class provides methods to open different windows (scenes) based on the provided FXML file path and title. It also allows passing a user object to the new window for context.
@@ -99,38 +97,27 @@ public class WindowManager {
      * @param manager the user object to pass to the controller of the new window.
      * @param view the name of the view that wants to be opened.
      */
-    public static void openWindowWithManager(String fxmlFilePath, String title, ManagerBean manager, String view) {
+    public static void openWindowWithManager(String fxmlFilePath, String title, ManagerBean manager) {
         try {
+            //coleccion de controladores e iterarla seteando igual, ver cómo hacerlo sin instanceof y cambiar los ififif
+            
+            if (AnimalGroupController.getManager() == null){
+                AnimalGroupController.setManager(manager); 
+            }
+            if (AnimalController.getManager() == null){
+                AnimalController.setManager(manager); 
+            }
+//            if (ProductController.getManager() == null){
+//                ProductController.setManager(manager); 
+//            }
+//            if (ConsumesController.getManager() == null){
+//                ConsumesController.setManager(manager); 
+//            }
+            
             // Load the FXML file
             AnimalController.setConditionalAnimalGroup(null);
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
-
-            switch (view) {
-                case "AnimalGroup":
-                    AnimalGroupController groupController = fxmlLoader.getController();
-                    groupController.setManager(manager);
-                    break;
-                case "Animal":
-                    //no está funcionando 
-                    
-
-                    break;
-                case "Consumes":
-                    // ConsumesController consumesController = fxmlLoader.getController();
-                    // consumesController.setManager(manager);
-                    break;
-                case "Product":
-                    // ProductController productController = fxmlLoader.getController();
-                    // productController.setManager(manager);
-                    break;
-                case "Home":
-                    HomeController homeController = fxmlLoader.getController();
-                    homeController.setManager(manager);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Wrong view: " + view);
-            }
 
             // Set up the stage (window)
             Stage stage = new Stage();

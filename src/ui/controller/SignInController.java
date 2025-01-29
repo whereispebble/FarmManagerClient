@@ -191,7 +191,7 @@ public class SignInController {
                 
                 MenuController.setManager(managers.get(0));
                 AnimalGroupController.setManager(managers.get(0));
-                WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", managers.get(0), "AnimalGroup");
+                WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", managers.get(0));
                 
             } catch (UserCredentialException ex) {
                 lblError.setText("Incorrect username or password.");

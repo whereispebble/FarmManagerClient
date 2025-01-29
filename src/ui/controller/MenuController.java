@@ -55,66 +55,12 @@ public class MenuController implements Initializable {
         MenuController.manager = manager;
     }
     
-//    @Override
-//    public void initialize(URL location, ResourceBundle resources) {
-//        miAnimalGroup.setOnAction(this::handleAnimalGroup);
-//        miAnimal.setOnAction(this::handleAnimal);
-//        miConsume.setOnAction(this::handleConsume);
-//        miProduct.setOnAction(this::handleProduct);
-//    }
-//     private void handleAnimalGroup(ActionEvent event) {      
-//        try {
-//            Stage stage = (Stage) menuBar.getScene().getWindow();
-//            stage.hide();
-//            AnimalGroupController.setManager(manager);
-//            WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", manager, "AnimalGroup");
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    private void handleAnimal(ActionEvent event) {
-//        try {
-//            Stage stage = (Stage) menuBar.getScene().getWindow();
-//            stage.hide();
-//            AnimalController.setManager(manager);
-//            WindowManager.openWindowWithManager("/ui/view/Animal.fxml", "Animal", manager, "Animal");
-//
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    
-//    private void handleConsume(ActionEvent event) {
-//        try {
-//            Stage stage = (Stage) menuBar.getScene().getWindow();
-//            stage.hide();
-//            ConsumeController.setManager(manager);
-//            WindowManager.openWindowWithManager("/ui/view/Consume.fxml", "Consume", manager, "Consume");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//    
-//    private void handleProduct(ActionEvent event) {
-//        try {
-//            Stage stage = (Stage) menuBar.getScene().getWindow();
-//            stage.hide();
-//            ProductController.setManager(manager);
-//            WindowManager.openWindowWithManager("/ui/view/Product.fxml", "Product", manager, "Product");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-//}
-  
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        miAnimalGroup.setOnAction(event -> openView("/ui/view/AnimalGroup.fxml", "Animal Group", "AnimalGroup"));
-        miAnimal.setOnAction(event -> openView("/ui/view/Animal.fxml", "Animal", "Animal"));
-        miConsume.setOnAction(event -> openView("/ui/view/Consumes.fxml", "Consumes", "Consumes"));
-        miProduct.setOnAction(event -> openView("/ui/view/Product.fxml", "Product", "Product"));
+        miAnimalGroup.setOnAction(event -> openView("/ui/view/AnimalGroup.fxml", "Animal Group"));
+        miAnimal.setOnAction(event -> openView("/ui/view/Animal.fxml", "Animal"));
+        miConsume.setOnAction(event -> openView("/ui/view/Consumes.fxml", "Consumes"));
+        miProduct.setOnAction(event -> openView("/ui/view/Product.fxml", "Product"));
     }
 
     /**
@@ -123,11 +69,11 @@ public class MenuController implements Initializable {
      * @param fxmlPath the FXML file to load
      * @param title the title of the new window
      */
-    private void openView(String fxmlPath, String title, String view) {
+    private void openView(String fxmlPath, String title) {
         try {
             Stage stage = (Stage) menuBar.getScene().getWindow();
             stage.hide();
-            WindowManager.openWindowWithManager(fxmlPath, title, manager, view);
+            WindowManager.openWindowWithManager(fxmlPath, title, manager);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error opening {0} window: {1}", new Object[]{title, e.getMessage()});
         }

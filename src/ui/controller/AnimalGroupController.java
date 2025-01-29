@@ -414,20 +414,7 @@ public class AnimalGroupController implements Initializable {
                     ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
                     WindowManager.openAnimalViewWithAnimalGroup("/ui/view/Animal.fxml", "Animal", manager, group);
                     break;
-                case "Animal":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/ui/view/Animal.fxml", "Animal", manager, view);
-                    break;
-                case "Consumes":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/ui/view/Consumes.fxml", "Consumes", manager, view);
-                    break;
-                case "Product":
-                    ((Scene) tbAnimalGroup.getScene()).getWindow().hide();
-                    WindowManager.openWindowWithManager("/ui/view/Product.fxml", "Product", manager, view);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown or wrong view: " + view);
+               
             }
         } catch (NullPointerException e) {
             logger.log(Level.INFO, "Error opening window: ", e);
