@@ -29,28 +29,43 @@
 		<band height="61" splitType="Stretch">
 			<staticText>
 				<reportElement x="31" y="41" width="100" height="20" uuid="883c8b5a-fac3-4499-a35f-2d1270586067"/>
+                                <textElement>
+                                    <font isUnderline="true"/>
+                                </textElement>
 				<text><![CDATA[Name]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="131" y="41" width="100" height="20" uuid="930cb2f0-c4b3-4071-8e8f-44783567e947"/>
+                                <textElement>
+                                    <font isUnderline="true"/>
+                                </textElement>
 				<text><![CDATA[Birthdate]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="231" y="41" width="100" height="20" uuid="d22dc91b-c320-49df-84ea-806db3a54f6a"/>
+                                <textElement>
+                                    <font isUnderline="true"/>
+                                </textElement>
 				<text><![CDATA[Animal Group]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="331" y="41" width="100" height="20" uuid="adaafe83-b1e2-4bf2-a084-f2f5778e1a0c"/>
+                                <textElement>
+                                    <font isUnderline="true"/>
+                                </textElement>
 				<text><![CDATA[Subespecies]]></text>
 			</staticText>
 			<staticText>
 				<reportElement x="431" y="41" width="100" height="20" uuid="dab0c8a8-b567-4cfb-a61b-d0feb927ae4c"/>
+                                <textElement>
+                                    <font isUnderline="true"/>
+                                </textElement>
 				<text><![CDATA[Subespecies]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="125" splitType="Stretch">
+		<band height="20" splitType="Stretch">
 			<textField>
 				<reportElement x="31" y="0" width="100" height="20" uuid="a101e59f-90ed-4a89-a21e-6589d439c676"/>
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
