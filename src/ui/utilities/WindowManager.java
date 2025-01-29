@@ -73,8 +73,8 @@ public class WindowManager {
 
             // Get the controller and set the user context
             AnimalController animalController = fxmlLoader.getController();
-            // animalController.setManager(manager);
-            // animalController.setAnimalGroup(animalGroup);
+            animalController.setManager(manager);
+            animalController.setAnimalGroup(animalGroup);
 
             // Set up the stage (window)
             Stage stage = new Stage();
@@ -109,7 +109,7 @@ public class WindowManager {
                     break;
                 case "Animal":
                     AnimalController animalController = fxmlLoader.getController();
-                    // animalController.setManager(manager);
+                    //animalController.setManager(manager);
                     break;
                 case "Consumes":
                     // ConsumesController consumesController = fxmlLoader.getController();

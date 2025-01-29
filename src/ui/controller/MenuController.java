@@ -20,6 +20,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ui.utilities.WindowManager;
 
@@ -42,6 +43,14 @@ public class MenuController implements Initializable {
     private MenuItem miConsume;
     @FXML
     private MenuItem miProduct;
+    
+    private static ManagerBean manager;
+    
+    public static void setManager(ManagerBean manager) {
+        MenuController.manager = manager;
+    }
+    
+    
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -50,8 +59,9 @@ public class MenuController implements Initializable {
         miConsume.setOnAction(this::handleConsume);
         miProduct.setOnAction(this::handleProduct);
     }
-     private void handleAnimalGroup(ActionEvent event) {
+     private void handleAnimalGroup(ActionEvent event) {      
         try {
+            
             openWindow("AnimalGroup.fxml", "Animal Group");
         } catch (Exception e) {
             e.printStackTrace();
@@ -60,7 +70,27 @@ public class MenuController implements Initializable {
 
     private void handleAnimal(ActionEvent event) {
         try {
-            openWindow("Animal.fxml", "Animal");
+            Stage stage = (Stage) menuBar.getScene().getWindow();
+            stage.hide();
+            
+            AnimalController.setManager(manager);
+            
+            WindowManager.openWindowWithManager("/ui/view/Animal.fxml", "Animal", manager, "Animal");
+
+          
+//            FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource("/ui/view/Animal.fxml"));
+//            Parent root = fxmlLoader.load();
+//
+//         
+//            Stage s = new Stage();
+//            s.setTitle("Animal");
+//            s.getIcons().add(new Image("resources/logo.png"));
+//            s.setScene(new Scene(root));
+//            s.setResizable(false);
+//            s.show();
+//            
+            
+//            openWindow("Animal.fxml", "Animal");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -85,7 +115,6 @@ public class MenuController implements Initializable {
     private void openWindow(String fxmlFile, String windowTitle) throws Exception {
         
         Stage stage = (Stage) menuBar.getScene().getWindow();
-        System.out.println(stage.getTitle());
         stage.hide();
         
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/view/" + fxmlFile));
@@ -100,6 +129,5 @@ public class MenuController implements Initializable {
         st.setTitle(windowTitle);
         
         st.show();
-    }
-    
+    } 
 }

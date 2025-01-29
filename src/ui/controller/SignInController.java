@@ -8,6 +8,7 @@ package ui.controller;
 import businessLogic.manager.ManagerFactory;
 import DTO.ManagerBean;
 import ui.utilities.WindowManager;
+import ui.controller.MenuController;
 import exceptions.InactiveUserException;
 import exceptions.ServerException;
 import exceptions.UserCapException;
@@ -182,8 +183,13 @@ public class SignInController {
                     throw new InactiveUserException("User is not active");
                 }
                 // Successfully authenticated; proceed to home screen
-                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
+//                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
+//                MenuController.setManager(managers.get(0));
+//                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
+                  
+                MenuController.setManager(managers.get(0));
+                WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Home", managers.get(0), "AnimalGroup");
+                
             } catch (UserCredentialException ex) {
                 lblError.setText("Incorrect username or password.");
                 logger.log(Level.SEVERE, "Credential error", ex);
@@ -203,6 +209,7 @@ public class SignInController {
      * @param actionEvent action event triggered by the Sign Up hyperlink.
      */
     public void handleSignUpHyperlinkAction(ActionEvent actionEvent) {
+        //quitar el alert
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText("You are about to exit");
