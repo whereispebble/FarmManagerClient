@@ -102,6 +102,7 @@ public class WindowManager {
     public static void openWindowWithManager(String fxmlFilePath, String title, ManagerBean manager, String view) {
         try {
             // Load the FXML file
+            AnimalController.setConditionalAnimalGroup(null);
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
 
@@ -111,8 +112,9 @@ public class WindowManager {
                     groupController.setManager(manager);
                     break;
                 case "Animal":
-                    AnimalController animalController = fxmlLoader.getController();
-                    //animalController.setManager(manager);
+                    //no está funcionando 
+                    
+
                     break;
                 case "Consumes":
                     // ConsumesController consumesController = fxmlLoader.getController();

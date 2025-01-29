@@ -139,7 +139,6 @@ public class AnimalController implements Initializable {
         return manager;
     }
     
-   
     private static AnimalGroupBean conditionalAnimalGroup;
 
     public static AnimalGroupBean getConditionalAnimalGroup() {
@@ -150,8 +149,6 @@ public class AnimalController implements Initializable {
         AnimalController.conditionalAnimalGroup = conditionalAnimalGroup;
     }
     
-    
-
     /**
      * Initializes the controller class.
      */
@@ -178,6 +175,7 @@ public class AnimalController implements Initializable {
     //        dpSearchFrom.setVisible(false);
     //        dpSearchTo.setVisible(false);
 
+    tfSearch.setText("");
             // Cargar los elementos en el combo de búsqueda
             comboSearch.getItems().addAll("Subespecies", "Animal Group", "Birthdate");
     //
