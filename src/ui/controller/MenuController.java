@@ -58,7 +58,8 @@ public class MenuController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         miAnimalGroup.setOnAction(event -> openView("/ui/view/AnimalGroup.fxml", "Animal Group"));
-        miAnimal.setOnAction(event -> openView("/ui/view/Animal.fxml", "Animal"));
+        // Establecer el título de la ventana como "Animals"
+        miAnimal.setOnAction(event -> openView("/ui/view/Animal.fxml", "Animals"));
         miConsume.setOnAction(event -> openView("/ui/view/Consumes.fxml", "Consumes"));
         miProduct.setOnAction(event -> openView("/ui/view/Product.fxml", "Product"));
     }

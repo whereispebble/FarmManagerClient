@@ -44,7 +44,6 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -71,11 +70,7 @@ import net.sf.jasperreports.engine.JasperPrint;
  */
 public class AnimalController implements Initializable {
     
-    /**
-     * Logger to track the class activity and handle debugging information.
-     */
     private static final Logger logger = Logger.getLogger(AnimalController.class.getName());
-    
     
     private Stage stage;
     
@@ -124,9 +119,6 @@ public class AnimalController implements Initializable {
     private MenuItem miDelete;
     
     @FXML
-    private StackPane stack;
-    
-    @FXML
     private HBox hboxDatePicker;
     
     private static ManagerBean manager;
@@ -155,18 +147,8 @@ public class AnimalController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
      
-        
         tbAnimal.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    //        // Establecer el título de la ventana
-    //        stage.setTitle("Animals");
-    //
-    //        // Establecer dimensiones fijas
-    //        stage.setWidth(1024);
-    //        stage.setHeight(720);
-
-    //        // Deshabilitar la redimensión de la ventana
-    //        stage.setResizable(false);
-
+  
     //        // Limpiar los campos de fechas
     //        dpSearchFrom.setValue(null);
     //        dpSearchTo.setValue(null);
@@ -174,8 +156,8 @@ public class AnimalController implements Initializable {
     //        // Hacer los campos de fechas invisibles
     //        dpSearchFrom.setVisible(false);
     //        dpSearchTo.setVisible(false);
-
-    tfSearch.setText("");
+            
+            
             // Cargar los elementos en el combo de búsqueda
             comboSearch.getItems().addAll("Subespecies", "Animal Group", "Birthdate");
     //
@@ -185,6 +167,9 @@ public class AnimalController implements Initializable {
     //        // Escuchar cambios en el ComboBox
             comboSearch.valueProperty().addListener(this::handleComboBoxChange);
             
+            // Limpiar tfSearch
+            tfSearch.setText("");
+            // TODO: Enfocar el campo !!
             tfSearch.toFront();
             // Enfocar el campo de búsqueda
 //            tfSearch.requestFocus();  
@@ -192,7 +177,7 @@ public class AnimalController implements Initializable {
             showDateFields(false);
 
     //        
-    //         // Habilitar los botones
+             // Habilitar los botones
             btnSearch.setDisable(false);
     //        btnAdd.setDisable(false);
     //

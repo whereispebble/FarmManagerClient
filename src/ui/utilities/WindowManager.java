@@ -27,24 +27,13 @@ import ui.controller.AnimalGroupController;
  */
 public class WindowManager {
 
-    /**
-     * Logger to track the activity and handle debugging information.
-     */
     private static final Logger logger = Logger.getLogger(WindowManager.class.getName());
 
-    /**
-     * Opens a new window with the provided FXML file and title. This method does not pass any user context to the new window.
-     *
-     * @param fxmlFilePath the path to the FXML file to load for the new window.
-     * @param title the title to set for the new window.
-     */
     public static void openWindow(String fxmlFilePath, String title) {
         try {
-            // Load the FXML file
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
 
-            // Set up the stage (window)
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.getIcons().add(new Image("resources/logo.png"));
@@ -56,28 +45,15 @@ public class WindowManager {
         }
     }
 
-    /**
-     * Opens a new window with the provided FXML file, title, and user context. The manager and animalGroup objects are passed to the controller of the new window.
-     *
-     * @param fxmlFilePath the path to the FXML file to load for the new window.
-     * @param title the title to set for the new window.
-     * @param manager the user object to pass to the controller of the new window.
-     * @param animalGroup the animal group to pass to the controller of the new window.
-     */
     public static void openAnimalViewWithAnimalGroup(String fxmlFilePath, String title, ManagerBean manager, AnimalGroupBean animalGroup) {
         try {
-         
             if (AnimalController.getManager() == null){
                 AnimalController.setManager(manager); 
             }
             AnimalController.setConditionalAnimalGroup(animalGroup);
 
-                          
-            // Load the FXML file and its controller
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
-
-            // Set up the stage (window)
             Stage stage = new Stage();
             stage.getIcons().add(new Image("resources/logo.png"));
             stage.setTitle(title);
@@ -89,14 +65,6 @@ public class WindowManager {
         }
     }
 
-    /**
-     * Opens a new window with the provided FXML file, title, user and the view that wants to be opened.
-     *
-     * @param fxmlFilePath the path to the FXML file to load for the new window.
-     * @param title the title to set for the new window.
-     * @param manager the user object to pass to the controller of the new window.
-     * @param view the name of the view that wants to be opened.
-     */
     public static void openWindowWithManager(String fxmlFilePath, String title, ManagerBean manager) {
         try {
             //coleccion de controladores e iterarla seteando igual, ver cómo hacerlo sin instanceof y cambiar los ififif
@@ -114,16 +82,14 @@ public class WindowManager {
 //                ConsumesController.setManager(manager); 
 //            }
             
-            // Load the FXML file
             AnimalController.setConditionalAnimalGroup(null);
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
-
-            // Set up the stage (window)
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.getIcons().add(new Image("resources/logo.png"));
             stage.setScene(new Scene(root));
+            // Deshabilitar la redimensión de la ventana
             stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
