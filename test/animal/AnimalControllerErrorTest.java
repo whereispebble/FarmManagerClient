@@ -5,10 +5,12 @@
  */
 package animal;
 
+import org.testfx.framework.junit.ApplicationTest;
+
 /**
  *
  * @author Aitziber
  */
-public class AnimalControllerErrorTest {
+public class AnimalControllerErrorTest extends ApplicationTest{
     
 }
