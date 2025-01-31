@@ -293,7 +293,7 @@ public class AnimalController implements Initializable {
             switch (searchType) {
                 case "Animal Group":
                     if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
-                        animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
+                        animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, tfSearch.getText(), String.valueOf(manager.getId()));
                     }
                     else{
                          showAllAnimals();
@@ -301,7 +301,7 @@ public class AnimalController implements Initializable {
                     break;
                 case "Subespecies":
                     if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
-                        animalList = AnimalManagerFactory.get().getAnimalsBySubespecies(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
+                        animalList = AnimalManagerFactory.get().getAnimalsBySubespecies(new GenericType<List<AnimalBean>>() {}, tfSearch.getText(), String.valueOf(manager.getId()));
                     }
                     else{
                          showAllAnimals();
@@ -312,13 +312,13 @@ public class AnimalController implements Initializable {
                     String to = (!dpSearchTo.getValue().toString().isEmpty()) ? dpSearchTo.getValue().toString() : null;
     
                     if (from != null && to != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(new GenericType<List<AnimalBean>>() {}, from, to);
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(new GenericType<List<AnimalBean>>() {}, from, to, String.valueOf(manager.getId()));
                     }
                     else if(from != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateFrom(new GenericType<List<AnimalBean>>() {}, from);
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateFrom(new GenericType<List<AnimalBean>>() {}, from, String.valueOf(manager.getId()));
                     }
                     else if(to != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateTo(new GenericType<List<AnimalBean>>() {}, to);
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateTo(new GenericType<List<AnimalBean>>() {}, to, String.valueOf(manager.getId()));
                     }
                     else{
                         showAllAnimals();
