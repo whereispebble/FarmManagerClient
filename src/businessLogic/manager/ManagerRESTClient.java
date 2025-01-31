@@ -11,6 +11,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import ui.utilities.ConfigReader;
 
 /**
  * Jersey REST client generated for REST resource:ManagerFacadeREST [manager]<br>
@@ -28,7 +29,7 @@ public class ManagerRESTClient implements IManager {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/farmapp/webresources";
+    private static final String BASE_URI = ConfigReader.getBaseUri();
 
     public ManagerRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
