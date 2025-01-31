@@ -5,6 +5,7 @@
  */
 package ui.controller;
 
+import DTO.ManagerBean;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -40,6 +41,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import businessLogic.product.ProductManagerFactory;
 import businessLogic.provider.ProviderManagerFactory;
+import java.util.logging.Logger;
+import javafx.util.StringConverter;
 import ui.cellFactories.DatePickerTableCell;
 
 /**
@@ -50,7 +53,7 @@ import ui.cellFactories.DatePickerTableCell;
 public class ProductController implements Initializable {
 
     @FXML
-    private ComboBox comboSearch;
+    private ComboBox<String> comboSearch;
 
     @FXML
     private DatePicker dpSearch;
@@ -62,7 +65,7 @@ public class ProductController implements Initializable {
     private Button btnSearch;
 
     @FXML
-    private TableView tbProduct;
+    private TableView<ProductBean> tbProduct;
 
     @FXML
     private TableColumn<ProductBean, String> tcName;
@@ -71,7 +74,7 @@ public class ProductController implements Initializable {
     private TableColumn<ProductBean, Float> tcPrice;
 
     @FXML
-    private TableColumn tcMonthlyConsume;
+    private TableColumn<ProductBean, String> tcMonthlyConsume;
 
     @FXML
     private TableColumn<ProductBean, Integer> tcStock;
@@ -80,13 +83,19 @@ public class ProductController implements Initializable {
     private TableColumn<ProductBean, ProviderBean> tcProviders;
 
     @FXML
-    private TableColumn tcCreatedDate;
+    private TableColumn<ProductBean, Date> tcCreatedDate;
 
     @FXML
     private Label lblInfo;
 
     @FXML
     private Button btnAdd;
+
+    private ObservableList<ProductBean> productData;
+
+    private static ManagerBean manager;
+
+    private static final Logger logger = Logger.getLogger(ProductController.class.getName());
 
     /**
      * Initializes the controller class.
@@ -128,7 +137,7 @@ public class ProductController implements Initializable {
         tcPrice.setOnEditCommit(event -> handleEditCommit(event, "price"));
 
         // Mensual consume: Consume() | No editable
-        tcMonthlyConsume.setCellValueFactory(new PropertyValueFactory<>("monthlyConsume"));
+        tcMonthlyConsume.setCellValueFactory(new PropertyValueFactory<ProductBean, String>("monthlyConsume"));
         tcMonthlyConsume.setEditable(false);
 
         // Stock: Integer | Editable (como SpinnerTableCell)
@@ -140,27 +149,73 @@ public class ProductController implements Initializable {
 
         // Providers: List<Providers> | Editable (como ComboBox)
         try {
-            tcProviders.setCellValueFactory(new PropertyValueFactory<>("providerId"));
+            logger.info("Cargando proveedores...");
+//            tcProviders.setCellValueFactory(new PropertyValueFactory<>("provider"));
+//            tcProviders.setCellFactory(column -> new TableCell<ProductBean, ProviderBean>() {
+//                @Override
+//                protected void updateItem(ProviderBean provider, boolean empty) {
+//                    super.updateItem(provider, empty);
+//
+//                    if (empty || provider == null) {
+//                        setText(null); // Si no hay proveedor, muestra una celda vacía
+//                    } else {
+//                        setText(provider.getName()); // Muestra el nombre del proveedor
+//                    }
+//                }
+//            });
+// Obtén la lista de proveedores
             List<ProviderBean> providerList = ProviderManagerFactory.get().getAllProviders(new GenericType<List<ProviderBean>>() {
             });
-            if (providerList == null) {
-                providerList = new ArrayList<>();
-            }
             ObservableList<ProviderBean> providerData = FXCollections.observableArrayList(providerList);
-            tcProviders.setCellFactory(ComboBoxTableCell.forTableColumn(providerData));
-            tcProviders.setOnEditCommit(event -> handleEditCommit(event, "providers"));
+
+// Configura la columna de proveedores
+            tcProviders.setCellValueFactory(new PropertyValueFactory<>("provider"));
+
+// Configura la ComboBoxTableCell para la columna de proveedores
+            tcProviders.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<ProviderBean>() {
+                @Override
+                public String toString(ProviderBean provider) {
+                    return provider != null ? provider.getName() : ""; // Muestra el nombre del proveedor
+                }
+
+                @Override
+                public ProviderBean fromString(String string) {
+                    // Convierte el nombre del proveedor de nuevo a un objeto ProviderBean
+                    return providerData.stream()
+                            .filter(p -> p.getName().equals(string))
+                            .findFirst()
+                            .orElse(null);
+                }
+            }, providerData)); // Pasa la lista de proveedores como parámetro
+
+            tcProviders.setOnEditCommit(event -> {
+                TablePosition<ProductBean, ProviderBean> pos = event.getTablePosition();
+                ProviderBean newProvider = event.getNewValue(); // Nuevo proveedor seleccionado
+                int row = pos.getRow();
+                ProductBean product = event.getTableView().getItems().get(row);
+
+                // Actualiza el proveedor en el producto
+                product.setProvider(newProvider);
+
+                // Actualiza la tabla
+                event.getTableView().refresh();
+            });
+
+            tcProviders.setEditable(true);
         } catch (Exception e) {
+            logger.severe("Error al cargar proveedores: " + e.getMessage());
             e.printStackTrace();
         }
 
         // Created date: Date Picker | No editable
-        tcCreatedDate.setCellValueFactory(new PropertyValueFactory<>("createDate"));
-        tcCreatedDate.setCellFactory(new Callback<TableColumn<ProductBean, Date>, TableCell<ProductBean, Date>>() {
-            @Override
-            public TableCell<ProductBean, Date> call(TableColumn<ProductBean, Date> param) {
-                return new DatePickerTableCell<>(param);
-            }
-        });
+        tcCreatedDate.setCellValueFactory(new PropertyValueFactory<ProductBean, Date>("createDate"));
+//        tcCreatedDate.setCellFactory(new Callback<TableColumn<ProductBean, Date>, TableCell<ProductBean, Date>>() {
+//            @Override
+//            public TableCell<ProductBean, Date> call(TableColumn<ProductBean, Date> param) {
+//                return new DatePickerTableCell<>(param);
+//            }
+//        });
+        tcCreatedDate.setCellFactory(DatePickerTableCell::new);
         tcCreatedDate.setStyle("-fx-alignment: center;");
         tcCreatedDate.setEditable(false);
 
@@ -209,9 +264,9 @@ public class ProductController implements Initializable {
                     break;
                 case "providers":
                     if (newValue instanceof ProviderBean) {
-                        productCopy.setProviderId((ProviderBean) newValue);
+                        productCopy.setProvider((ProviderBean) newValue);
                         ProductManagerFactory.get().updateProduct(productCopy);
-                        product.setProviderId((ProviderBean) newValue);
+                        product.setProvider((ProviderBean) newValue);
                     }
                     break;
                 default:
@@ -296,15 +351,34 @@ public class ProductController implements Initializable {
 
     private void showAllProducts() {
         try {
-            List<ProductBean> allProducts = ProductManagerFactory.get()
-                    .getAllProducts(new GenericType<List<ProductBean>>() {
-                    });
-            ObservableList<ProductBean> productData = FXCollections.observableArrayList(allProducts);
-            tbProduct.setItems(productData);
-        } catch (WebApplicationException e) {
+            logger.info("Solicitando todos los productos...");
+            List<ProductBean> productList = ProductManagerFactory.get().getAllProducts(new GenericType<List<ProductBean>>() {
+            });
+
+            if (productList != null && !productList.isEmpty()) {
+                logger.info("Productos cargados: " + productList.size());
+                productData = FXCollections.observableArrayList(productList);
+                tbProduct.setItems(productData);
+                btnAdd.setDisable(false);
+            } else {
+                logger.severe("ERROR. No tiene productos asociados");
+                Alert alert = new Alert(Alert.AlertType.INFORMATION, "No tiene productos asociados", ButtonType.OK);
+                alert.showAndWait();
+            }
+        } catch (Exception e) {
+            logger.severe("Error inesperado al cargar los productos: " + e.getMessage());
             Alert alert = new Alert(Alert.AlertType.ERROR,
-                    "Error al cargar los productos: " + e.getMessage(), ButtonType.OK);
+                    "Error inesperado al cargar los productos: " + e.getMessage(), ButtonType.OK);
             alert.showAndWait();
         }
     }
+
+    public static ManagerBean getManager() {
+        return manager;
+    }
+
+    public static void setManager(ManagerBean manager) {
+        ProductController.manager = manager;
+    }
+
 }

@@ -5,12 +5,13 @@
  */
 package businessLogic.product;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import DTO.ProductBean;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Jersey REST client generated for REST resource:ProductEntityFacadeREST [productentity]<br>
@@ -62,14 +63,20 @@ public class ProductRESTClient implements IProductManager {
     public <T> T getProductByName(GenericType<T> responseType, String name) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("name/{0}", new Object[]{name}));
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);    
+        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
     @Override
     public <T> T getAllProducts(GenericType<T> responseType) throws WebApplicationException {
-        WebTarget resource = webTarget;
-        resource = resource.path("all/{0}");
-        return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
+        WebTarget resource = webTarget.path("all");
+        Response response = resource.request(MediaType.APPLICATION_XML).get();
+
+        if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+            return response.readEntity(responseType);
+        } else {
+            String errorMessage = response.readEntity(String.class);
+            throw new WebApplicationException("Error en la solicitud: " + errorMessage, response.getStatus());
+        }
     }
 
     public void close() {

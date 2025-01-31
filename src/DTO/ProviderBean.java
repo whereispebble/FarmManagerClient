@@ -16,8 +16,7 @@ import DTO.UserBean;
  *
  * @author InigoFreire
  */
-
-@XmlRootElement
+@XmlRootElement(name = "providerEntity")
 public class ProviderBean extends UserBean implements Serializable {
 
     @OneToMany(mappedBy = "provider", fetch = FetchType.EAGER)
@@ -31,12 +30,14 @@ public class ProviderBean extends UserBean implements Serializable {
         super.setId(id);
     }
 
+    @Override
     public String getName() {
-        return name;
+        return super.getName(); // Obtiene el nombre del proveedor
     }
 
+    @Override
     public void setName(String name) {
-        this.name = name;
+        super.setName(name); // Establece el nombre del proveedor
     }
 
     public List<ProductBean> getProducts() {

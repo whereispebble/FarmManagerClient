@@ -7,13 +7,14 @@ package DTO;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author InigoFreire
  */
-@XmlRootElement
+@XmlRootElement(name = "productEntity")
 public class ProductBean implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
@@ -23,27 +24,27 @@ public class ProductBean implements Serializable, Cloneable {
     private Float monthlyConsume;
     private Float price;
     private Integer stock;
-    private ProviderBean providerId;
+    private ProviderBean provider;
     private Date createDate;
 
     public ProductBean() {
     }
-    
+
     public ProductBean(Long id, String name, Float monthlyConsume, Float price, Integer stock, ProviderBean providerId, Date createDate) {
         this.id = id;
         this.name = name;
         this.monthlyConsume = monthlyConsume;
         this.price = price;
         this.stock = stock;
-        this.providerId = providerId;
+        this.provider = providerId;
         this.createDate = createDate;
     }
-    
-    public ProductBean clone() throws CloneNotSupportedException{
-        
+
+    public ProductBean clone() throws CloneNotSupportedException {
+
         return (ProductBean) super.clone();
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -83,15 +84,17 @@ public class ProductBean implements Serializable, Cloneable {
     public void setStock(Integer stock) {
         this.stock = stock;
     }
-
-    public ProviderBean getProviderId() {
-        return providerId;
+    
+    @XmlElement(name = "provider")
+    public ProviderBean getProvider() {
+        return provider;
     }
 
-    public void setProviderId(ProviderBean providerId) {
-        this.providerId = providerId;
+    public void setProvider(ProviderBean provider) {
+        this.provider = provider;
     }
     
+    @XmlElement(name = "createdDate")
     public Date getCreateDate() {
         return createDate;
     }
