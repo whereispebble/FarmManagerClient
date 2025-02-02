@@ -30,6 +30,10 @@ public class ProductBean implements Serializable, Cloneable {
     public ProductBean() {
     }
 
+    public ProductBean(String name) {
+        this.name = name;
+    }
+
     public ProductBean(Long id, String name, Float monthlyConsume, Float price, Integer stock, ProviderBean providerId, Date createDate) {
         this.id = id;
         this.name = name;

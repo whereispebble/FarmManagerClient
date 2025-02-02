@@ -5,6 +5,7 @@
  */
 package ui.controller;
 
+import DTO.ProductBean;
 import DTO.ManagerBean;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,7 +18,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TablePosition;
@@ -28,22 +28,27 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import DTO.ProductBean;
 import DTO.ProviderBean;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.util.Callback;
-import javafx.util.converter.FloatStringConverter;
 import javafx.util.converter.IntegerStringConverter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import businessLogic.product.ProductManagerFactory;
 import businessLogic.provider.ProviderManagerFactory;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import javafx.scene.control.TableCell;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import ui.cellFactories.DatePickerTableCell;
+import ui.cellFactories.SpinnerTableCellFactory;
 
 /**
  * FXML Controller class
@@ -96,6 +101,7 @@ public class ProductController implements Initializable {
     private static ManagerBean manager;
 
     private static final Logger logger = Logger.getLogger(ProductController.class.getName());
+    private static final String PROHIBITED_CHARACTERS = "'\"\\;*%()<>|&,-/!?=";
 
     /**
      * Initializes the controller class.
@@ -117,6 +123,8 @@ public class ProductController implements Initializable {
         btnAdd.setDisable(false);
         // Ocultar el Label lblInfo.
         lblInfo.setVisible(false);
+        // Deshabilitar el DatePicker dpSearch
+        dpSearch.setDisable(true);
 
         // Cargar la tabla:
         // Establecer como editables las columnas Product, Price, Stock y Providers.
@@ -132,8 +140,7 @@ public class ProductController implements Initializable {
         // Price: Float | Editable (como SpinnerTableCell)
         tcPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
         // TODO cambiar a factoria de celda de Spinner
-        tcPrice.setCellFactory(
-                TextFieldTableCell.<ProductBean, Float>forTableColumn(new FloatStringConverter()));
+        tcPrice.setCellFactory(param -> new SpinnerTableCellFactory(0.0f, 1000.0f, 0.5f)); // Para valores Float
         tcPrice.setOnEditCommit(event -> handleEditCommit(event, "price"));
 
         // Mensual consume: Consume() | No editable
@@ -148,74 +155,50 @@ public class ProductController implements Initializable {
         tcStock.setOnEditCommit(event -> handleEditCommit(event, "stock"));
 
         // Providers: List<Providers> | Editable (como ComboBox)
-        try {
-            logger.info("Cargando proveedores...");
-//            tcProviders.setCellValueFactory(new PropertyValueFactory<>("provider"));
-//            tcProviders.setCellFactory(column -> new TableCell<ProductBean, ProviderBean>() {
-//                @Override
-//                protected void updateItem(ProviderBean provider, boolean empty) {
-//                    super.updateItem(provider, empty);
-//
-//                    if (empty || provider == null) {
-//                        setText(null); // Si no hay proveedor, muestra una celda vacía
-//                    } else {
-//                        setText(provider.getName()); // Muestra el nombre del proveedor
-//                    }
-//                }
-//            });
-// Obtén la lista de proveedores
-            List<ProviderBean> providerList = ProviderManagerFactory.get().getAllProviders(new GenericType<List<ProviderBean>>() {
-            });
-            ObservableList<ProviderBean> providerData = FXCollections.observableArrayList(providerList);
+        List<ProviderBean> providerList = ProviderManagerFactory.get()
+                .getAllProviders(new GenericType<List<ProviderBean>>() {
+                });
+        ObservableList<ProviderBean> providerData = FXCollections.observableArrayList(providerList);
 
-// Configura la columna de proveedores
-            tcProviders.setCellValueFactory(new PropertyValueFactory<>("provider"));
+        tcProviders.setCellValueFactory(new PropertyValueFactory<>("provider"));
 
-// Configura la ComboBoxTableCell para la columna de proveedores
-            tcProviders.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<ProviderBean>() {
-                @Override
-                public String toString(ProviderBean provider) {
-                    return provider != null ? provider.getName() : ""; // Muestra el nombre del proveedor
-                }
+        tcProviders.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<ProviderBean>() {
+            @Override
+            public String toString(ProviderBean provider) {
+                return provider != null ? provider.getName() : ""; // Muestra el nombre del proveedor
+            }
 
-                @Override
-                public ProviderBean fromString(String string) {
-                    // Convierte el nombre del proveedor de nuevo a un objeto ProviderBean
-                    return providerData.stream()
-                            .filter(p -> p.getName().equals(string))
-                            .findFirst()
-                            .orElse(null);
-                }
-            }, providerData)); // Pasa la lista de proveedores como parámetro
+            @Override
+            public ProviderBean fromString(String string) {
+                // Convierte el nombre del proveedor de nuevo a un objeto ProviderBean
+                return providerData.stream()
+                        .filter(p -> p.getName().equals(string))
+                        .findFirst()
+                        .orElse(null);
+            }
+        }, providerData)); // Pasa la lista de proveedores como parámetro
+        tcProviders.setOnEditCommit(event -> {
+            TablePosition<ProductBean, ProviderBean> pos = event.getTablePosition();
+            ProviderBean newProvider = event.getNewValue(); // Nuevo proveedor seleccionado
+            int row = pos.getRow();
+            ProductBean product = event.getTableView().getItems().get(row);
 
-            tcProviders.setOnEditCommit(event -> {
-                TablePosition<ProductBean, ProviderBean> pos = event.getTablePosition();
-                ProviderBean newProvider = event.getNewValue(); // Nuevo proveedor seleccionado
-                int row = pos.getRow();
-                ProductBean product = event.getTableView().getItems().get(row);
+            // Actualiza el proveedor en el producto
+            product.setProvider(newProvider);
 
-                // Actualiza el proveedor en el producto
-                product.setProvider(newProvider);
-
-                // Actualiza la tabla
-                event.getTableView().refresh();
-            });
-
-            tcProviders.setEditable(true);
-        } catch (Exception e) {
-            logger.severe("Error al cargar proveedores: " + e.getMessage());
-            e.printStackTrace();
-        }
+            // Actualiza la tabla
+            event.getTableView().refresh();
+        });
+        tcProviders.setEditable(true);
 
         // Created date: Date Picker | No editable
         tcCreatedDate.setCellValueFactory(new PropertyValueFactory<ProductBean, Date>("createDate"));
-//        tcCreatedDate.setCellFactory(new Callback<TableColumn<ProductBean, Date>, TableCell<ProductBean, Date>>() {
-//            @Override
-//            public TableCell<ProductBean, Date> call(TableColumn<ProductBean, Date> param) {
-//                return new DatePickerTableCell<>(param);
-//            }
-//        });
-        tcCreatedDate.setCellFactory(DatePickerTableCell::new);
+        tcCreatedDate.setCellFactory(new Callback<TableColumn<ProductBean, Date>, TableCell<ProductBean, Date>>() {
+            @Override
+            public TableCell<ProductBean, Date> call(TableColumn<ProductBean, Date> param) {
+                return new DatePickerTableCell<>(param);
+            }
+        });
         tcCreatedDate.setStyle("-fx-alignment: center;");
         tcCreatedDate.setEditable(false);
 
@@ -224,6 +207,10 @@ public class ProductController implements Initializable {
         // En caso de producirse alguna excepción, se mostrará un mensaje al usuario con
         // el texto de la misma en el Label lblInfo.
         showAllProducts();
+
+        // Añadir listener para el Botón btnSearch y btnAdd
+        btnSearch.setOnAction(this::onSearchButtonClicked);
+        btnAdd.setOnAction(this::onAddButtonClicked);
     }
 
     private <T> void handleEditCommit(CellEditEvent<ProductBean, T> event, String fieldName) {
@@ -239,13 +226,22 @@ public class ProductController implements Initializable {
             ProductBean product = event.getTableView().getItems().get(row);
             ProductBean productCopy = product.clone();
 
-            // Actualiza el objeto original y su copia, y luego actualiza la capa lógica con la copia modificada
             switch (fieldName) {
                 case "name":
                     if (newValue instanceof String) {
-                        productCopy.setName((String) newValue);
+                        String newName = (String) newValue;
+                        if (newName.matches(".*[" + PROHIBITED_CHARACTERS + "].*")) {
+                            throw new IllegalArgumentException("El nombre contiene caracteres no permitidos.");
+                        }
+                        List<ProductBean> existingProducts = ProductManagerFactory.get().getAllProducts(new GenericType<List<ProductBean>>() {
+                        });
+                        boolean nameExists = existingProducts.stream().anyMatch(p -> p.getName().equalsIgnoreCase(newName));
+                        if (nameExists) {
+                            throw new IllegalArgumentException("El nombre del producto ya existe. Introduzca un nombre único.");
+                        }
+                        productCopy.setName(newName);
                         ProductManagerFactory.get().updateProduct(productCopy);
-                        product.setName((String) newValue);
+                        product.setName(newName);
                     }
                     break;
                 case "price":
@@ -273,29 +269,33 @@ public class ProductController implements Initializable {
                     throw new IllegalArgumentException("Campo desconocido: " + fieldName);
             }
 
+            lblInfo.setText("Product's information has been successfully updated.");
             event.getTableView().refresh();
-
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
             alert.showAndWait();
+            lblInfo.setText(e.getMessage());
             event.consume();
         }
     }
 
     private void handleComboBoxChange(ObservableValue<? extends String> observable, Object oldValue, Object newValue) {
-        if ("createDate".equals(newValue)) {
+        if ("Created Date".equalsIgnoreCase(newValue.toString())) {
             // Ocultar el campo de búsqueda de texto
             tfSearch.setVisible(false);
+            tfSearch.setDisable(true);
             tfSearch.clear();
-
-            // Mostrar los campos de fecha
-            //dpSearch.setVisible(true);
-        } else if ("Product".equals(newValue)) {
+            // Mostrar el campo de fecha y habilitarlo
+            dpSearch.setVisible(true);
+            dpSearch.setDisable(false);
+        } else if ("Product".equals(newValue.toString())) {
             // Ocultar los campos de fecha
-            //dpSearch.setVisible(false);
+            dpSearch.setVisible(false);
+            dpSearch.setDisable(true);
             // Mostrar el campo de búsqueda de texto
             tfSearch.setVisible(true);
             tfSearch.clear();
+            tfSearch.setDisable(false);
         }
     }
 
@@ -306,35 +306,32 @@ public class ProductController implements Initializable {
 
             switch (searchType) {
                 case "Product":
-                    // Comprobar si el campo de texto no está vacío antes de buscar productos por nombre
                     String searchText = tfSearch.getText();
                     if (searchText != null && !searchText.trim().isEmpty()) {
-                        productList = ProductManagerFactory.get().getProductByName(new GenericType<List<ProductBean>>() {
-                        }, searchText.trim());
+                        productList = ProductManagerFactory.get()
+                                .getProductByName(new GenericType<List<ProductBean>>() {
+                                }, searchText.trim());
                     } else {
-                        // Mostrar todos los productos si el campo está vacío
                         showAllProducts();
                     }
                     break;
 
                 case "Created date":
-                    // Obtener la fecha del DatePicker y comprobar si no está vacía
                     if (dpSearch.getValue() != null) {
                         String date = dpSearch.getValue().toString();
                         if (!date.isEmpty()) {
-                            productList = ProductManagerFactory.get().getProductsByCreatedDate(new GenericType<List<ProductBean>>() {
-                            }, date);
+                            productList = ProductManagerFactory.get()
+                                    .getProductsByCreatedDate(new GenericType<List<ProductBean>>() {
+                                    }, date);
                         } else {
                             showAllProducts();
                         }
                     } else {
-                        // Mostrar todos los productos si no se selecciona una fecha
                         showAllProducts();
                     }
                     break;
 
                 default:
-                    // Caso por defecto para manejar valores inesperados en searchType
                     System.out.println("Opción de búsqueda no válida: " + searchType);
                     showAllProducts();
                     break;
@@ -345,15 +342,95 @@ public class ProductController implements Initializable {
                 tbProduct.setItems(productData);
             }
         } catch (WebApplicationException e) {
-            System.err.println("Error fetching animals: " + e.getMessage());
+            System.err.println("Error fetching product: " + e.getMessage());
+        }
+    }
+
+    private void onAddButtonClicked(ActionEvent event) {
+        try {
+            ProductBean newProduct = new ProductBean();
+            newProduct.setName("New Product");
+            newProduct.setPrice(0f);
+            newProduct.setStock(0);
+            newProduct.setMonthlyConsume(0f);
+
+            // Validaciones antes de enviar la solicitud
+            if (newProduct.getName() == null || newProduct.getName().trim().isEmpty()) {
+                throw new IllegalArgumentException("El nombre del producto no puede estar vacío.");
+            }
+            if (newProduct.getPrice() < 0) {
+                throw new IllegalArgumentException("El precio no puede ser negativo.");
+            }
+            if (newProduct.getStock() < 0) {
+                throw new IllegalArgumentException("El stock no puede ser negativo.");
+            }
+
+            // Verificar si el producto ya existe
+            List<ProductBean> existingProducts = ProductManagerFactory.get().getAllProducts(new GenericType<List<ProductBean>>() {
+            });
+            boolean nameExists = existingProducts.stream().anyMatch(p -> p.getName().equalsIgnoreCase(newProduct.getName()));
+            if (nameExists) {
+                throw new IllegalArgumentException("El producto ya existe en la base de datos.");
+            }
+
+            // Enviar solicitud de creación con manejo de errores detallado
+            try {
+                ProductManagerFactory.get().createProduct(newProduct);
+                lblInfo.setText("Nuevo producto añadido correctamente.");
+                btnSearch.fire();
+            } catch (WebApplicationException e) {
+                String errorResponse = e.getResponse().readEntity(String.class);
+                throw new IllegalArgumentException("Error en la creación del producto: " + errorResponse);
+            }
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+            alert.showAndWait();
+            lblInfo.setText(e.getMessage());
+        }
+    }
+
+    private void onDeleteMenuItemClicked(ActionEvent event) {
+        ObservableList<ProductBean> selectedProducts = tbProduct.getSelectionModel().getSelectedItems();
+        List<ProductBean> successfullyDeleted = new ArrayList<>();
+
+        Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Are you sure you want to delete the selected product(s)?", ButtonType.YES, ButtonType.NO);
+        Optional<ButtonType> result = confirmationAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.YES) {
+            try {
+                for (ProductBean selectedProduct : selectedProducts) {
+                    try {
+                        System.out.println(selectedProduct.toString());
+                        ProductManagerFactory.get().deleteProductById(String.valueOf(selectedProduct.getId()));
+                        successfullyDeleted.add(selectedProduct);
+
+                    } catch (WebApplicationException e) {
+                        System.err
+                                .println("Error deleting product: " + selectedProduct.getName() + " - " + e.getMessage());
+                    }
+                }
+
+                if (!successfullyDeleted.isEmpty()) {
+                    tbProduct.getItems().removeAll(successfullyDeleted);
+                    tbProduct.getSelectionModel().clearSelection();
+                    tbProduct.refresh();
+                }
+
+            } catch (Exception e) {
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR,
+                        "Unexpected error during deletion: " + e.getMessage(),
+                        ButtonType.OK);
+                errorAlert.showAndWait();
+            }
         }
     }
 
     private void showAllProducts() {
         try {
             logger.info("Solicitando todos los productos...");
-            List<ProductBean> productList = ProductManagerFactory.get().getAllProducts(new GenericType<List<ProductBean>>() {
-            });
+            List<ProductBean> productList = ProductManagerFactory.get()
+                    .getAllProducts(new GenericType<List<ProductBean>>() {
+                    });
 
             if (productList != null && !productList.isEmpty()) {
                 logger.info("Productos cargados: " + productList.size());
@@ -370,6 +447,19 @@ public class ProductController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.ERROR,
                     "Error inesperado al cargar los productos: " + e.getMessage(), ButtonType.OK);
             alert.showAndWait();
+        }
+    }
+
+    private void focusNewProduct() {
+        final int NEW_PRODUCT_ROW;
+        for (int row = 0; row < tbProduct.getItems().size(); row++) {
+            ProductBean product = tbProduct.getItems().get(row);
+            if (product.getName().equals("New Product")) {
+                NEW_PRODUCT_ROW = row;
+                Platform.runLater(() -> tbProduct.edit(NEW_PRODUCT_ROW, tcName));
+                tbProduct.refresh();
+                break;
+            }
         }
     }
 
