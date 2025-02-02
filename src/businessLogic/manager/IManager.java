@@ -11,6 +11,7 @@ import javax.ws.rs.core.GenericType;
 /**
  * 
  * @author Ander
+ * @author Aitziber
  */
 public interface IManager {
 
