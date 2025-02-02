@@ -189,6 +189,7 @@ public class SignInController {
 //                MenuController.setManager(managers.get(0));
 //                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
                 
+                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
                 MenuController.setManager(managers.get(0));
                 AnimalGroupController.setManager(managers.get(0));
                 WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", managers.get(0));
