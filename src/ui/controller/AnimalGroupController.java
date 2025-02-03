@@ -72,9 +72,6 @@ public class AnimalGroupController implements Initializable {
     private Button btnCreate;
 
     @FXML
-    private Button btnLogOut;
-
-    @FXML
     private Button btnSearch;
 
     @FXML
@@ -151,7 +148,6 @@ public class AnimalGroupController implements Initializable {
             // BUTTONS
             btnSearch.setOnAction(this::onSearchButtonClicked);
             btnCreate.setOnAction(this::onCreateButtonClicked);
-            btnLogOut.setOnAction(this::onLogOutButtonClicked);
 
             // MENUITEMS
             miDelete.setDisable(true);
@@ -443,44 +439,6 @@ public class AnimalGroupController implements Initializable {
 //            showErrorAlert("Error al imprimir:\n"+
 //                            ex.getMessage());
 
-        }
-    }
-
-    private void onLogOutButtonClicked(ActionEvent event) {
-        logger.log(Level.INFO, "Log out action initiated");
-
-        if (showLogoutConfirmation()) {
-            try {
-                Stage home = (Stage) btnLogOut.getScene().getWindow();
-                home.close();
-                WindowManager.openWindow("/ui/view/SignIn.fxml", "SignIn");
-
-                logger.log(Level.INFO, "Successfully navigated to Sign In screen.");
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Unexpected error during logout process.", e);
-            }
-        } else {
-            logger.log(Level.INFO, "Log out cancelled by user.");
-        }
-    }
-
-    /**
-     * Displays a confirmation dialog for the logout action.
-     *
-     * @return {@code true} if the user confirms the logout, {@code false} otherwise
-     */
-    private boolean showLogoutConfirmation() {
-        try {
-            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-            alert.setTitle("Log Out");
-            alert.setHeaderText("This window will be closed.");
-            alert.setContentText("Are you sure you want to log out?");
-
-            Optional<ButtonType> result = alert.showAndWait();
-            return result.isPresent() && result.get() == ButtonType.OK;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error showing logout confirmation", e);
-            return false;
         }
     }
 

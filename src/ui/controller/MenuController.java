@@ -11,6 +11,7 @@ import businessLogic.manager.ManagerFactory;
 import encryption.PasswordService;
 import encryption.UserAuthService;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,6 +22,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -111,6 +114,32 @@ public class MenuController implements Initializable {
     }
     
     private void handleLogOutAction(ActionEvent event){
-        
+        logger.log(Level.INFO, "Log out action initiated");
+        if (showLogoutConfirmation()) {
+            try {
+                MenuController.manager=null;
+                openView("/ui/view/SignIn.fxml", "SignIn");
+                logger.log(Level.INFO, "Successfully navigated to Sign In screen.");
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "Unexpected error during logout process.", e);
+            }
+        } else {
+            logger.log(Level.INFO, "Log out cancelled by user.");
+        }
+    }
+
+    private boolean showLogoutConfirmation() {
+        try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Log Out");
+            alert.setHeaderText("This window will be closed.");
+            alert.setContentText("Are you sure you want to log out?");
+
+            Optional<ButtonType> result = alert.showAndWait();
+            return result.isPresent() && result.get() == ButtonType.OK;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error showing logout confirmation", e);
+            return false;
+        }
     }
 }
