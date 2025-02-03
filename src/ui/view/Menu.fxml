@@ -26,11 +26,12 @@
                     <MenuItem mnemonicParsing="false" text="Print" />
                 </items>
             </Menu>
+         <Menu fx:id="mHelp" mnemonicParsing="false" text="Help" />
          <Menu mnemonicParsing="false" text="Profile">
             <items>
-               <MenuItem mnemonicParsing="false" text="Reset password" />
+               <MenuItem fx:id="miReset" mnemonicParsing="false" text="Reset password" />
                <SeparatorMenuItem mnemonicParsing="false" />
-               <MenuItem mnemonicParsing="false" text="Log out" />
+               <MenuItem fx:id="miLogOut" mnemonicParsing="false" text="Log out" />
             </items>
          </Menu>
         </menus>
