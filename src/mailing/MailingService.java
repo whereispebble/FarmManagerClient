@@ -15,12 +15,16 @@ import javax.mail.internet.MimeMessage;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ui.controller.MenuController;
 
 /**
  *
  * @author Aitziber
  */
 public class MailingService {
+    
+    private static final Logger logger = Logger.getLogger(MailingService.class.getName());
+     
     private final String HOST = "localhost";
     private final String PORT = "25";
     private final String SENDER_EMAIL = "farmapp@support.com";
@@ -41,6 +45,7 @@ public class MailingService {
     public boolean sendEmail(String recipient) {
         Transport transport = null;
         try {
+            logger.info("starting mailing service");
             MimeMessage msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(SENDER_EMAIL));
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
@@ -51,7 +56,7 @@ public class MailingService {
             transport = session.getTransport("smtp");
             transport.connect(HOST, SENDER_EMAIL, SENDER_PASSWORD);
             transport.sendMessage(msg, msg.getAllRecipients());
-
+            logger.info("mail sent to "+ recipient + " address");
             return true;
         } catch (MessagingException e) {
             Logger.getLogger(MailingService.class.getName()).log(Level.SEVERE, null, e);

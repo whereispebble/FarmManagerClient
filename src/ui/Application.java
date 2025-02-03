@@ -5,21 +5,11 @@
  */
 package ui;
 
-import DTO.AnimalBean;
-import DTO.SpeciesBean;
-import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javax.ws.rs.core.GenericType;
-import ui.controller.AnimalController;
-import businessLogic.animal.AnimalManagerFactory;
-import businessLogic.species.SpeciesManagerFactory;
-import mailing.MailingService;
 
 /**
  * The main application class responsible for initializing and displaying the Sign In window.
@@ -64,8 +54,6 @@ public class Application extends javafx.application.Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-//        launch(args);
-        MailingService ms =new MailingService();
-        boolean sent = ms.sendEmail("manager@mail.com");
+        launch(args);
     }
 }

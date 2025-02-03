@@ -21,13 +21,13 @@
                     <MenuItem fx:id="miProduct" mnemonicParsing="false" text="Products" />
                 </items>
             </Menu>
-            <Menu mnemonicParsing="false" text="Report">
+            <Menu fx:id="menuReport" mnemonicParsing="false" text="Report">
                 <items>
-                    <MenuItem mnemonicParsing="false" text="Print" />
+                    <MenuItem fx:id="miPrint" mnemonicParsing="false" text="Print" />
                 </items>
             </Menu>
-         <Menu fx:id="mHelp" mnemonicParsing="false" text="Help" />
-         <Menu mnemonicParsing="false" text="Profile">
+         <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help" />
+         <Menu fx:id="menuProfile" mnemonicParsing="false" text="Profile">
             <items>
                <MenuItem fx:id="miReset" mnemonicParsing="false" text="Reset password" />
                <SeparatorMenuItem mnemonicParsing="false" />
