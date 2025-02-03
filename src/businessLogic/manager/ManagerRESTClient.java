@@ -42,7 +42,7 @@ public class ManagerRESTClient implements IManager {
         resource = resource.path(java.text.MessageFormat.format("search/{0}/{1}", new Object[]{email, password}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
+    
     @Override
     public void updateManager(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
@@ -60,7 +60,7 @@ public class ManagerRESTClient implements IManager {
     }
     
     @Override
-    public <T> T getManagerByEmail(GenericType<T> responseType, String email) throws WebApplicationException {
+    public <T>T getManagerByEmail(GenericType<T> responseType, String email) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("search/{0}", new Object[]{email}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

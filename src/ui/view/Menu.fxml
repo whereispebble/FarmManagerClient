@@ -13,7 +13,7 @@
     </stylesheets>      
     <MenuBar fx:id="menuBar" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="36.0" prefWidth="1024.0">
         <menus>
-            <Menu mnemonicParsing="false" text="Navigate to">
+            <Menu fx:id="menuNavigateTo" mnemonicParsing="false" text="Navigate to">
                 <items>
                     <MenuItem fx:id="miAnimal" mnemonicParsing="false" text="Animals" />
                     <MenuItem fx:id="miAnimalGroup" mnemonicParsing="false" text="Animal Groups" />

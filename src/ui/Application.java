@@ -52,15 +52,6 @@ public class Application extends javafx.application.Application {
         stage.setResizable(false);
         stage.setTitle("Sign in");
         stage.show();
-
-//      Parent root = FXMLLoader.load(getClass().getResource("view/Animal.fxml"));
-//        
-//        Scene scene = new Scene(root);
-//        scene.getStylesheets().add(getClass().getResource("view/styles.css").toExternalForm());
-//        stage.setScene(scene);
-//        stage.setResizable(false);
-//        stage.setTitle("Animals");
-//        stage.show();
         
     }
 
@@ -73,8 +64,5 @@ public class Application extends javafx.application.Application {
      */
     public static void main(String[] args) {
         launch(args);
-        
-        
     }
-    
 }

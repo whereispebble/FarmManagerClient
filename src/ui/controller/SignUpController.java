@@ -8,6 +8,7 @@ package ui.controller;
 import businessLogic.manager.ManagerFactory;
 import exceptions.ExistingUserException;
 import DTO.ManagerBean;
+import encryption.UserAuthService;
 import ui.utilities.WindowManager;
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +45,6 @@ import javax.ws.rs.core.GenericType;
  * @see javafx.event.ActionEvent
  * @see java.util.logging.Logger
  *
- * @author Pablo
  * @author Ander
  * @author Aitziber
  */
@@ -300,16 +300,22 @@ public class SignUpController {
      */
     private void handleSignUpButtonAction(ActionEvent actionEvent) {
         tfPassword.setText(pfPassword.getText());
-        ManagerBean manager = new ManagerBean(cbActive.isSelected(), tfPassword.getText().trim(), tfName.getText().trim(), tfEmail.getText().trim(), "000000000", 
+        
+        String hashedPassword = UserAuthService.hashPassword(tfPassword.getText().trim());
+         
+        ManagerBean manager = new ManagerBean(cbActive.isSelected(), hashedPassword, tfName.getText().trim(), tfEmail.getText().trim(), "000000000", 
                 tfCity.getText().trim(), tfZip.getText().trim(), tfAddress.getText().trim());
         logger.log(Level.INFO, "Manager signed up successfully");
-        logger.log(Level.INFO, "Creating manager: {0}", manager.toString());
+        
         try {
-            List<ManagerBean> existingManagers = ManagerFactory.get().getManagerByEmail(new GenericType<List<ManagerBean>>() {
+            /////
+            ManagerBean existingManager = ManagerFactory.get().getManagerByEmail(new GenericType<ManagerBean>() {
             }, tfEmail.getText().trim());
-            if (!existingManagers.isEmpty()) {
+            if (existingManager != null ) {
                 throw new ExistingUserException("User already exists, please try with another email");
             }
+            
+            logger.log(Level.INFO, "Creating manager: {0}", manager.toString());
             ManagerFactory.get().createManager(manager);
             logger.log(Level.INFO, "Manager signed up successfully");
 
@@ -323,7 +329,7 @@ public class SignUpController {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("ERROR");
             alert.setHeaderText("Server error");
-            alert.setContentText("There was an error in the server, please contact the responsible technician");
+            alert.setContentText("There was an error in the server, please contact the responsible technician"+ ex.getMessage());
             alert.showAndWait();
             logger.log(Level.SEVERE, "Server error", ex);
         }
