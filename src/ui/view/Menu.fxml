@@ -7,7 +7,7 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane id="AnchorPane" prefHeight="35.0" prefWidth="1024.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/9.0.1" fx:controller="ui.controller.MenuController">
+<AnchorPane id="AnchorPane" prefHeight="35.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ui.controller.MenuController">
     <stylesheets>
         <URL value="@styles.css" />
     </stylesheets>      
@@ -19,8 +19,6 @@
                     <MenuItem fx:id="miAnimalGroup" mnemonicParsing="false" text="Animal Groups" />
                     <MenuItem fx:id="miConsume" mnemonicParsing="false" text="Consumes" />
                     <MenuItem fx:id="miProduct" mnemonicParsing="false" text="Products" />
-                    <SeparatorMenuItem mnemonicParsing="false" />
-                    <MenuItem fx:id="miLogOut" mnemonicParsing="false" text="Log out" />
                 </items>
             </Menu>
             <Menu mnemonicParsing="false" text="Report">
@@ -28,6 +26,14 @@
                     <MenuItem mnemonicParsing="false" text="Print" />
                 </items>
             </Menu>
+         <Menu fx:id="mHelp" mnemonicParsing="false" text="Help" />
+         <Menu mnemonicParsing="false" text="Profile">
+            <items>
+               <MenuItem fx:id="miReset" mnemonicParsing="false" text="Reset password" />
+               <SeparatorMenuItem mnemonicParsing="false" />
+               <MenuItem fx:id="miLogOut" mnemonicParsing="false" text="Log out" />
+            </items>
+         </Menu>
         </menus>
     </MenuBar>
 </AnchorPane>
