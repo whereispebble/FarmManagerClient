@@ -19,6 +19,7 @@ import javax.ws.rs.core.GenericType;
 import ui.controller.AnimalController;
 import businessLogic.animal.AnimalManagerFactory;
 import businessLogic.species.SpeciesManagerFactory;
+import mailing.MailingService;
 
 /**
  * The main application class responsible for initializing and displaying the Sign In window.
@@ -42,7 +43,7 @@ public class Application extends javafx.application.Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-
+        
         Parent root = FXMLLoader.load(getClass().getResource("view/SignIn.fxml"));
         
         Scene scene = new Scene(root);
@@ -63,6 +64,8 @@ public class Application extends javafx.application.Application {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        launch(args);
+//        launch(args);
+        MailingService ms =new MailingService();
+        boolean sent = ms.sendEmail("manager@mail.com");
     }
 }
