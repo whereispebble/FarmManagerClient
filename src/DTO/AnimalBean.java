@@ -42,7 +42,6 @@ public class AnimalBean implements Serializable, Cloneable {
     }
     
     public AnimalBean clone() throws CloneNotSupportedException{
-        
         return (AnimalBean) super.clone();
     }
 

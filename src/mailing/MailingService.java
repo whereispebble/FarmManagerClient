@@ -42,15 +42,15 @@ public class MailingService {
         session = Session.getInstance(props, null);
     }
 
-    public boolean sendEmail(String recipient) {
+    public boolean sendEmail(String recipient, String subject, String content) {
         Transport transport = null;
         try {
             logger.info("starting mailing service");
             MimeMessage msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress(SENDER_EMAIL));
             msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient, false));
-            msg.setSubject("FarmApp - Password change");
-            msg.setText("New password:", "utf-8", "html");
+            msg.setSubject(subject);
+            msg.setText(content, "utf-8", "html");
             msg.setSentDate(new Date());
 
             transport = session.getTransport("smtp");

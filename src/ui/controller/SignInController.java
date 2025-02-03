@@ -201,6 +201,7 @@ public class SignInController {
                 }, username);
                 
                 if (!UserAuthService.verifyPassword(password, manager.getPassword())) {
+                    actionEvent.consume();
                     throw new UserCredentialException("Incorrect password");
                 }
 

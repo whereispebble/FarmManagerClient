@@ -12,9 +12,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 /**
  *
  * @author Ander
+ * @author Aitziber
  */
 @XmlRootElement(name = "manager")
-public class ManagerBean extends UserBean implements Serializable {
+public class ManagerBean extends UserBean implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
     private boolean isActive;
@@ -29,6 +30,9 @@ public class ManagerBean extends UserBean implements Serializable {
         super(name, email, phone, city, zip, street);
         this.isActive = isActive;
         this.password = password;
+    }
+     public ManagerBean clone() throws CloneNotSupportedException{
+        return (ManagerBean) super.clone();
     }
 
     @Override

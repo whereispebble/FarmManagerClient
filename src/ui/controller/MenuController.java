@@ -7,6 +7,9 @@ package ui.controller;
 
 import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
+import businessLogic.manager.ManagerFactory;
+import encryption.PasswordService;
+import encryption.UserAuthService;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -100,13 +103,14 @@ public class MenuController implements Initializable {
     }
     
     private void handleResetAction(ActionEvent event){
-        logger.info("reset click");
+        String newPassword = PasswordService.resetPassword();
+        manager.setPassword(UserAuthService.hashPassword(newPassword));
+        ManagerFactory.get().updateManager(manager);
         MailingService ms =new MailingService();
-        boolean sent = ms.sendEmail(manager.getEmail());
+        boolean sent = ms.sendEmail(manager.getEmail(), "Farm App - Password reset", "New password: " + newPassword);
     }
     
     private void handleLogOutAction(ActionEvent event){
-        
         
     }
 }
