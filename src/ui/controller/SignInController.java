@@ -7,6 +7,7 @@ package ui.controller;
 
 import businessLogic.manager.ManagerFactory;
 import DTO.ManagerBean;
+import encryption.PasswordService;
 import encryption.UserAuthService;
 import ui.utilities.WindowManager;
 import ui.controller.MenuController;
@@ -35,10 +36,12 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
+import mailing.MailingService;
 
 /**
  * Controller class for the Sign In screen. Manages user authentication, navigation actions, and input validation. This class is responsible for handling user interactions on the sign-in screen. It includes: - Field validation methods - Password visibility toggle - Sign-in logic with error handling for various exceptions
@@ -99,6 +102,9 @@ public class SignInController {
      */
     @FXML
     private Hyperlink hlSignUp;
+    
+    @FXML
+    private Hyperlink hlReset;
 
     /**
      * Initializes the controller by setting up event listeners and button properties. This method is automatically called after the FXML file is loaded.
@@ -108,6 +114,7 @@ public class SignInController {
         tfUsername.focusedProperty().addListener(this::handleTfUsernameFocusProperyLost);
         btnSignIn.setOnAction(this::handleSignInButtonAction);
         hlSignUp.setOnAction(this::handleSignUpHyperlinkAction);
+        hlReset.setOnAction(this::handleResetHyperlinkAction);
 
         // Set the "Sign In" button as the default
         btnSignIn.setDefaultButton(true);
@@ -174,29 +181,6 @@ public class SignInController {
             try {
                 lblError.setText("");
 
-                //logger.log(Level.INFO, "{0} {1}", new Object[]{username, password});
-                
-                // por qué es una coleccion? el email era unico no?  
-//                List<ManagerBean> managers = ManagerFactory.get().getManager(new GenericType<List<ManagerBean>>() {
-//                }, username, password);
-
-//                if (managers.isEmpty()) {
-//                    throw new UserCredentialException("Credentias are incorrect or user does not exist");
-//                }
-//                if (!managers.get(0).isIsActive()) {
-//                    throw new InactiveUserException("User is not active");
-//                }
-                
-                // Successfully authenticated; proceed to home screen
-//                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-//                MenuController.setManager(managers.get(0));
-//                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
-                
-//                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-//                MenuController.setManager(managers.get(0));
-//                AnimalGroupController.setManager(managers.get(0));
-//                WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", managers.get(0));
-
                 ManagerBean manager = ManagerFactory.get().getManagerByEmail(new GenericType<ManagerBean>() {
                 }, username);
                 
@@ -234,18 +218,59 @@ public class SignInController {
      * @param actionEvent action event triggered by the Sign Up hyperlink.
      */
     public void handleSignUpHyperlinkAction(ActionEvent actionEvent) {
-        //quitar el alert
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Confirmation");
-        alert.setHeaderText("You are about to exit");
-        alert.setContentText("Are you sure you want to leave the sign in window and open the sign up window?");
-        Optional<ButtonType> result = alert.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-            WindowManager.openWindow("/ui/view/SignUp.fxml", "Sign Up");
+        WindowManager.openWindow("/ui/view/SignUp.fxml", "Sign Up");
+    }
+    
+    public void handleResetHyperlinkAction(ActionEvent actionEvent) {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Password Recovery");
+        dialog.setHeaderText("Forgot your password?");
+        dialog.setContentText("Please enter your email address:");
+
+        Optional<String> result = dialog.showAndWait();
+
+        if (result.isPresent()) {
+            String email = result.get();
+
+            if (!email.contains("@")) {
+                showErrorAlert("Invalid Email", "Please enter a valid email address.");
+                return;
+            }
+
+            try {
+                ManagerBean manager = ManagerFactory.get().getManagerByEmail(new GenericType<ManagerBean>() {}, email);
+                if (manager ==null){
+                    //aviso?
+                    return;
+                }
+
+                String newPassword = PasswordService.resetPassword();
+                manager.setPassword(UserAuthService.hashPassword(newPassword));
+                ManagerFactory.get().updateManager(manager);
+
+                MailingService ms = new MailingService();
+                boolean sent = ms.sendEmail(manager.getEmail(), "Farm App - Password Reset", "Your new password: " + newPassword);
+
+                if (sent) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Password Reset");
+                    alert.setHeaderText(null);
+                    alert.setContentText("A new password has been sent to your email.");
+                    alert.showAndWait();
+                } else {
+                    showErrorAlert("Email Error", "Failed to send the password reset email.");
+                }
+
+            } catch (WebApplicationException e) {
+                showErrorAlert("Server Error", "An error occurred while processing your request.");
+                logger.log(Level.SEVERE, "Server error during password reset", e);
+            } catch (Exception e) {
+                showErrorAlert("Error", "No account found with this email.");
+                logger.log(Level.SEVERE, "Error finding user", e);
+            }
         }
     }
-
+    
     /**
      * Helper method to display an error alert with a custom title and message.
      *
