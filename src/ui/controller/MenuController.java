@@ -18,10 +18,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import mailing.MailingService;
 import ui.utilities.WindowManager;
 
 /**
@@ -36,6 +38,8 @@ public class MenuController implements Initializable {
     @FXML
     private MenuBar menuBar;
     @FXML
+    private Menu menuNavigateTo;
+    @FXML
     private MenuItem miAnimal;
     @FXML
     private MenuItem miAnimalGroup;
@@ -43,6 +47,18 @@ public class MenuController implements Initializable {
     private MenuItem miConsume;
     @FXML
     private MenuItem miProduct;
+    @FXML
+    private Menu menuReport;
+    @FXML
+    private MenuItem miPrint;
+    @FXML
+    private Menu menuHelp;
+    @FXML
+    private Menu menuProfile;
+    @FXML
+    private MenuItem miReset;
+    @FXML
+    private MenuItem miLogOut;
     
     private static ManagerBean manager;
     
@@ -62,6 +78,9 @@ public class MenuController implements Initializable {
         miAnimal.setOnAction(event -> openView("/ui/view/Animal.fxml", "Animals"));
         miConsume.setOnAction(event -> openView("/ui/view/Consumes.fxml", "Consumes"));
         miProduct.setOnAction(event -> openView("/ui/view/Product.fxml", "Product"));
+        
+        miReset.setOnAction(this::handleResetAction);
+        miLogOut.setOnAction(this::handleLogOutAction);
     }
 
     /**
@@ -78,5 +97,16 @@ public class MenuController implements Initializable {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error opening {0} window: {1}", new Object[]{title, e.getMessage()});
         }
+    }
+    
+    private void handleResetAction(ActionEvent event){
+        logger.info("reset click");
+        MailingService ms =new MailingService();
+        boolean sent = ms.sendEmail(manager.getEmail());
+    }
+    
+    private void handleLogOutAction(ActionEvent event){
+        
+        
     }
 }
