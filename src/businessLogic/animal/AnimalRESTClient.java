@@ -10,6 +10,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import ui.utilities.ConfigReader;
 
 /**
  * Jersey REST client generated for REST resource:AnimalREST [animal]<br>
@@ -27,7 +28,7 @@ public class AnimalRESTClient implements IAnimalManager{
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/farmapp/webresources";
+    private static final String BASE_URI = ConfigReader.getBaseUri();
     
 
     public AnimalRESTClient() {
@@ -39,9 +40,9 @@ public class AnimalRESTClient implements IAnimalManager{
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), AnimalBean.class);
     }
 
-    public <T> T getAnimalsByAnimalGroup(GenericType<T> responseType, String animalGroupName) throws WebApplicationException {
+    public <T> T getAnimalsByAnimalGroup(GenericType<T> responseType, String animalGroupName, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("group/{0}", new Object[]{animalGroupName}));
+        resource = resource.path(java.text.MessageFormat.format("group/{0}/{1}", new Object[]{animalGroupName, managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
@@ -49,15 +50,15 @@ public class AnimalRESTClient implements IAnimalManager{
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), AnimalBean.class);
     }
 
-    public <T> T getAnimalsBySubespecies(GenericType<T> responseType, String subespecies) throws WebApplicationException {
+    public <T> T getAnimalsBySubespecies(GenericType<T> responseType, String subespecies, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("subespecies/{0}", new Object[]{subespecies}));
+        resource = resource.path(java.text.MessageFormat.format("subespecies/{0}/{1}", new Object[]{subespecies, managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T getAnimalsByBirthdateTo(GenericType<T> responseType, String dateTo) throws WebApplicationException {
+    public <T> T getAnimalsByBirthdateTo(GenericType<T> responseType, String dateTo, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("to/{0}", new Object[]{dateTo}));
+        resource = resource.path(java.text.MessageFormat.format("to/{0}/{1}", new Object[]{dateTo, managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
@@ -65,21 +66,21 @@ public class AnimalRESTClient implements IAnimalManager{
         webTarget.path(java.text.MessageFormat.format("delete/{0}", new Object[]{id})).request().delete(AnimalBean.class);
     }
 
-    public <T> T getAnimalsByBirthdateFrom(GenericType<T> responseType, String dateFrom) throws WebApplicationException {
+    public <T> T getAnimalsByBirthdateFrom(GenericType<T> responseType, String dateFrom, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("from/{0}", new Object[]{dateFrom}));
+        resource = resource.path(java.text.MessageFormat.format("from/{0}/{1}", new Object[]{dateFrom, managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T getAnimalByName(GenericType<T> responseType, String name) throws WebApplicationException {
+    public <T> T getAnimalByName(GenericType<T> responseType, String name, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("name/{0}", new Object[]{name}));
+        resource = resource.path(java.text.MessageFormat.format("name/{0}/{1}", new Object[]{name, managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
 
-    public <T> T getAnimalsByBirthdate(GenericType<T> responseType, String dateFrom, String dateTo) throws WebApplicationException {
+    public <T> T getAnimalsByBirthdate(GenericType<T> responseType, String dateFrom, String dateTo, String managerId) throws WebApplicationException {
         WebTarget resource = webTarget;
-        resource = resource.path(java.text.MessageFormat.format("between/{0}/{1}", new Object[]{dateFrom, dateTo}));
+        resource = resource.path(java.text.MessageFormat.format("between/{0}/{1}/{2}", new Object[]{dateFrom, dateTo, managerId}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
     public <T> T getAllAnimals(GenericType<T> responseType, String managerId) throws WebApplicationException {

@@ -11,6 +11,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
+import ui.utilities.ConfigReader;
 
 /**
  * Jersey REST client generated for REST resource:ManagerFacadeREST [manager]<br>
@@ -28,7 +29,7 @@ public class ManagerRESTClient implements IManager {
 
     private WebTarget webTarget;
     private Client client;
-    private static final String BASE_URI = "http://localhost:8080/farmapp/webresources";
+    private static final String BASE_URI = ConfigReader.getBaseUri();
 
     public ManagerRESTClient() {
         client = javax.ws.rs.client.ClientBuilder.newClient();
@@ -41,7 +42,7 @@ public class ManagerRESTClient implements IManager {
         resource = resource.path(java.text.MessageFormat.format("search/{0}/{1}", new Object[]{email, password}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
-
+    
     @Override
     public void updateManager(Object requestEntity) throws WebApplicationException {
         webTarget.request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
@@ -59,7 +60,7 @@ public class ManagerRESTClient implements IManager {
     }
     
     @Override
-    public <T> T getManagerByEmail(GenericType<T> responseType, String email) throws WebApplicationException {
+    public <T>T getManagerByEmail(GenericType<T> responseType, String email) throws WebApplicationException {
         WebTarget resource = webTarget;
         resource = resource.path(java.text.MessageFormat.format("search/{0}", new Object[]{email}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);

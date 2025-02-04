@@ -7,7 +7,9 @@ package ui.controller;
 
 import businessLogic.manager.ManagerFactory;
 import DTO.ManagerBean;
+import encryption.UserAuthService;
 import ui.utilities.WindowManager;
+import ui.controller.MenuController;
 import exceptions.InactiveUserException;
 import exceptions.ServerException;
 import exceptions.UserCapException;
@@ -172,18 +174,46 @@ public class SignInController {
             try {
                 lblError.setText("");
 
-                logger.log(Level.INFO, "{0} {1}", new Object[]{username, password});
-                List<ManagerBean> managers = ManagerFactory.get().getManager(new GenericType<List<ManagerBean>>() {
-                }, username, password);
-                if (managers.isEmpty()) {
-                    throw new UserCredentialException("Credentias are incorrect or user does not exist");
+                //logger.log(Level.INFO, "{0} {1}", new Object[]{username, password});
+                
+                // por qué es una coleccion? el email era unico no?  
+//                List<ManagerBean> managers = ManagerFactory.get().getManager(new GenericType<List<ManagerBean>>() {
+//                }, username, password);
+
+//                if (managers.isEmpty()) {
+//                    throw new UserCredentialException("Credentias are incorrect or user does not exist");
+//                }
+//                if (!managers.get(0).isIsActive()) {
+//                    throw new InactiveUserException("User is not active");
+//                }
+                
+                // Successfully authenticated; proceed to home screen
+//                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
+//                MenuController.setManager(managers.get(0));
+//                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
+                
+//                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
+//                MenuController.setManager(managers.get(0));
+//                AnimalGroupController.setManager(managers.get(0));
+//                WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", managers.get(0));
+
+                ManagerBean manager = ManagerFactory.get().getManagerByEmail(new GenericType<ManagerBean>() {
+                }, username);
+                
+                if (!UserAuthService.verifyPassword(password, manager.getPassword())) {
+                    throw new UserCredentialException("Incorrect password");
                 }
-                if (!managers.get(0).isIsActive()) {
+
+                if (!manager.isIsActive()) {
                     throw new InactiveUserException("User is not active");
                 }
-                // Successfully authenticated; proceed to home screen
-                ((Node) actionEvent.getSource()).getScene().getWindow().hide();
-                WindowManager.openWindowWithManager("/ui/view/Home.fxml", "Home", managers.get(0), "Home");
+
+            // Autenticación exitosa, proceder a la siguiente pantalla
+            ((Node) actionEvent.getSource()).getScene().getWindow().hide();
+            MenuController.setManager(manager);
+            AnimalGroupController.setManager(manager);
+            WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", manager);
+                
             } catch (UserCredentialException ex) {
                 lblError.setText("Incorrect username or password.");
                 logger.log(Level.SEVERE, "Credential error", ex);
@@ -203,6 +233,7 @@ public class SignInController {
      * @param actionEvent action event triggered by the Sign Up hyperlink.
      */
     public void handleSignUpHyperlinkAction(ActionEvent actionEvent) {
+        //quitar el alert
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText("You are about to exit");

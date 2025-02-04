@@ -18,9 +18,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import mailing.MailingService;
 import ui.utilities.WindowManager;
 
 /**
@@ -35,6 +38,8 @@ public class MenuController implements Initializable {
     @FXML
     private MenuBar menuBar;
     @FXML
+    private Menu menuNavigateTo;
+    @FXML
     private MenuItem miAnimal;
     @FXML
     private MenuItem miAnimalGroup;
@@ -42,64 +47,66 @@ public class MenuController implements Initializable {
     private MenuItem miConsume;
     @FXML
     private MenuItem miProduct;
-
+    @FXML
+    private Menu menuReport;
+    @FXML
+    private MenuItem miPrint;
+    @FXML
+    private Menu menuHelp;
+    @FXML
+    private Menu menuProfile;
+    @FXML
+    private MenuItem miReset;
+    @FXML
+    private MenuItem miLogOut;
+    
+    private static ManagerBean manager;
+    
+    /**
+     * Sets the manager instance for this session.
+     * 
+     * @param manager the manager to be set
+     */
+    public static void setManager(ManagerBean manager) {
+        MenuController.manager = manager;
+    }
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        miAnimalGroup.setOnAction(this::handleAnimalGroup);
-        miAnimal.setOnAction(this::handleAnimal);
-        miConsume.setOnAction(this::handleConsume);
-        miProduct.setOnAction(this::handleProduct);
-    }
-     private void handleAnimalGroup(ActionEvent event) {
-        try {
-            openWindow("AnimalGroup.fxml", "Animal Group");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        miAnimalGroup.setOnAction(event -> openView("/ui/view/AnimalGroup.fxml", "Animal Group"));
+        // Establecer el título de la ventana como "Animals"
+        miAnimal.setOnAction(event -> openView("/ui/view/Animal.fxml", "Animals"));
+        miConsume.setOnAction(event -> openView("/ui/view/Consumes.fxml", "Consumes"));
+        miProduct.setOnAction(event -> openView("/ui/view/Product.fxml", "Product"));
+        
+        miReset.setOnAction(this::handleResetAction);
+        miLogOut.setOnAction(this::handleLogOutAction);
     }
 
-    private void handleAnimal(ActionEvent event) {
+    /**
+     * Handles the window transition and hides the current stage.
+     * 
+     * @param fxmlPath the FXML file to load
+     * @param title the title of the new window
+     */
+    private void openView(String fxmlPath, String title) {
         try {
-            openWindow("Animal.fxml", "Animal");
+            Stage stage = (Stage) menuBar.getScene().getWindow();
+            stage.hide();
+            WindowManager.openWindowWithManager(fxmlPath, title, manager);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE, "Error opening {0} window: {1}", new Object[]{title, e.getMessage()});
         }
     }
     
-    private void handleConsume(ActionEvent event) {
-        try {
-            openWindow("Consume.fxml", "Consume");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void handleResetAction(ActionEvent event){
+        logger.info("reset click");
+        MailingService ms =new MailingService();
+        boolean sent = ms.sendEmail(manager.getEmail());
     }
     
-    private void handleProduct(ActionEvent event) {
-        try {
-            openWindow("Product.fxml", "Product");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void handleLogOutAction(ActionEvent event){
+        
+        
     }
-
-    private void openWindow(String fxmlFile, String windowTitle) throws Exception {
-        
-        Stage stage = (Stage) menuBar.getScene().getWindow();
-        System.out.println(stage.getTitle());
-        stage.hide();
-        
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/view/" + fxmlFile));
-        Parent root = loader.load();
-        
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("/ui/view/styles.css").toExternalForm());
-        
-        Stage st = new Stage();
-        st.setScene(scene);
-        st.setResizable(false);
-        st.setTitle(windowTitle);
-        
-        st.show();
-    }
-    
 }

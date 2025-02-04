@@ -7,6 +7,7 @@ package ui.controller;
 
 import DTO.AnimalBean;
 import DTO.AnimalGroupBean;
+import DTO.ManagerBean;
 import DTO.SpeciesBean;
 import ui.cellFactories.DatePickerTableCell;
 import java.net.URL;
@@ -43,7 +44,6 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -60,6 +60,8 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 import java.util.Collection;
 import java.util.Map;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotFoundException;
 import net.sf.jasperreports.engine.JasperPrint;
 
 
@@ -70,11 +72,7 @@ import net.sf.jasperreports.engine.JasperPrint;
  */
 public class AnimalController implements Initializable {
     
-    /**
-     * Logger to track the class activity and handle debugging information.
-     */
     private static final Logger logger = Logger.getLogger(AnimalController.class.getName());
-    
     
     private Stage stage;
     
@@ -123,124 +121,116 @@ public class AnimalController implements Initializable {
     private MenuItem miDelete;
     
     @FXML
-    private StackPane stack;
-    
-    @FXML
     private HBox hboxDatePicker;
     
-    private String managerId;
+    private static ManagerBean manager;
+    
+    public static void setManager(ManagerBean manager) {
+        AnimalController.manager = manager;
+    }
 
+    public static ManagerBean getManager() {
+        return manager;
+    }
+    
+    private static AnimalGroupBean conditionalAnimalGroup;
+
+    public static AnimalGroupBean getConditionalAnimalGroup() {
+        return conditionalAnimalGroup;
+    }
+
+    public static void setConditionalAnimalGroup(AnimalGroupBean conditionalAnimalGroup) {
+        AnimalController.conditionalAnimalGroup = conditionalAnimalGroup;
+    }
+    
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) { 
-        // recibir por parametro
-        managerId = "1";
-       
-        
+     
         tbAnimal.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-    //        // Establecer el título de la ventana
-    //        stage.setTitle("Animals");
-    //
-    //        // Establecer dimensiones fijas
-    //        stage.setWidth(1024);
-    //        stage.setHeight(720);
+        // Cargar los elementos en el combo de búsqueda
+        comboSearch.getItems().addAll("Subespecies", "Animal Group", "Birthdate");
 
-    //        // Deshabilitar la redimensión de la ventana
-    //        stage.setResizable(false);
-
-    //        // Limpiar los campos de fechas
-    //        dpSearchFrom.setValue(null);
-    //        dpSearchTo.setValue(null);
-    //
-    //        // Hacer los campos de fechas invisibles
-    //        dpSearchFrom.setVisible(false);
-    //        dpSearchTo.setVisible(false);
-
-            // Cargar los elementos en el combo de búsqueda
-            comboSearch.getItems().addAll("Subespecies", "Animal Group", "Birthdate");
-    //
-    //        // Seleccionar por defecto "Animal Group"
-            comboSearch.setValue("Animal Group");
-    //        
-    //        // Escuchar cambios en el ComboBox
-            comboSearch.valueProperty().addListener(this::handleComboBoxChange);
-            
-            tfSearch.toFront();
-            // Enfocar el campo de búsqueda
-//            tfSearch.requestFocus();  
-            
-            showDateFields(false);
-
-    //        
-    //         // Habilitar los botones
-            btnSearch.setDisable(false);
-    //        btnAdd.setDisable(false);
-    //
-    //        // Establecer "Search" como el botón por defecto
-            btnSearch.setDefaultButton(true);
-            btnSearch.setOnAction(this::onSearchButtonClicked);  
+        // Seleccionar por defecto "Animal Group"
+        comboSearch.setValue("Animal Group");
         
-            tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
-            tcName.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
-            tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
-            
-            tcBirthdate.setCellValueFactory(new PropertyValueFactory<>("birthdate"));
-            tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, TableCell<AnimalBean, Date>>() {
-                @Override
-                public TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
-                    DatePickerTableCell<AnimalBean> cell = new DatePickerTableCell<>(param);
-                    cell.updateDateCallback = (Date updatedDate) -> {
-                        try {
-                            updateAnimalBirthdate(updatedDate);
-                        } catch (CloneNotSupportedException ex) {
-                            Logger.getLogger(AnimalController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    };
-                    return cell;
-                }
-            });
-            tcBirthdate.setStyle("-fx-alignment: center;");
+       // Escuchar cambios en el ComboBox
+        comboSearch.valueProperty().addListener(this::handleComboBoxChange);
 
-    //        Animal Group y Species: combo no editable con el valor del nombre 
-    //        del Animal Group y el valor del nombre de la Species asociados 
-    //        seleccionados. Edición ComboBoxTableCell
+        // Limpiar tfSearch
+        tfSearch.setText("");
+        tfSearch.toFront();
 
-            tcAnimalGroup.setCellValueFactory(new PropertyValueFactory<>("animalGroup"));
-            List<AnimalGroupBean> animalGroupList = new ArrayList<AnimalGroupBean>();
-            animalGroupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, managerId);             
-            ObservableList<AnimalGroupBean> animalGroupData = FXCollections.observableArrayList(animalGroupList);
-            tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(animalGroupData));
-            tcAnimalGroup.setOnEditCommit(event -> handleEditCommit(event, "animalGroup"));
-            
-            tcSubespecies.setCellValueFactory(new PropertyValueFactory<>("subespecies"));
-            tcSubespecies.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
-            tcSubespecies.setOnEditCommit(event -> handleEditCommit(event, "subespecies"));
+        showDateFields(false);
+        
+         // Habilitar los botones
+        btnSearch.setDisable(false);
 
-            tcSpecies.setCellValueFactory(new PropertyValueFactory<>("species"));
-            List<SpeciesBean> speciesList = new ArrayList<SpeciesBean>();
-          
-            speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});     
-            ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
-            tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));
-            tcSpecies.setOnEditCommit(event -> handleEditCommit(event, "species"));
+        // Establecer "Search" como el botón por defecto
+        btnSearch.setDefaultButton(true);
+        btnSearch.setOnAction(this::onSearchButtonClicked);  
 
-            miDelete.setDisable(true);
-            tbAnimal.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalBean>) change -> {
-                miDelete.setDisable(tbAnimal.getSelectionModel().getSelectedItems().isEmpty());
-            });
-            miDelete.setOnAction(this::onDeleteMenuItemClicked);
-            
-//            btnAdd.setDisable(false);
-            btnAdd.setOnAction(this::onAddButtonClicked);
+        tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        tcName.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
+        tcName.setOnEditCommit(event -> handleEditCommit(event, "name"));
 
-            tbAnimal.setEditable(true);
-            //        stage.show(); 
-            
+        tcBirthdate.setCellValueFactory(new PropertyValueFactory<>("birthdate"));
+        tcBirthdate.setCellFactory(new Callback<TableColumn<AnimalBean, Date>, TableCell<AnimalBean, Date>>() {
+            @Override
+            public TableCell<AnimalBean, Date> call(TableColumn<AnimalBean, Date> param) {
+                DatePickerTableCell<AnimalBean> cell = new DatePickerTableCell<>(param);
+                cell.updateDateCallback = (Date updatedDate) -> {
+                    try {
+                        updateAnimalBirthdate(updatedDate);
+                    } catch (CloneNotSupportedException ex) {
+                        Logger.getLogger(AnimalController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                };
+                return cell;
+            }
+        });
+        tcBirthdate.setStyle("-fx-alignment: center;");
+
+        tcAnimalGroup.setCellValueFactory(new PropertyValueFactory<>("animalGroup"));
+        List<AnimalGroupBean> animalGroupList = new ArrayList<AnimalGroupBean>();
+        animalGroupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, String.valueOf(manager.getId())); 
+
+        ObservableList<AnimalGroupBean> animalGroupData = FXCollections.observableArrayList(animalGroupList);
+        tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(animalGroupData));
+        tcAnimalGroup.setOnEditCommit(event -> handleEditCommit(event, "animalGroup"));
+
+        tcSubespecies.setCellValueFactory(new PropertyValueFactory<>("subespecies"));
+        tcSubespecies.setCellFactory(TextFieldTableCell.<AnimalBean>forTableColumn());
+        tcSubespecies.setOnEditCommit(event -> handleEditCommit(event, "subespecies"));
+
+        tcSpecies.setCellValueFactory(new PropertyValueFactory<>("species"));
+        List<SpeciesBean> speciesList = new ArrayList<SpeciesBean>();
+
+        speciesList = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});     
+        ObservableList<SpeciesBean> speciesData = FXCollections.observableArrayList(speciesList);
+        tcSpecies.setCellFactory(ComboBoxTableCell.forTableColumn(speciesData));
+        tcSpecies.setOnEditCommit(event -> handleEditCommit(event, "species"));
+
+        miDelete.setDisable(true);
+        tbAnimal.getSelectionModel().getSelectedItems().addListener((ListChangeListener<AnimalBean>) change -> {
+            miDelete.setDisable(tbAnimal.getSelectionModel().getSelectedItems().isEmpty());
+        });
+        miDelete.setOnAction(this::onDeleteMenuItemClicked);
+
+        btnAdd.setOnAction(this::onAddButtonClicked);
+
+        tbAnimal.setEditable(true);
+
+        if (this.conditionalAnimalGroup != null) {
+            tfSearch.setText(conditionalAnimalGroup.getName());
+            btnSearch.fire();
+        } else{
             showAllAnimals();
-            
-            btnPrint.setOnAction(this::handlePrintAction); 
+        }
+
+        btnPrint.setOnAction(this::handlePrintAction); 
     }
     
     private void handleComboBoxChange(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -280,7 +270,7 @@ public class AnimalController implements Initializable {
             switch (searchType) {
                 case "Animal Group":
                     if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
-                        animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
+                        animalList = AnimalManagerFactory.get().getAnimalsByAnimalGroup(new GenericType<List<AnimalBean>>() {}, tfSearch.getText(), String.valueOf(manager.getId()));
                     }
                     else{
                          showAllAnimals();
@@ -288,7 +278,7 @@ public class AnimalController implements Initializable {
                     break;
                 case "Subespecies":
                     if(tfSearch.getText() != null && !tfSearch.getText().isEmpty()){
-                        animalList = AnimalManagerFactory.get().getAnimalsBySubespecies(new GenericType<List<AnimalBean>>() {}, tfSearch.getText());
+                        animalList = AnimalManagerFactory.get().getAnimalsBySubespecies(new GenericType<List<AnimalBean>>() {}, tfSearch.getText(), String.valueOf(manager.getId()));
                     }
                     else{
                          showAllAnimals();
@@ -299,13 +289,13 @@ public class AnimalController implements Initializable {
                     String to = (!dpSearchTo.getValue().toString().isEmpty()) ? dpSearchTo.getValue().toString() : null;
     
                     if (from != null && to != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(new GenericType<List<AnimalBean>>() {}, from, to);
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(new GenericType<List<AnimalBean>>() {}, from, to, String.valueOf(manager.getId()));
                     }
                     else if(from != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateFrom(new GenericType<List<AnimalBean>>() {}, from);
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateFrom(new GenericType<List<AnimalBean>>() {}, from, String.valueOf(manager.getId()));
                     }
                     else if(to != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateTo(new GenericType<List<AnimalBean>>() {}, to);
+                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateTo(new GenericType<List<AnimalBean>>() {}, to, String.valueOf(manager.getId()));
                     }
                     else{
                         showAllAnimals();
@@ -370,9 +360,9 @@ public class AnimalController implements Initializable {
                 default:
                     throw new IllegalArgumentException("Campo desconocido: " + fieldName);
             }
-
+            
             event.getTableView().refresh();
-
+            
         } catch (Exception e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
             alert.showAndWait();
@@ -388,8 +378,6 @@ public class AnimalController implements Initializable {
             try {
                 AnimalManagerFactory.get().updateAnimal(animalCopy);
                 animal.setBirthdate(updatedDate);
-                
-                
             } catch (WebApplicationException e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
                 alert.showAndWait();
@@ -430,71 +418,45 @@ public class AnimalController implements Initializable {
             }
         }     
     }
-    
-    private void onAddButtonClicked(ActionEvent event){
 
+    private void onAddButtonClicked(ActionEvent event){
         AnimalBean newAnimal = new AnimalBean();
-        //crear constructor por defecto
         newAnimal.setName("New Animal");
-        newAnimal.setSubespecies("Unknown");
         newAnimal.setBirthdate(new Date());
+        setDefaultAnimalGroup(newAnimal);
+        newAnimal.setSubespecies("Unknown");
+        setDefaultSpecies(newAnimal);
         newAnimal.setMonthlyConsume(0);
         
         String filterType = comboSearch.getValue();
-        String filterValue = tfSearch.getText();
 
-        // Lógica para asignar AnimalGroup o Subespecie según el filtro
-        if ("Animal Group".equals(filterType)) {
-            if (filterValue != null && !filterValue.isEmpty()) {
-                AnimalGroupBean choiceAnimalGroup = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<AnimalGroupBean>() {}, filterValue, managerId);
-                // internal server error si no hay coincidencias, tratarlo y darle un defaultAnimalGroup
-
-                if (choiceAnimalGroup != null) {
-                    newAnimal.setAnimalGroup(choiceAnimalGroup);
-                } else {
-                    setDefaultAnimalGroup(newAnimal);
+        if (filterType.equals("Animal Group")  || filterType.equals("Subespecies")){
+            String filterValue = tfSearch.getText();
+            if (filterValue != null && !filterValue.isEmpty()){
+                if (filterType.equals("Subespecies")){
+                    newAnimal.setSubespecies(filterValue); 
+                }
+                else if (filterType.equals("Animal Group")){
+                     try {
+                        AnimalGroupBean choiceAnimalGroup = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<AnimalGroupBean>() {}, filterValue, String.valueOf(manager.getId()));
+                        newAnimal.setAnimalGroup(choiceAnimalGroup);
+                    } catch (NotFoundException | BadRequestException e) {
+                        System.err.println("Bad Request: Grupo de animales no encontrado, asignando grupo por defecto.");
+                        tfSearch.setText("");
+                    }
                 }
             }
-        } else if ("Subespecies".equals(filterType)) {
-            if (filterValue != null && !filterValue.isEmpty()) {
-                // Asignar la subespecie basada en el filtro
-                newAnimal.setSubespecies(filterValue);
-                setDefaultAnimalGroup(newAnimal);
-            }
         }
-
-        List<SpeciesBean> availableSpecies = new ArrayList<SpeciesBean>();
-        availableSpecies = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});
-       
-        if (availableSpecies != null && !availableSpecies.isEmpty()) {
-            newAnimal.setSpecies(availableSpecies.get(0));
-        } else {
-            System.out.println("No se encontraron especies");
-        }
-       
-        AnimalManagerFactory.get().createAnimal(newAnimal);
         
-        //lanzar accion btnSearch
+        AnimalManagerFactory.get().createAnimal(newAnimal);
         btnSearch.fire();
-
-        //poner en modo edicion la casilla que contenga en la columna name "New Animal"
-        final int NEW_ANIMAL_ROW;
-        for (int row = 0; row < tbAnimal.getItems().size(); row++) {
-            AnimalBean animal = tbAnimal.getItems().get(row);
-            if (animal.getName().equals("New Animal")) {                
-//                tbAnimal.edit(row, tcName);
-                NEW_ANIMAL_ROW=row;
-                Platform.runLater(() -> tbAnimal.edit(NEW_ANIMAL_ROW, tcName));
-                tbAnimal.refresh();
-                break;
-            }
-        }
-    }  
+        // poner en modo edicion la casilla que contenga en la columna name "New Animal"
+        focusNewAnimal();
+    }
     
     private void setDefaultAnimalGroup(AnimalBean newAnimal){
         List<AnimalGroupBean> availableAnimalGroups = new ArrayList<AnimalGroupBean>();
-        availableAnimalGroups = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, managerId);
-        
+        availableAnimalGroups = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, String.valueOf(manager.getId()));
         if (availableAnimalGroups != null && !availableAnimalGroups.isEmpty()) {
             newAnimal.setAnimalGroup(availableAnimalGroups.get(0));
         } else {
@@ -503,9 +465,32 @@ public class AnimalController implements Initializable {
         }
     }
     
+    private void setDefaultSpecies(AnimalBean newAnimal){         
+        List<SpeciesBean> availableSpecies = new ArrayList<SpeciesBean>();
+        availableSpecies = SpeciesManagerFactory.get().getAllSpecies(new GenericType<List<SpeciesBean>>() {});
+        if (availableSpecies != null && !availableSpecies.isEmpty()) {
+            newAnimal.setSpecies(availableSpecies.get(0));
+        } else {
+            System.out.println("No se encontraron especies");
+        }
+    }
+    
+    private void focusNewAnimal(){
+        final int NEW_ANIMAL_ROW;
+        for (int row = 0; row < tbAnimal.getItems().size(); row++) {
+            AnimalBean animal = tbAnimal.getItems().get(row);
+            if (animal.getName().equals("New Animal")) {                
+                NEW_ANIMAL_ROW=row;
+                Platform.runLater(() -> tbAnimal.edit(NEW_ANIMAL_ROW, tcName));
+                tbAnimal.refresh();
+                break;
+            }
+        }
+    }
+    
     private void showAllAnimals() {
         try {
-            List<AnimalBean> allAnimals = AnimalManagerFactory.get().getAllAnimals(new GenericType<List<AnimalBean>>() {}, managerId);
+            List<AnimalBean> allAnimals = AnimalManagerFactory.get().getAllAnimals(new GenericType<List<AnimalBean>>() {}, String.valueOf(manager.getId()));
                     
             if (allAnimals != null && !allAnimals.isEmpty()) {
                 ObservableList<AnimalBean> animalData = FXCollections.observableArrayList(allAnimals);

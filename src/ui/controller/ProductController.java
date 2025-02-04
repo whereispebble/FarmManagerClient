@@ -42,12 +42,10 @@ import javax.ws.rs.core.GenericType;
 import businessLogic.product.ProductManagerFactory;
 import businessLogic.provider.ProviderManagerFactory;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.util.Callback;
@@ -109,7 +107,7 @@ public class ProductController implements Initializable {
     private Button btnAdd;
 
     @FXML
-    private MenuItem miPrint;
+    private Button btnPrint;
 
     @FXML
     private MenuItem miDelete;
@@ -144,7 +142,7 @@ public class ProductController implements Initializable {
         // Deshabilitar el DatePicker dpSearch
         dpSearch.setDisable(true);
 
-//        miPrint.setOnAction(this::handlePrintAction);
+//        btnPrint.setOnAction(this::handlePrintAction);
 
         // Configure menu items.
 //        miDelete.setDisable(true);
@@ -457,7 +455,7 @@ public class ProductController implements Initializable {
             logger.info("Beginning printing action...");
 
             // Cargar el archivo del reporte de manera segura
-            InputStream reportStream = getClass().getResourceAsStream("/reports/ProductReport.jrxml");
+            InputStream reportStream = getClass().getResourceAsStream("/ui.reports/productReport.jrxml");
             if (reportStream == null) {
                 throw new JRException("No se pudo encontrar el archivo de reporte.");
             }

@@ -17,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ui.controller.AnimalController;
 import ui.controller.AnimalGroupController;
-import ui.controller.HomeController;
 
 /**
  * Utility class for managing the opening of new windows in the application. This class provides methods to open different windows (scenes) based on the provided FXML file path and title. It also allows passing a user object to the new window for context.
@@ -28,24 +27,13 @@ import ui.controller.HomeController;
  */
 public class WindowManager {
 
-    /**
-     * Logger to track the activity and handle debugging information.
-     */
     private static final Logger logger = Logger.getLogger(WindowManager.class.getName());
 
-    /**
-     * Opens a new window with the provided FXML file and title. This method does not pass any user context to the new window.
-     *
-     * @param fxmlFilePath the path to the FXML file to load for the new window.
-     * @param title the title to set for the new window.
-     */
     public static void openWindow(String fxmlFilePath, String title) {
         try {
-            // Load the FXML file
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
 
-            // Set up the stage (window)
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.getIcons().add(new Image("resources/logo.png"));
@@ -57,26 +45,15 @@ public class WindowManager {
         }
     }
 
-    /**
-     * Opens a new window with the provided FXML file, title, and user context. The manager and animalGroup objects are passed to the controller of the new window.
-     *
-     * @param fxmlFilePath the path to the FXML file to load for the new window.
-     * @param title the title to set for the new window.
-     * @param manager the user object to pass to the controller of the new window.
-     * @param animalGroup the animal group to pass to the controller of the new window.
-     */
     public static void openAnimalViewWithAnimalGroup(String fxmlFilePath, String title, ManagerBean manager, AnimalGroupBean animalGroup) {
         try {
-            // Load the FXML file and its controller
+            if (AnimalController.getManager() == null){
+                AnimalController.setManager(manager); 
+            }
+            AnimalController.setConditionalAnimalGroup(animalGroup);
+
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
-
-            // Get the controller and set the user context
-            AnimalController animalController = fxmlLoader.getController();
-            // animalController.setManager(manager);
-            // animalController.setAnimalGroup(animalGroup);
-
-            // Set up the stage (window)
             Stage stage = new Stage();
             stage.getIcons().add(new Image("resources/logo.png"));
             stage.setTitle(title);
@@ -88,50 +65,31 @@ public class WindowManager {
         }
     }
 
-    /**
-     * Opens a new window with the provided FXML file, title, user and the view that wants to be opened.
-     *
-     * @param fxmlFilePath the path to the FXML file to load for the new window.
-     * @param title the title to set for the new window.
-     * @param manager the user object to pass to the controller of the new window.
-     * @param view the name of the view that wants to be opened.
-     */
-    public static void openWindowWithManager(String fxmlFilePath, String title, ManagerBean manager, String view) {
+    public static void openWindowWithManager(String fxmlFilePath, String title, ManagerBean manager) {
         try {
-            // Load the FXML file
+            //coleccion de controladores e iterarla seteando igual, ver cómo hacerlo sin instanceof y cambiar los ififif
+            
+            if (AnimalGroupController.getManager() == null){
+                AnimalGroupController.setManager(manager); 
+            }
+            if (AnimalController.getManager() == null){
+                AnimalController.setManager(manager); 
+            }
+//            if (ProductController.getManager() == null){
+//                ProductController.setManager(manager); 
+//            }
+//            if (ConsumesController.getManager() == null){
+//                ConsumesController.setManager(manager); 
+//            }
+            
+            AnimalController.setConditionalAnimalGroup(null);
             FXMLLoader fxmlLoader = new FXMLLoader(WindowManager.class.getResource(fxmlFilePath));
             Parent root = fxmlLoader.load();
-
-            switch (view) {
-                case "AnimalGroup":
-                    AnimalGroupController groupController = fxmlLoader.getController();
-                    groupController.setManager(manager);
-                    break;
-                case "Animal":
-                    AnimalController animalController = fxmlLoader.getController();
-                    // animalController.setManager(manager);
-                    break;
-                case "Consumes":
-                    // ConsumesController consumesController = fxmlLoader.getController();
-                    // consumesController.setManager(manager);
-                    break;
-                case "Product":
-                    // ProductController productController = fxmlLoader.getController();
-                    // productController.setManager(manager);
-                    break;
-                case "Home":
-                    HomeController homeController = fxmlLoader.getController();
-                    homeController.setManager(manager);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Wrong view: " + view);
-            }
-
-            // Set up the stage (window)
             Stage stage = new Stage();
             stage.setTitle(title);
             stage.getIcons().add(new Image("resources/logo.png"));
             stage.setScene(new Scene(root));
+            // Deshabilitar la redimensión de la ventana
             stage.setResizable(false);
             stage.show();
         } catch (IOException e) {
