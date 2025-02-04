@@ -11,7 +11,6 @@ import DTO.ManagerBean;
 import encryption.UserAuthService;
 import ui.utilities.WindowManager;
 import java.io.IOException;
-import java.util.List;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -40,7 +39,7 @@ import javax.ws.rs.core.GenericType;
 /**
  * Controller class for the Sign Up screen. Manages user registration, input validation, and navigation actions. This class handles user interactions on the sign-up screen, including: - Field validation methods - Password visibility toggle - Sign-up logic with error handling for various exceptions
  *
- * @see userLogicTier.model.User
+ * @see DTO.ManagerBean
  * @see javafx.beans.value.ObservableValue
  * @see javafx.event.ActionEvent
  * @see java.util.logging.Logger
