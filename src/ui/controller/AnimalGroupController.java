@@ -48,6 +48,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.util.converter.DoubleStringConverter;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -104,24 +105,14 @@ public class AnimalGroupController implements Initializable {
     private MenuItem miOpen;
 
 //    @FXML
-//    private MenuItem miAnimals;
-//
-//    @FXML
-//    private MenuItem miConsumes;
-//
-//    @FXML
-//    private MenuItem miProducts;
-//
-//    @FXML
 //    private MenuItem miPrint;
-
     @FXML
     private TableColumn<AnimalGroupBean, String> tcArea;
 
     private ObservableList<AnimalGroupBean> groupData;
 
     private static ManagerBean manager;
-    
+
     public static void setManager(ManagerBean manager) {
         AnimalGroupController.manager = manager;
     }
@@ -129,7 +120,6 @@ public class AnimalGroupController implements Initializable {
     public static ManagerBean getManager() {
         return manager;
     }
-    
 
     /**
      * Initializes the controller class.
@@ -173,7 +163,6 @@ public class AnimalGroupController implements Initializable {
             miOpen.setOnAction(this::onOpenMenuItemClicked);
 
 //            miPrint.setOnAction(this::handlePrintAction);
-
             // COLUMNS
             // Name column
             tcName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -195,6 +184,7 @@ public class AnimalGroupController implements Initializable {
 //            tcAnimals.setStyle("-fx-alignment: center;");
             // Consumes column
             tcConsume.setCellValueFactory(new PropertyValueFactory<>("consume"));
+            tcConsume.setCellFactory(TextFieldTableCell.forTableColumn(new DoubleStringConverter()));
             tcConsume.setStyle("-fx-alignment: center;");
 
             // Creation date column
@@ -217,11 +207,11 @@ public class AnimalGroupController implements Initializable {
 
             // Table is editable
             tbAnimalGroup.setEditable(true);
-            
+
             if (manager != null) {
                 showAnimalGroups();
             }
-            
+
         } catch (Exception e) {
             // If something goes wrong
             logger.log(Level.SEVERE, "Something went wrong: ", e);
@@ -404,7 +394,7 @@ public class AnimalGroupController implements Initializable {
         }
     }
 
-    private void onOpenMenuItemClicked (ActionEvent event){
+    private void onOpenMenuItemClicked(ActionEvent event) {
         try {
 
             AnimalGroupBean group = (AnimalGroupBean) tbAnimalGroup.getSelectionModel().getSelectedItem();
@@ -491,9 +481,22 @@ public class AnimalGroupController implements Initializable {
             if (manager != null) {
                 List<AnimalGroupBean> groupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
                 }, manager.getId().toString());
+                List<AnimalGroupBean> groupListAux = new ArrayList<>();
+                for (AnimalGroupBean group : groupList) {
+                    Double totalConsume = 0.0;
+//                    List<ConsumesBean> consumos = findConsumesByAnimalGroup(new GenericType<List<ConsumesBean>>() {
+//                    }, group.getName());
+//                    for (ConsumesBean consumo : consumos) {
+//                        if (consumo.getConsumeAmount() != null) {
+//                            totalConsume += consumo.getConsumeAmount();
+//                        }
+//                    }
+                    group.setConsume(totalConsume);
+                    groupListAux.add(group);
+                }
                 logger.log(Level.INFO, "Animal groups gotten");
                 // Show animal groups
-                groupData = FXCollections.observableArrayList(groupList);
+                groupData = FXCollections.observableArrayList(groupListAux);
                 tbAnimalGroup.setItems(groupData);
             } else {
                 logger.log(Level.WARNING, "Manager is null");

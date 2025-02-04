@@ -24,20 +24,18 @@ public class AnimalGroupBean implements Serializable, Cloneable {
     private String area;
     private String description;
     private Date creationDate;
-    private Integer animals;
-    private Integer consume;
+    private Double consume;
     private List<ManagerBean> managers;
 
     public AnimalGroupBean() {
     }
 
-    public AnimalGroupBean(Long id, String name, String area, String description, Date creationDate, Integer animals, List<ManagerBean> managers) {
+    public AnimalGroupBean(Long id, String name, String area, String description, Date creationDate, List<ManagerBean> managers) {
         this.id = id;
         this.name = name;
         this.area = area;
         this.description = description;
         this.creationDate = creationDate;
-        this.animals = animals;
         this.managers = managers;
     }
 
@@ -45,11 +43,11 @@ public class AnimalGroupBean implements Serializable, Cloneable {
         return (AnimalGroupBean) super.clone();
     }
 
-    public Integer getConsume() {
+    public Double getConsume() {
         return consume;
     }
 
-    public void setConsume(Integer consume) {
+    public void setConsume(Double consume) {
         this.consume = consume;
     }
 
@@ -92,14 +90,7 @@ public class AnimalGroupBean implements Serializable, Cloneable {
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
-
-    public Integer getAnimals() {
-        return animals;
-    }
-
-    public void setAnimals(Integer animals) {
-        this.animals = animals;
-    }
+    
 //
 //    public List<ConsumeEntity> getConsumes() {
 //        return consumes;
