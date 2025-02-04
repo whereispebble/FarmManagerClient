@@ -5,7 +5,6 @@
  */
 package ui.controller;
 
-import DTO.ProductBean;
 import DTO.ManagerBean;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -42,11 +41,24 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import businessLogic.product.ProductManagerFactory;
 import businessLogic.provider.ProviderManagerFactory;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableCell;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.view.JasperViewer;
 import ui.cellFactories.DatePickerTableCell;
 import ui.cellFactories.SpinnerTableCellFactory;
 
@@ -96,6 +108,12 @@ public class ProductController implements Initializable {
     @FXML
     private Button btnAdd;
 
+    @FXML
+    private MenuItem miPrint;
+
+    @FXML
+    private MenuItem miDelete;
+
     private ObservableList<ProductBean> productData;
 
     private static ManagerBean manager;
@@ -126,6 +144,15 @@ public class ProductController implements Initializable {
         // Deshabilitar el DatePicker dpSearch
         dpSearch.setDisable(true);
 
+//        miPrint.setOnAction(this::handlePrintAction);
+
+        // Configure menu items.
+//        miDelete.setDisable(true);
+//        // Enable the delete menu item only when at least one item is selected.
+//        tbProduct.getSelectionModel().getSelectedItems().addListener((ListChangeListener<ProductBean>) change -> {
+//            miDelete.setDisable(tbProduct.getSelectionModel().getSelectedItems().isEmpty());
+//        });
+//        miDelete.setOnAction(this::onDeleteMenuItemClicked);
         // Cargar la tabla:
         // Establecer como editables las columnas Product, Price, Stock y Providers.
         // Llamar al método de lógica getAllProducts() y obtener una lista con todos los
@@ -422,6 +449,46 @@ public class ProductController implements Initializable {
                         ButtonType.OK);
                 errorAlert.showAndWait();
             }
+        }
+    }
+
+    private void handlePrintAction(ActionEvent event) {
+        try {
+            logger.info("Beginning printing action...");
+
+            // Cargar el archivo del reporte de manera segura
+            InputStream reportStream = getClass().getResourceAsStream("/reports/ProductReport.jrxml");
+            if (reportStream == null) {
+                throw new JRException("No se pudo encontrar el archivo de reporte.");
+            }
+
+            JasperReport report = JasperCompileManager.compileReport(reportStream);
+
+            // Obtener los productos de la tabla y verificar que sean del tipo correcto
+            List<ProductBean> productList = new ArrayList<>();
+            for (Object item : tbProduct.getItems()) {
+                if (item instanceof ProductBean) {
+                    productList.add((ProductBean) item);
+                } else {
+                    throw new JRException("Error al convertir los datos de la tabla.");
+                }
+            }
+
+            // Crear la fuente de datos para Jasper
+            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource(productList);
+
+            // Mapa de parámetros (puedes agregar más si es necesario)
+            Map<String, Object> parameters = new HashMap<>();
+
+            // Llenar el reporte con datos
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+
+            // Crear y mostrar el visor del reporte
+            JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
+            jasperViewer.setVisible(true);
+
+        } catch (JRException ex) {
+            logger.severe("Error al generar el reporte: " + ex.getMessage());
         }
     }
 
