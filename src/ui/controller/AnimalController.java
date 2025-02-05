@@ -52,6 +52,9 @@ import javax.ws.rs.core.GenericType;
 import businessLogic.animalGroup.AnimalGroupFactory;
 import businessLogic.animal.AnimalManagerFactory;
 import businessLogic.species.SpeciesManagerFactory;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -262,8 +265,28 @@ public class AnimalController implements Initializable {
         dpSearchTo.setVisible(show);
     }
     
+    private boolean isValidDate(LocalDate date) {
+        // Crear un DateTimeFormatter para el formato esperado
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            
+        if (date == null) {
+            return false; // No considerar fechas nulas como válidas
+        }
+
+        try {
+            // Intentar formatear la fecha con el formato esperado
+            String dateStr = date.format(formatter);
+            formatter.parse(dateStr); // Si la fecha se puede parsear sin errores, es válida
+            return true;
+        } catch (DateTimeParseException e) {
+            // Si ocurre un error de parsing, la fecha no tiene el formato correcto
+            return false;
+        }
+    }
+    
     private void onSearchButtonClicked(ActionEvent event) {
         try {
+
             String searchType = comboSearch.getValue();
             List<AnimalBean> animalList = null;
 
@@ -285,21 +308,25 @@ public class AnimalController implements Initializable {
                     }
                     break;
                 case "Birthdate":
-                    String from = (!dpSearchFrom.getValue().toString().isEmpty()) ? dpSearchFrom.getValue().toString() : null;
-                    String to = (!dpSearchTo.getValue().toString().isEmpty()) ? dpSearchTo.getValue().toString() : null;
-    
-                    if (from != null && to != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(new GenericType<List<AnimalBean>>() {}, from, to, String.valueOf(manager.getId()));
-                    }
-                    else if(from != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateFrom(new GenericType<List<AnimalBean>>() {}, from, String.valueOf(manager.getId()));
-                    }
-                    else if(to != null){
-                        animalList = AnimalManagerFactory.get().getAnimalsByBirthdateTo(new GenericType<List<AnimalBean>>() {}, to, String.valueOf(manager.getId()));
-                    }
-                    else{
+                    LocalDate fromDate = dpSearchFrom.getValue();
+                    LocalDate toDate = dpSearchTo.getValue();
+
+                    if (fromDate == null && toDate == null) {
                         showAllAnimals();
-                    }
+                    } else {
+                        boolean fromDateValid = isValidDate(fromDate);
+                        boolean toDateValid = isValidDate(toDate);
+
+                        if (fromDateValid && toDateValid) {
+                           animalList = AnimalManagerFactory.get().getAnimalsByBirthdate(new GenericType<List<AnimalBean>>() {}, fromDate.toString(), toDate.toString(), String.valueOf(manager.getId()));
+                        } else if (fromDateValid) {
+                             animalList = AnimalManagerFactory.get().getAnimalsByBirthdateFrom(new GenericType<List<AnimalBean>>() {}, fromDate.toString(), String.valueOf(manager.getId()));
+                        } else if (toDateValid) {
+                            animalList = AnimalManagerFactory.get().getAnimalsByBirthdateTo(new GenericType<List<AnimalBean>>() {}, toDate.toString(), String.valueOf(manager.getId()));
+                        } else {
+                            showAllAnimals();
+                        }
+                    }   
                     break;
             }
 
