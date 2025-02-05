@@ -104,6 +104,12 @@ public class AnimalGroupController implements Initializable {
     private Button btnSearch;
 
     /**
+     * Button to trigger the print action.
+     */
+    @FXML
+    private Button btnPrint;
+
+    /**
      * Text field for entering the name of an animal group to search.
      */
     @FXML
@@ -202,6 +208,7 @@ public class AnimalGroupController implements Initializable {
             btnSearch.setOnAction(this::onSearchButtonClicked);
             btnCreate.setOnAction(this::onCreateButtonClicked);
             btnLogOut.setOnAction(this::onLogOutButtonClicked);
+            btnPrint.setOnAction(this::handlePrintAction);
 
             // Configure menu items.
             miDelete.setDisable(true);
@@ -493,19 +500,33 @@ public class AnimalGroupController implements Initializable {
     /**
      * Handles the print action by compiling and displaying a JasperReports report.
      *
-     * @param event the action event triggered by clicking the print menu item.
+     * @param event the action event triggered by clicking the print button.
      */
     private void handlePrintAction(ActionEvent event) {
         try {
-            logger.info("Beginning printing action...");
-            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/reports/AnimalGroupReport.jrxml"));
-            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<AnimalGroupBean>) tbAnimalGroup.getItems());
+            logger.log(Level.INFO, "Beginning printing action...");
+            JasperReport report
+                    = JasperCompileManager.compileReport(getClass()
+                            .getResourceAsStream("/ui/reports/AnimalGroupReport.jrxml"));
+            //Data for the report: a collection of UserBean passed as a JRDataSource 
+            //implementation 
+            JRBeanCollectionDataSource dataItems
+                    = new JRBeanCollectionDataSource((Collection<AnimalGroupBean>) this.tbAnimalGroup.getItems());
+            //Map of parameter to be passed to the report
             Map<String, Object> parameters = new HashMap<>();
+            //Fill report with data
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            //Create and show the report window. The second parameter false value makes 
+            //report window not to close app.
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
+            // jasperViewer.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         } catch (JRException ex) {
-            logger.log(Level.SEVERE, "Error printing report", ex);
+            //If there is an error show message and
+            //log it.
+            logger.log(Level.SEVERE, "Error printing report: ", ex);
+            showErrorAlert("ERROR", "Error printing report", ex.getMessage());
+
         }
     }
 
