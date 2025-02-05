@@ -5,11 +5,8 @@
  */
 package ui.controller;
 
-import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import businessLogic.manager.ManagerFactory;
-import encryption.PasswordService;
-import encryption.UserAuthService;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -17,19 +14,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import mailing.MailingService;
 import ui.utilities.WindowManager;
 
 /**
@@ -106,11 +97,7 @@ public class MenuController implements Initializable {
     }
     
     private void handleResetAction(ActionEvent event){
-        String newPassword = PasswordService.resetPassword();
-        manager.setPassword(UserAuthService.hashPassword(newPassword));
-        ManagerFactory.get().updateManager(manager);
-        MailingService ms =new MailingService();
-        boolean sent = ms.sendEmail(manager.getEmail(), "Farm App - Password reset", "New password: " + newPassword);
+        ManagerFactory.get().resetPassword(manager);
     }
     
     private void handleLogOutAction(ActionEvent event){

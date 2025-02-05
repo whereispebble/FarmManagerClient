@@ -5,6 +5,7 @@
  */
 package businessLogic.manager;
 
+import DTO.ManagerBean;
 import businessLogic.manager.IManager;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
@@ -65,10 +66,24 @@ public class ManagerRESTClient implements IManager {
         resource = resource.path(java.text.MessageFormat.format("search/{0}", new Object[]{email}));
         return resource.request(javax.ws.rs.core.MediaType.APPLICATION_XML).get(responseType);
     }
+    
+    @Override
+    public void resetPassword(Object requestEntity) throws WebApplicationException {
+        webTarget.path("reset").request(javax.ws.rs.core.MediaType.APPLICATION_XML).put(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    }
+    
+    @Override
+    public <T> T signIn(Object requestEntity, GenericType<T> responseType) throws WebApplicationException {
+        return webTarget.path("signin").request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML), responseType);
+    }
+
+    @Override
+    public void signUp(Object requestEntity) throws WebApplicationException {
+        webTarget.path("signup").request(javax.ws.rs.core.MediaType.APPLICATION_XML).post(javax.ws.rs.client.Entity.entity(requestEntity, javax.ws.rs.core.MediaType.APPLICATION_XML));
+    }
 
     @Override
     public void close() {
         client.close();
     }
-    
 }
