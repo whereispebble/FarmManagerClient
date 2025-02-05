@@ -45,6 +45,7 @@ import javax.ws.rs.core.GenericType;
 import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import javafx.scene.control.ButtonType;
+import javax.ws.rs.ProcessingException;
 import ui.cellFactories.DatePickerTableCell;
 import ui.utilities.WindowManager;
 import net.sf.jasperreports.engine.JRException;
@@ -343,7 +344,7 @@ public class AnimalGroupController implements Initializable {
             event.getTableView().refresh();
         } catch (CloneNotSupportedException | IllegalArgumentException e) {
             logger.log(Level.SEVERE, "Error editing Animal Group: ", e);
-        } catch (WebApplicationException e) {
+        } catch (WebApplicationException | ProcessingException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
@@ -398,7 +399,7 @@ public class AnimalGroupController implements Initializable {
             } else {
                 logger.log(Level.INFO, "No animal groups found");
             }
-        } catch (WebApplicationException e) {
+        } catch (WebApplicationException | ProcessingException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
@@ -440,7 +441,7 @@ public class AnimalGroupController implements Initializable {
                     break;
                 }
             }
-        } catch (WebApplicationException e) {
+        } catch (WebApplicationException | ProcessingException e) {
             logger.log(Level.SEVERE, "Error creating animal group", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
@@ -472,7 +473,7 @@ public class AnimalGroupController implements Initializable {
                 }
             }
             showAnimalGroups();
-        } catch (WebApplicationException e) {
+        } catch (WebApplicationException | ProcessingException e) {
             logger.log(Level.SEVERE, "Error deleting animal group", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
@@ -594,7 +595,7 @@ public class AnimalGroupController implements Initializable {
             } else {
                 logger.log(Level.WARNING, "Manager is null");
             }
-        } catch (WebApplicationException e) {
+        } catch (WebApplicationException | ProcessingException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         } catch (NullPointerException e) {
