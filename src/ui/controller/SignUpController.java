@@ -8,7 +8,6 @@ package ui.controller;
 import businessLogic.manager.ManagerFactory;
 import exceptions.ExistingUserException;
 import DTO.ManagerBean;
-import encryption.UserAuthService;
 import ui.utilities.WindowManager;
 import java.io.IOException;
 import java.util.Optional;
@@ -299,10 +298,8 @@ public class SignUpController {
      */
     private void handleSignUpButtonAction(ActionEvent actionEvent) {
         tfPassword.setText(pfPassword.getText());
-        
-        String hashedPassword = UserAuthService.hashPassword(tfPassword.getText().trim());
          
-        ManagerBean manager = new ManagerBean(cbActive.isSelected(), hashedPassword, tfName.getText().trim(), tfEmail.getText().trim(), "000000000", 
+        ManagerBean manager = new ManagerBean(cbActive.isSelected(), tfPassword.getText().trim(), tfName.getText().trim(), tfEmail.getText().trim(), "000000000", 
                 tfCity.getText().trim(), tfZip.getText().trim(), tfAddress.getText().trim());
         logger.log(Level.INFO, "Manager signed up successfully");
         
@@ -315,7 +312,7 @@ public class SignUpController {
             }
             
             logger.log(Level.INFO, "Creating manager: {0}", manager.toString());
-            ManagerFactory.get().createManager(manager);
+            ManagerFactory.get().signUp(manager);
             logger.log(Level.INFO, "Manager signed up successfully");
 
             ((Node) actionEvent.getSource()).getScene().getWindow().hide();

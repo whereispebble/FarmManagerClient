@@ -5,8 +5,8 @@
  */
 package ui.controller;
 
-import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
+import businessLogic.manager.ManagerFactory;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -14,19 +14,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import mailing.MailingService;
 import ui.utilities.WindowManager;
 
 /**
@@ -101,13 +95,11 @@ public class MenuController implements Initializable {
             logger.log(Level.SEVERE, "Error opening {0} window: {1}", new Object[]{title, e.getMessage()});
         }
     }
-
-    private void handleResetAction(ActionEvent event) {
-        logger.info("reset click");
-        MailingService ms = new MailingService();
-        boolean sent = ms.sendEmail(manager.getEmail());
+    
+    private void handleResetAction(ActionEvent event){
+        ManagerFactory.get().resetPassword(manager);
     }
-
+    
     /**
      * Handles the log out action by closing the current window and opening the SignIn window.
      *
@@ -117,9 +109,8 @@ public class MenuController implements Initializable {
         logger.log(Level.INFO, "Log out action initiated");
         if (showLogoutConfirmation()) {
             try {
-                Stage home = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
-                home.close();
-                WindowManager.openWindow("/ui/view/SignIn.fxml", "SignIn");
+                MenuController.manager=null;
+                openView("/ui/view/SignIn.fxml", "SignIn");
                 logger.log(Level.INFO, "Successfully navigated to Sign In screen.");
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Unexpected error during logout process.", e);

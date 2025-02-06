@@ -5,6 +5,8 @@
  */
 package businessLogic.manager;
 
+import DTO.ManagerBean;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 
@@ -24,6 +26,13 @@ public interface IManager {
     public <T> T getManagers(GenericType<T> responseType) throws WebApplicationException;
     
     public <T> T getManagerByEmail(GenericType<T> responseType, String email) throws WebApplicationException;
+    
+    public void resetPassword(Object requestEntity) throws WebApplicationException;
+    
+    public <T> T signIn(Object requestEntity, GenericType<T> responseType) throws WebApplicationException;
+
+    public void signUp(Object requestEntity) throws WebApplicationException;
 
     public void close();
+    
 }

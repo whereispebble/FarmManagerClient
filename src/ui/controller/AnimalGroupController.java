@@ -210,6 +210,7 @@ public class AnimalGroupController implements Initializable {
             btnLogOut.setOnAction(this::onLogOutButtonClicked);
             btnPrint.setOnAction(this::handlePrintAction);
 
+
             // Configure menu items.
             miDelete.setDisable(true);
             // Enable the delete menu item only when at least one item is selected.
