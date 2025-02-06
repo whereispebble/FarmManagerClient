@@ -235,12 +235,12 @@ public class ConsumesController implements Initializable{
         tcProduct.setCellValueFactory(new PropertyValueFactory<>("product"));    
         
         List<ProductBean> productList = new ArrayList<ProductBean>();
-        LOGGER.info("Fetching animal groups for manager...");
+        LOGGER.info("Fetching products...");
         productList = ProductManagerFactory.get().getAllProducts(new GenericType<List<ProductBean>>() {});
         
         ObservableList<ProductBean> productData = FXCollections.observableArrayList(productList);
-        LOGGER.info("Animal groups fetched, setting up ComboBox cell...");
-        tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(productData));
+        LOGGER.info("Products fetched, setting up ComboBox cell...");
+        tcProduct.setCellFactory(ComboBoxTableCell.forTableColumn(productData));
         
         
         
