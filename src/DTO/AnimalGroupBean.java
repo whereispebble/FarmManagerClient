@@ -70,6 +70,7 @@ public class AnimalGroupBean implements Serializable, Cloneable {
     /**
      * Constructs an AnimalGroupBean with the specified attributes for testing purposes.
      *
+     * @param id id of the animal group.
      * @param name the name of the animal group.
      * @param area the area where the animal group is located.
      * @param description a description of the animal group.
