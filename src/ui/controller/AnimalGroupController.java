@@ -399,7 +399,7 @@ public class AnimalGroupController implements Initializable {
             } else {
                 logger.log(Level.INFO, "No animal groups found");
             }
-        } catch (WebApplicationException | ProcessingException e) {
+        } catch (WebApplicationException | ProcessingException | NullPointerException e) {
             logger.log(Level.SEVERE, "Error fetching animal groups: ", e);
             showErrorAlert("SERVER ERROR", "Please contact with support", e.getMessage());
         }
@@ -464,12 +464,8 @@ public class AnimalGroupController implements Initializable {
             Optional<ButtonType> result = confirmationAlert.showAndWait();
 
             if (result.isPresent() && result.get() == ButtonType.YES) {
-                try {
-                    for (AnimalGroupBean agb : selectedGroups) {
-                        AnimalGroupFactory.get().deleteAnimalGroupById(agb.getId().toString());
-                    }
-                } catch (WebApplicationException e) {
-                    logger.log(Level.SEVERE, "Error deleting animal groups", e);
+                for (AnimalGroupBean agb : selectedGroups) {
+                    AnimalGroupFactory.get().deleteAnimalGroupById(agb.getId().toString());
                 }
             }
             showAnimalGroups();
