@@ -21,11 +21,6 @@
                     <MenuItem fx:id="miProduct" mnemonicParsing="false" text="Products" />
                 </items>
             </Menu>
-            <Menu fx:id="menuReport" mnemonicParsing="false" text="Report">
-                <items>
-                    <MenuItem fx:id="miPrint" mnemonicParsing="false" text="Print" />
-                </items>
-            </Menu>
          <Menu fx:id="menuHelp" mnemonicParsing="false" text="Help" />
          <Menu fx:id="menuProfile" mnemonicParsing="false" text="Profile">
             <items>
