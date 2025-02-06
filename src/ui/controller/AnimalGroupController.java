@@ -43,7 +43,9 @@ import javafx.util.converter.DoubleStringConverter;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericType;
 import DTO.AnimalGroupBean;
+import DTO.ConsumesBean;
 import DTO.ManagerBean;
+import businessLogic.consumes.ConsumesManagerFactory;
 import javafx.scene.control.ButtonType;
 import ui.cellFactories.DatePickerTableCell;
 import ui.utilities.WindowManager;
@@ -209,7 +211,6 @@ public class AnimalGroupController implements Initializable {
             btnCreate.setOnAction(this::onCreateButtonClicked);
             btnLogOut.setOnAction(this::onLogOutButtonClicked);
             btnPrint.setOnAction(this::handlePrintAction);
-
 
             // Configure menu items.
             miDelete.setDisable(true);
@@ -586,6 +587,11 @@ public class AnimalGroupController implements Initializable {
                 List<AnimalGroupBean> groupListAux = new ArrayList<>();
                 for (AnimalGroupBean group : groupList) {
                     Double totalConsume = 0.0;
+                    List<ConsumesBean> consumes = ConsumesManagerFactory.get().findConsumesByAnimalGroup(new GenericType<List<ConsumesBean>>() {
+                    }, group.getName());
+                    for (int i = 0; i < consumes.size(); i++) {
+                        totalConsume += consumes.get(i).getConsumeAmount();
+                    }
                     group.setConsume(totalConsume);
                     groupListAux.add(group);
                 }

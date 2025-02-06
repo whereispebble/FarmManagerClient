@@ -6,7 +6,7 @@ import DTO.AnimalGroupBean;
 import DTO.ConsumesIdBean;
 import DTO.ManagerBean;
 import businessLogic.animalGroup.AnimalGroupFactory;
-import cellFactories.DatePickerTableCell;
+import ui.cellFactories.DatePickerTableCell;
 import java.net.URL;
 import java.util.ArrayList;
 import businessLogic.consumes.ConsumesRestClient;
