@@ -11,11 +11,11 @@
  * <h2>Main Classes:</h2>
  * <ul>
  *   <li>{@link AnimalGroupRESTClient} - Handles REST communication for managing animal groups.</li>
- *   <li>{@link AnimalGroupRESTClientInterface} - Defines the operations for interacting with the REST service.</li>
- *   <li>{@link AnimalGroupRESTClientFactory} - Responsible for creating instances of {@link AnimalGroupRESTClient}.</li>
+ *   <li>{@link IAnimalGroup} - Defines the operations for interacting with the REST service.</li>
+ *   <li>{@link AnimalGroupFactory} - Responsible for creating instances of {@link AnimalGroupRESTClient}.</li>
  * </ul>
  *
- * @see AnimalGroupRESTClientInterface
+ * @see IAnimalGroup
  * @author Ander
  * @version 1.0
  */
