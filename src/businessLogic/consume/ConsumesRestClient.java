@@ -18,6 +18,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import ui.utilities.ConfigReader;
 
 /**
  * REST client for managing consume records via the Consumes RESTful service.
@@ -42,7 +43,7 @@ public class ConsumesRestClient implements IConsumesManager {
     private static final Logger LOGGER = Logger.getLogger("logger");
 
     /** Base URI for the REST service */
-    private static final String BASE_URI = "http://localhost:8080/farmapp/webresources";
+    private static final String BASE_URI = ConfigReader.getBaseUri();
 
     /** REST client for making HTTP requests */
     private Client client;
