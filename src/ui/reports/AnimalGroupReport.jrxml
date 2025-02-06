@@ -6,7 +6,7 @@
 	<field name="name" class="java.lang.String"/>
 	<field name="area" class="java.lang.String"/>
 	<field name="description" class="java.lang.String"/>
-	<field name="consume" class="java.lang.Integer"/>
+	<field name="consume" class="java.lang.Double"/>
 	<field name="creationDate" class="java.util.Date"/>
 	<background>
 		<band splitType="Stretch"/>
@@ -61,6 +61,7 @@
 			</textField>
 			<textField>
 				<reportElement x="327" y="0" width="100" height="20" uuid="3a946d2a-8602-4561-94e9-b6486a38c15c"/>
+				<textElement textAlignment="Justified"/>
 				<textFieldExpression><![CDATA[$F{consume}]]></textFieldExpression>
 			</textField>
 			<textField>

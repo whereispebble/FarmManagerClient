@@ -5,7 +5,6 @@
  */
 package ui.controller;
 
-import DTO.AnimalGroupBean;
 import DTO.ManagerBean;
 import ui.utilities.WindowManager;
 import java.util.logging.Level;
@@ -18,7 +17,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import java.util.Optional;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
@@ -31,18 +29,22 @@ import javafx.scene.input.MouseEvent;
 
 /**
  * Controller class for the Home view.
+ * <p>
+ * Manages user interaction within the Home view, handling user data display, logout operations, and contextual menu actions.
+ * Provides functions for displaying user information, confirming logouts, and managing various input events.
+ * </p>
  *
- * Manages user interaction within the Home view, handling user data display, logout operations, and contextual menu actions. Provides functions for displaying user information, confirming logouts, and managing various input events.
+ * <p>This class is linked to the FXML Home view file, and it is initialized automatically when the view is loaded.</p>
  *
- * This class is linked to the FXML Home view file, and it is initialized automatically when the view is loaded.
+ * <p>Usage Example:</p>
+ * <pre>
+ * HomeController controller = new HomeController(); 
+ * controller.setManager(manager);
+ * </pre>
  *
- * Usage Example:
- *
- * HomeController controller = new HomeController(); controller.setUser(user);
- *
- * @see User
+ * @see ManagerBean
  * @see WindowManager
- *
+ * 
  * @author Aitziber
  * @author Ander
  */
@@ -100,18 +102,21 @@ public class HomeController {
     @FXML
     private Text lblUserCity;
 
+    /**
+     * Button for viewing additional information.
+     */
     @FXML
     private Button btnView;
 
     /**
-     * User object containing the data to be displayed in the Home view.
+     * ManagerBean object containing the data to be displayed in the Home view.
      */
     private ManagerBean manager;
 
     /**
-     * Sets the user for the Home view and updates the displayed information.
-     *
-     * @param manager the {@link User} object containing the user data to be displayed
+     * Sets the manager for the Home view and updates the displayed information.
+     * 
+     * @param manager the {@link ManagerBean} object containing the user data to be displayed
      */
     public void setManager(ManagerBean manager) {
         this.manager = manager;
@@ -120,9 +125,10 @@ public class HomeController {
 
     /**
      * Initializes the controller class.
-     *
-     * Sets up event handlers for mouse and keyboard interactions, configures the contextual menu, and logs the initialization process.
-     *
+     * <p>
+     * Sets up event handlers for mouse and keyboard interactions, configures the contextual menu,
+     * and logs the initialization process.
+     * </p>
      */
     @FXML
     public void initialize() {
@@ -147,7 +153,7 @@ public class HomeController {
     }
 
     /**
-     * Updates the displayed user information based on the provided {@link User} data.
+     * Updates the displayed user information based on the provided {@link ManagerBean} data.
      */
     private void updateUserInfo() {
         try {
@@ -304,6 +310,11 @@ public class HomeController {
         }
     }
 
+    /**
+     * Handles the view button click event.
+     *
+     * @param event the action event triggered by pressing the view button
+     */
     private void handleViewButtonClicked(ActionEvent event) {
         ((Node) event.getSource()).getScene().getWindow().hide();
         WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", manager);
