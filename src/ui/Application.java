@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package userInterfaceTier;
+package ui;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -33,15 +33,17 @@ public class Application extends javafx.application.Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("SignIn.fxml"));
+        
+        Parent root = FXMLLoader.load(getClass().getResource("view/SignIn.fxml"));
         
         Scene scene = new Scene(root);
-        scene.getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-        stage.setScene(scene);
+        scene.getStylesheets().add(getClass().getResource("view/styles.css").toExternalForm());
         stage.getIcons().add(new Image("resources/logo.png"));
+        stage.setScene(scene);
         stage.setResizable(false);
-        stage.setTitle("Sign In");
+        stage.setTitle("Sign in");
         stage.show();
+        
     }
 
     /**
@@ -54,5 +56,4 @@ public class Application extends javafx.application.Application {
     public static void main(String[] args) {
         launch(args);
     }
-    
 }
