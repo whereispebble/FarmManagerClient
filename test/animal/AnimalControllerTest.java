@@ -29,7 +29,6 @@ import static org.testfx.matcher.base.NodeMatchers.isVisible;
 import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 
-
 /**
  *
  * @author Aitziber
@@ -124,22 +123,22 @@ public class AnimalControllerTest extends ApplicationTest{
         assertTrue("El animal con el nombre 'TEST' debería estar presente en la tabla", animalUpdated);
     }
 
-    @Test
-    public void testE_DeleteAniaml() {
-        TableView<AnimalBean> table = lookup("#tbAnimal").query();
-        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(0).query();
-        clickOn(row);
-
-        AnimalBean selectedAnimal=(AnimalBean)table.getSelectionModel().getSelectedItem();
-        rightClickOn(row);
-        clickOn("#miDelete");
-        clickOn("Sí");
-        
-        ObservableList<AnimalBean> items = table.getItems();
-        boolean isDeleted = items.stream().noneMatch(item -> item.equals(selectedAnimal));
-
-        assertTrue("El item eliminado no debería estar presente en la tabla", isDeleted);
-    }
+//    @Test
+//    public void testE_DeleteAniaml() {
+//        TableView<AnimalBean> table = lookup("#tbAnimal").query();
+//        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(0).query();
+//        clickOn(row);
+//
+//        AnimalBean selectedAnimal=(AnimalBean)table.getSelectionModel().getSelectedItem();
+//        rightClickOn(row);
+//        clickOn("#miDelete");
+//        clickOn("Sí");
+//        
+//        ObservableList<AnimalBean> items = table.getItems();
+//        boolean isDeleted = items.stream().noneMatch(item -> item.equals(selectedAnimal));
+//
+//        assertTrue("El item eliminado no debería estar presente en la tabla", isDeleted);
+//    }
     
     @Test
     public void testC_DeleteAnimal() {
