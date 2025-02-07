@@ -30,7 +30,7 @@ import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
  * Test class for ProductController.
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class ProductControllerTest extends ApplicationTest {
+public class ProductControllerTestOK extends ApplicationTest {
 
     private TableView table;
     private TableColumn tcStock;
@@ -100,7 +100,6 @@ public class ProductControllerTest extends ApplicationTest {
         verifyThat("#tfSearch", (TextField t) -> t.isFocused());
     }
 
-    @Ignore
     @Test
     public void testD_EditProduct() {
         //get row count
@@ -122,24 +121,5 @@ public class ProductControllerTest extends ApplicationTest {
 
         doubleClickOn("#tcStock");
         write(modifiedProduct.getStock().toString());
-
-        // Uncomment and adapt the following lines to modify other fields (e.g., Providers)
-//        doubleClickOn("#tcProviders");
-//        int providerCount = tcProviders.getItems().size();
-//        if (providerCount > 1) {
-//            if (selectedProduct.getProvider().equals(cbProviders.getItems().get(0))) {
-//                press(KeyCode.DOWN);
-//            } else {
-//                press(KeyCode.UP);
-//            }
-//        }
-//        modifiedProduct.setProvider((ProviderBean) cbProviders
-//                .getSelectionModel().getSelectedItem());
-//        clickOn(btModify);
-//        Assert modification.
-//        assertEquals("The product has not been modified!!!",
-//                modifiedProduct,
-//                (ProductBean) table.getItems().get(selectedIndex));
-//        verifyThat("#tfSearch", (TextField t) -> t.isFocused());
     }
 }
