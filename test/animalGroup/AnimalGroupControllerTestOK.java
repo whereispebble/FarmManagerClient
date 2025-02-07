@@ -125,7 +125,7 @@ public class AnimalGroupControllerTestOK extends ApplicationTest {
     }
 
     @Test
-    public void testE_UpdateAnimalGroup() {
+    public void testE_UpdateAnimalGroup() throws InterruptedException {
         logger.info("Iniciando test Update");
 
         TableView<AnimalGroupBean> table = lookup("#tbAnimalGroup").query();
@@ -143,6 +143,51 @@ public class AnimalGroupControllerTestOK extends ApplicationTest {
 
         AnimalGroupBean updatedAnimalGroup = table.getItems().get(lastIndex);
         assertEquals("The name of the group should be 'Test Group'", "Test Group", updatedAnimalGroup.getName());
-    }
+        
+        table = lookup("#tbAnimalGroup").query();
 
+        lastIndex = table.getItems().size() - 1;
+
+        row = lookup(".table-row-cell").nth(lastIndex).query();
+        
+        cell = from(row).lookup(".table-cell").nth(1).query();
+
+        clickOn(cell);
+
+        write("Test Description");
+        push(KeyCode.ENTER);
+        
+        updatedAnimalGroup = table.getItems().get(lastIndex);
+        assertEquals("The description of the group should be 'Test Description'", "Test Description", updatedAnimalGroup.getDescription());
+        
+        table = lookup("#tbAnimalGroup").query();
+
+        lastIndex = table.getItems().size() - 1;
+
+        row = lookup(".table-row-cell").nth(lastIndex).query();
+        
+        cell = from(row).lookup(".table-cell").nth(2).query();
+
+        clickOn(cell);
+
+        write("Test Area");
+        push(KeyCode.ENTER);
+
+        updatedAnimalGroup = table.getItems().get(lastIndex);
+        assertEquals("The area of the group should be 'Test Area'", "Test Area", updatedAnimalGroup.getArea());
+        
+        table = lookup("#tbAnimalGroup").query();
+
+        lastIndex = table.getItems().size() - 1;
+
+        row = lookup(".table-row-cell").nth(lastIndex).query();
+        
+        cell = from(row).lookup(".table-cell").nth(4).query();
+
+        clickOn(cell);
+        clickOn(cell);
+        clickOn(cell);
+        clickOn(cell).write("04/02/2025");
+        push(KeyCode.ENTER);
+    }
 }
