@@ -608,44 +608,53 @@ public class AnimalController implements Initializable {
     * @param event The action event triggered by the user clicking the add button.
     */
     private void onAddButtonClicked(ActionEvent event){
-        logger.info("Creating a new animal instance.");
-        AnimalBean newAnimal = new AnimalBean();
-        newAnimal.setName("New Animal");
-        newAnimal.setBirthdate(new Date());
-        setDefaultAnimalGroup(newAnimal);
-        newAnimal.setSubespecies("Unknown");
-        setDefaultSpecies(newAnimal);
-        newAnimal.setMonthlyConsume(0);
-        logger.info("New animal initialized with default values.");
+        try{
+            logger.info("Creating a new animal instance.");
+            AnimalBean newAnimal = new AnimalBean();
+            newAnimal.setName("New Animal");
+            newAnimal.setBirthdate(new Date());
+            setDefaultAnimalGroup(newAnimal);
+            newAnimal.setSubespecies("Unknown");
+            setDefaultSpecies(newAnimal);
+            newAnimal.setMonthlyConsume(0);
+            logger.info("New animal initialized with default values.");
         
-        String filterType = comboSearch.getValue();
-        // Set default values based on search filter
-        if (filterType.equals("Animal Group")  || filterType.equals("Subespecies")){
-            String filterValue = tfSearch.getText();
-            if (filterValue != null && !filterValue.isEmpty()){
-                if (filterType.equals("Subespecies")){
-                    newAnimal.setSubespecies(filterValue); 
-                }
-                else if (filterType.equals("Animal Group")){
-                     try {
-                        AnimalGroupBean choiceAnimalGroup = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<AnimalGroupBean>() {}, filterValue, String.valueOf(manager.getId()));
-                        newAnimal.setAnimalGroup(choiceAnimalGroup);
-                    } catch (NotFoundException | BadRequestException e) {
-                        logger.log(Level.WARNING, "Animal group not found. Assigning default group.", e.getMessage());
-                        tfSearch.setText("");
+            String filterType = comboSearch.getValue();
+            // Set default values based on search filter
+            if (filterType.equals("Animal Group")  || filterType.equals("Subespecies")){
+                String filterValue = tfSearch.getText();
+                if (filterValue != null && !filterValue.isEmpty()){
+                    if (filterType.equals("Subespecies")){
+                        newAnimal.setSubespecies(filterValue); 
+                    }
+                    else if (filterType.equals("Animal Group")){
+                         try {
+                            AnimalGroupBean choiceAnimalGroup = AnimalGroupFactory.get().getAnimalGroupByName(new GenericType<AnimalGroupBean>() {}, filterValue, String.valueOf(manager.getId()));
+                            newAnimal.setAnimalGroup(choiceAnimalGroup);
+                        } catch (NotFoundException | BadRequestException e) {
+                            logger.log(Level.WARNING, "Animal group not found. Assigning default group.", e.getMessage());
+                            tfSearch.setText("");
+                        }
                     }
                 }
             }
+            logger.info("Saving new animal to database.");
+            AnimalManagerFactory.get().createAnimal(newAnimal);
+            logger.log(Level.INFO, "New animal successfully created with name: {0}", newAnimal.getName());
+            // Refresh table
+            btnSearch.fire();
+
+            // Put the newly created animal in edit mode
+            focusNewAnimal();
+            logger.info("New animal is now in edit mode.");
+        } catch (Exception e){
+            logger.log(Level.WARNING, "Connection to server refused");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Connection error");
+            alert.setHeaderText(null);
+            alert.setContentText("Please try again later");
+            alert.showAndWait();
         }
-        logger.info("Saving new animal to database.");
-        AnimalManagerFactory.get().createAnimal(newAnimal);
-        logger.log(Level.INFO, "New animal successfully created with name: {0}", newAnimal.getName());
-        // Refresh table
-        btnSearch.fire();
-        
-        // Put the newly created animal in edit mode
-        focusNewAnimal();
-        logger.info("New animal is now in edit mode.");
     }
     
     /**
