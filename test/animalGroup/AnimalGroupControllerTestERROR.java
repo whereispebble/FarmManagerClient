@@ -6,15 +6,12 @@
 package animalGroup;
 
 import DTO.AnimalGroupBean;
-import java.util.Date;
 import java.util.logging.Logger;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import org.junit.Test;
@@ -37,7 +34,7 @@ public class AnimalGroupControllerTestERROR extends ApplicationTest {
     @Override
     public void start(Stage stage) throws Exception {
         if (!loggedIn) {
-            Parent root = FXMLLoader.load(getClass().getResource("/ui/view/AnimalGroup.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/ui/view/SignIn.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
@@ -45,11 +42,22 @@ public class AnimalGroupControllerTestERROR extends ApplicationTest {
     }
 
     @Test
+    public void testA_OpenAnimalGroupView() {
+        logger.info("Iniciando test Open");
+        clickOn("#tfUsername").write("ander@paia.com");
+        clickOn("#pfPasswd").write("12345678");
+        clickOn("#btnSignIn");
+        verifyThat("#tbAnimalGroup", isVisible());
+        loggedIn = true;
+
+        // For this test at this point server must be shut down manually
+        sleep(10000);
+    }
+
+    @Test
     public void testB_GetAnimalGroupsERROR() {
-        clickOn("#searchField").write("Group");
         clickOn("#btnSearch");
         verifyThat("Please contact with support", isVisible());
-        sleep(500);
         clickOn("Aceptar");
     }
 
@@ -57,52 +65,27 @@ public class AnimalGroupControllerTestERROR extends ApplicationTest {
     public void testC_AddAnimalGroupERROR() {
         clickOn("#btnCreate");
         verifyThat("Please contact with support", isVisible());
-        sleep(500);
         clickOn("Aceptar");
     }
 
     @Test
     public void testD_UpdateAnimalGroupERROR() {
-        TableView<AnimalGroupBean> table = lookup("#tbAnimalGroup").query();
-        ObservableList<AnimalGroupBean> items = table.getItems();
-        AnimalGroupBean testGroup = new AnimalGroupBean(1L, "Error Group", "Error Area", "This is a generated group for testing", new Date());
-        interact(() -> items.add(testGroup));
-
-        int lastIndex = items.size() - 1;
-
-        TableRow<AnimalGroupBean> row = lookup(".table-row-cell").nth(lastIndex).query();
-
+        TableRow<String> row = lookup(".table-row-cell").nth(0).query();
         Node cell = from(row).lookup(".table-cell").nth(1).query();
-
-        doubleClickOn(cell);
-
-        write("New error test description");
+        doubleClickOn(cell).write("New description");
         push(KeyCode.ENTER);
         verifyThat("Please contact with support", isVisible());
-        sleep(500);
         clickOn("Aceptar");
     }
 
     @Test
     public void testE_DeleteAnimalGroupERROR() {
-        TableView<AnimalGroupBean> table = lookup("#tbAnimalGroup").query();
-        ObservableList<AnimalGroupBean> items = table.getItems();
-
-        AnimalGroupBean testGroup = new AnimalGroupBean(1L, "Error Group", "Error Area", "This is a generated group for testing", new Date());
-
-        interact(() -> items.add(testGroup));
-
-        int lastIndex = items.size() - 1;
-
-        TableRow<AnimalGroupBean> row = lookup(".table-row-cell").nth(lastIndex).query();
+        TableRow<AnimalGroupBean> row = lookup(".table-row-cell").nth(0).query();
 
         rightClickOn(row);
-
         clickOn("#miDelete");
         clickOn("Sí");
-
         verifyThat("Please contact with support", isVisible());
-
         clickOn("Aceptar");
     }
 }

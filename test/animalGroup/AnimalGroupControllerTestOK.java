@@ -6,6 +6,8 @@
 package animalGroup;
 
 import DTO.AnimalGroupBean;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -22,12 +24,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.runners.MethodSorters;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
-import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 
 /**
  *
@@ -36,6 +36,7 @@ import static org.testfx.matcher.control.TextInputControlMatchers.hasText;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AnimalGroupControllerTestOK extends ApplicationTest {
 
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
     private static final Logger logger = Logger.getLogger(AnimalGroupControllerTestOK.class.getName());
     private static boolean loggedIn = false;
 
@@ -116,11 +117,23 @@ public class AnimalGroupControllerTestOK extends ApplicationTest {
         ObservableList<AnimalGroupBean> items = table.getItems();
 
         AnimalGroupBean newItem = items.stream()
-                .filter(item -> "Group of animals".equals(item.getDescription()))
-                .findFirst()
+                .filter(item -> item.getName().startsWith("Group"))
+                .reduce((first, second) -> second)
                 .orElse(null);
 
-        assertNotNull("The new element should have the description: 'Group of animals'", newItem);
+        assertNotNull("The name of the new element should start with: 'Group'", newItem);
+
+        assertNotNull("The new element should have the description: 'Group of animals'", newItem.getDescription());
+
+        assertNotNull("The new element should have the area: 'Undefined zone'", newItem.getArea());
+
+        assertNotNull("The new element should have the consume value to: '0.0'", newItem.getConsume().toString());
+
+        String today = sdf.format(new Date());
+        String itemDate = sdf.format(newItem.getCreationDate());
+
+        assertEquals("The creation date should be today", today, itemDate);
+
         assertEquals("The element in the table should be an AnimalGroupBean", AnimalGroupBean.class, newItem.getClass());
     }
 
@@ -143,29 +156,29 @@ public class AnimalGroupControllerTestOK extends ApplicationTest {
 
         AnimalGroupBean updatedAnimalGroup = table.getItems().get(lastIndex);
         assertEquals("The name of the group should be 'Test Group'", "Test Group", updatedAnimalGroup.getName());
-        
+
         table = lookup("#tbAnimalGroup").query();
 
         lastIndex = table.getItems().size() - 1;
 
         row = lookup(".table-row-cell").nth(lastIndex).query();
-        
+
         cell = from(row).lookup(".table-cell").nth(1).query();
 
         clickOn(cell);
 
         write("Test Description");
         push(KeyCode.ENTER);
-        
+
         updatedAnimalGroup = table.getItems().get(lastIndex);
         assertEquals("The description of the group should be 'Test Description'", "Test Description", updatedAnimalGroup.getDescription());
-        
+
         table = lookup("#tbAnimalGroup").query();
 
         lastIndex = table.getItems().size() - 1;
 
         row = lookup(".table-row-cell").nth(lastIndex).query();
-        
+
         cell = from(row).lookup(".table-cell").nth(2).query();
 
         clickOn(cell);
@@ -175,13 +188,11 @@ public class AnimalGroupControllerTestOK extends ApplicationTest {
 
         updatedAnimalGroup = table.getItems().get(lastIndex);
         assertEquals("The area of the group should be 'Test Area'", "Test Area", updatedAnimalGroup.getArea());
-        
-        table = lookup("#tbAnimalGroup").query();
 
+        table = lookup("#tbAnimalGroup").query();
         lastIndex = table.getItems().size() - 1;
 
         row = lookup(".table-row-cell").nth(lastIndex).query();
-        
         cell = from(row).lookup(".table-cell").nth(4).query();
 
         clickOn(cell);
@@ -189,5 +200,9 @@ public class AnimalGroupControllerTestOK extends ApplicationTest {
         clickOn(cell);
         clickOn(cell).write("04/02/2025");
         push(KeyCode.ENTER);
+
+        AnimalGroupBean newItem = table.getItems().get(lastIndex);
+        
+        assertEquals("The creation date should be 04/02/2025", "04/02/2025", sdf.format(newItem.getCreationDate()));
     }
 }
