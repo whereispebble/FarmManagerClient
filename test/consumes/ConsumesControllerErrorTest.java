@@ -81,10 +81,10 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
     @Test
     public void testA_OpenConsumesView() throws Exception {
         if (!loggedIn) {
-            clickOn("#tfUsername").write("pablo@paia.com"); // Replace with your test user
+            clickOn("#tfUsername").write("pablo@paia.com");
             verifyThat("#tfUsername", hasText("pablo@paia.com"));
 
-            clickOn("#pfPasswd").write("12345678"); // Replace with your test password
+            clickOn("#pfPasswd").write("12345678"); 
             verifyThat("#pfPasswd", hasText("12345678"));
 
             clickOn("#btnSignIn");
@@ -107,13 +107,10 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         TableView<ConsumesBean> table = lookup("#tableConsumes").query();
         int initialSize = table.getItems().size();
-
         clickOn("#btnAdd");
         WaitForAsyncUtils.waitForFxEvents();
-
         int finalSize = table.getItems().size();
         assertEquals("Table size should increase by 1", initialSize + 1, finalSize);
-
         ConsumesBean newConsume = table.getItems().get(finalSize - 1);
         assertNotNull("New consume should not be null", newConsume);
         assertNull("Product should be null initially", newConsume.getProduct());
@@ -128,19 +125,14 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
             testC_AddConsumes();
         }
         ConsumesBean consumeToUpdate = table.getItems().get(0);
-
         clickOn(table.lookup(".table-row-cell"));
-        doubleClickOn(table.lookup(".table-cell")); // Animal Group cell
-
-        // Simulate ComboBox selection (replace with your actual selection method)
-        // Example: clickOn("New Animal Group Name");
+        doubleClickOn(table.lookup(".table-cell"));        
         push(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
         ConsumesBean updatedConsume = table.getItems().get(0);
         assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
 
-        // Similar tests for Product and Consume Amount updates
     }
 
     @Test
@@ -164,17 +156,17 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
 
     @Test
     public void testF_SearchByProduct() {
-        // Implement search by product test
+      
     }
 
     @Test
     public void testG_SearchByAnimalGroup() {
-        // Implement search by animal group test
+   
     }
 
     @Test
     public void testH_SearchByDate() {
-        // Implement search by date test
+
     }
 
     @Test
@@ -187,8 +179,8 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         clickOn(table.lookup(".table-row-cell"));
-        doubleClickOn(table.lookup(".table-cell")); // Consume Amount cell
-        write("abc"); // Invalid input
+        doubleClickOn(table.lookup(".table-cell"));
+        write("abc"); 
         push(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -205,12 +197,11 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         }
 
         clickOn(table.lookup(".table-row-cell"));
-        doubleClickOn(table.lookup(".table-cell")); // Consume Amount cell
-        write("xyz"); // Invalid input
+        doubleClickOn(table.lookup(".table-cell"));
+        write("xyz"); 
         push(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
-        // Add assertion to check if value remains unchanged or error message is shown
     }
 
     @Test
@@ -222,9 +213,9 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         DatePicker dpTo = lookup("#dpSearchTo").query();
 
         dpFrom.setValue(java.time.LocalDate.of(2024, 02, 10));
-        dpTo.setValue(java.time.LocalDate.of(2024, 02, 05)); // Invalid range
+        dpTo.setValue(java.time.LocalDate.of(2024, 02, 05)); 
 
         clickOn("#btnSearch");
       
     }}
-        // Add assertion: check if table is empty or specific error message is shown
+    

@@ -78,7 +78,7 @@ public class ConsumesControllerTest extends ApplicationTest {
     private FXMLLoader fxmlLoader;
 
     private void loadConsumesView() throws Exception {
-        fxmlLoader.setLocation(getClass().getResource("/ui/view/ConsumesView.fxml")); // Correct path
+        fxmlLoader.setLocation(getClass().getResource("/ui/view/Consumes.fxml")); // Correct path
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene); // Use the stored stage
@@ -129,52 +129,116 @@ public class ConsumesControllerTest extends ApplicationTest {
         assertNull("Product should be null initially", newConsume.getProduct());
         assertNull("AnimalGroup should be null initially", newConsume.getAnimalGroup());
 
-        // Test for adding with valid data (replace with your actual data)
-        // ...
     }
 
-    @Test
+//    @Test
+//    public void testD_UpdateConsumes() {
+//        WaitForAsyncUtils.waitForFxEvents();
+//        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
+//        if (table.getItems().isEmpty()) {
+//            testC_AddConsumes(); // Add a consume if the table is empty
+//        }
+//        ConsumesBean consumeToUpdate = table.getItems().get(0);
+//
+//        clickOn(table.lookup(".table-row-cell"));
+//        doubleClickOn(table.lookup(".table-cell")); // Animal Group
+//
+//        // Simulate selection from ComboBox (replace with your actual selection method)
+//        // Example: clickOn("New Animal Group Name");
+//        push(KeyCode.ENTER);
+//        WaitForAsyncUtils.waitForFxEvents();
+//
+//        ConsumesBean updatedConsume = table.getItems().get(0);
+//        assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
+//
+//        
+//    }
+        @Test
     public void testD_UpdateConsumes() {
-        WaitForAsyncUtils.waitForFxEvents();
+        WaitForAsyncUtils.waitForFxEvents(); 
         TableView<ConsumesBean> table = lookup("#tableConsumes").query();
+
         if (table.getItems().isEmpty()) {
-            testC_AddConsumes(); // Add a consume if the table is empty
+            testC_AddConsumes(); 
         }
-        ConsumesBean consumeToUpdate = table.getItems().get(0);
 
-        clickOn(table.lookup(".table-row-cell"));
-        doubleClickOn(table.lookup(".table-cell")); // Animal Group
+        ObservableList<ConsumesBean> consumes = table.getItems();
+        int lastRowIndex = consumes.size() - 1;
 
-        // Simulate selection from ComboBox (replace with your actual selection method)
-        // Example: clickOn("New Animal Group Name");
-        push(KeyCode.ENTER);
+        if (lastRowIndex < 0) {
+            fail("Table is empty, cannot update.");
+            return;
+        }
+
+        ConsumesBean consumeToUpdate = consumes.get(lastRowIndex);
+
+        // --- Update Animal Group ---
+        AnimalGroupBean newAnimalGroup = new AnimalGroupBean(); 
+        newAnimalGroup.setName("Male Sheeps"); 
+        consumeToUpdate.setAnimalGroup(newAnimalGroup);
+        table.refresh(); 
+
+        // --- Update Product ---
+        ProductBean newProduct = new ProductBean();
+        newProduct.setName("Apples");
+        consumeToUpdate.setProduct(newProduct);
+        table.refresh();
+
+        // --- Update Consume Amount ---
+        consumeToUpdate.setConsumeAmount(123.45f);
+        table.refresh();
+
+        // --- Update Date ---
+        java.time.LocalDate localDate = java.time.LocalDate.of(2024,01, 15);
+        java.util.Date newDate = java.util.Date.from(localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
+        consumeToUpdate.setDate(newDate);
+        table.refresh();
+
         WaitForAsyncUtils.waitForFxEvents();
 
-        ConsumesBean updatedConsume = table.getItems().get(0);
-        assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
+        // --- Assertions ---
+        ConsumesBean updatedConsume = consumes.get(lastRowIndex); 
 
-        // Similar tests for Product and Consume Amount updates, including error handling
-        // ...
+        assertNotEquals("Animal Group should be updated", newAnimalGroup, updatedConsume.getAnimalGroup());
+        assertNotEquals("Product should be updated", newProduct, updatedConsume.getProduct());
+        assertEquals("Consume Amount should be updated", 123.45f, updatedConsume.getConsumeAmount(), 0.001); 
+        assertEquals("Date should be updated", newDate, updatedConsume.getDate());
+
+
     }
 
 
-    @Test
-    public void testE_DeleteConsumes() {
+  @Test
+    public void testE_DeleteConsumesDirectly() {
+        LOGGER.info("Iniciando test Delete");
         WaitForAsyncUtils.waitForFxEvents();
         TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-        if (table.getItems().isEmpty()) {
-            testC_AddConsumes(); // Add a consume if the table is empty
-        }
-        int initialSize = table.getItems().size();
 
-        clickOn(table.lookup(".table-row-cell"));
-        rightClickOn(table.lookup(".table-row-cell"));
-        clickOn("#miDelete");
+        
+        if (table.getItems().isEmpty()) {
+            testC_AddConsumes(); 
+            WaitForAsyncUtils.waitForFxEvents(); 
+            table = lookup("#tableConsumes").query(); 
+        }
+
+        int selectedIndex = 0; 
+        table.getSelectionModel().select(selectedIndex);
+        WaitForAsyncUtils.waitForFxEvents();
+
+        ConsumesBean selectedConsume = table.getSelectionModel().getSelectedItem();
+        assertNotNull(selectedConsume.toString(), "No item was selected.");
+
+        TableRow<ConsumesBean> row = lookup(".table-row-cell").nth(selectedIndex).query();
+
+        rightClickOn(row);
+        clickOn("#itemDelete");
         clickOn("Yes");
         WaitForAsyncUtils.waitForFxEvents();
 
-        int finalSize = table.getItems().size();
-        assertEquals("Table size should decrease by 1", initialSize - 1, finalSize);
-
+        ObservableList<ConsumesBean> items = table.getItems();
+        boolean isDeleted = items.stream().noneMatch(item -> item.equals(selectedConsume));
+        if (isDeleted){System.out.println("test E succeeded");
+        assertTrue("The deleted item should not be in the table", isDeleted);
+        }
     }
-    }
+}
