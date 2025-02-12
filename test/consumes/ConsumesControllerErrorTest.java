@@ -199,18 +199,19 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         write("xyz"); 
         push(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
+    }
 
+    @Test
+    public void testK_SearchInvalidDateRange() {
+        clickOn("#comboSearch");
+        clickOn("Date");
 
-//    @Test
-//    public void testK_SearchInvalidDateRange() {
-//        clickOn("#comboSearch");
-//        clickOn("Date");
-//
-//        DatePicker dpFrom = lookup("#dpSearchFrom").query();
-//        DatePicker dpTo = lookup("#dpSearchTo").query();
-//
-//        dpFrom.setValue(java.time.LocalDate.of(2024, 02, 10));
-//        dpTo.setValue(java.time.LocalDate.of(2024, 02, 05)); 
-//        clickOn("#btnSearch");
-//    }
+        DatePicker dpFrom = lookup("#dpSearchFrom").query();
+        DatePicker dpTo = lookup("#dpSearchTo").query();
+
+        dpFrom.setValue(java.time.LocalDate.of(2024, 02, 10));
+        dpTo.setValue(java.time.LocalDate.of(2024, 02, 05)); 
+        clickOn("#btnSearch");
+    }
+
 }
