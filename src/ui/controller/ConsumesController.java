@@ -424,10 +424,10 @@ public class ConsumesController implements Initializable {
         itemDelete.setDisable(false);
         itemDelete.setOnAction(this::handleDeleteAction);
 
-        tableConsumes.getSelectionModel().getSelectedItems().addListener((ListChangeListener<ConsumesBean>) change -> {
-            itemDelete.setDisable(tableConsumes.getSelectionModel().getSelectedItems().isEmpty());
-            LOGGER.info("Item delete launched.");
-        });
+//        tableConsumes.getSelectionModel().getSelectedItems().addListener((ListChangeListener<ConsumesBean>) change -> {
+//            itemDelete.setDisable(tableConsumes.getSelectionModel().getSelectedItems().isEmpty());
+//            LOGGER.info("Item delete launched.");
+//        });
 
         LOGGER.info("Setting up selection listener for table...");
         tableConsumes.getSelectionModel().selectedItemProperty().addListener(
@@ -653,65 +653,70 @@ public class ConsumesController implements Initializable {
         final int NEW_CONSUME_ROW = tableConsumes.getItems().size() - 1; // Last added row
         Platform.runLater(() -> tableConsumes.edit(NEW_CONSUME_ROW, tcAnimalGroup));
     }
+private void handleDeleteAction(ActionEvent event) {
+    ObservableList<ConsumesBean> selectedConsumes = tableConsumes.getSelectionModel().getSelectedItems();
 
-    /**
-     * Handles the delete action. This method is invoked when the user clicks the "Delete" button. It confirms the deletion of selected consumption items and removes them from both the backend and the table.
-     *
-     * @param event The action event triggered by clicking the "Delete" button.
-     */
-    private void handleDeleteAction(ActionEvent event) {
-        ObservableList<ConsumesBean> selectedConsumes = tableConsumes.getSelectionModel().getSelectedItems();
+    // 1. Manejo de selección vacía (mejorado)
+    if (selectedConsumes.isEmpty()) {
+        Alert warningAlert = new Alert(Alert.AlertType.WARNING, "No consumes selected for deletion.", ButtonType.OK);
+        warningAlert.showAndWait(); // No necesitas Platform.runLater aquí, ya que se llama desde el hilo de la UI
+        return;
+    }
+
+    // 2. Confirmación (sin cambios sustanciales)
+    Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
+            "Are you sure you want to delete the selected consumes?",
+            ButtonType.YES, ButtonType.NO);
+    Optional<ButtonType> result = confirmationAlert.showAndWait();
+
+    if (result.isPresent() && result.get() == ButtonType.YES) {
+        // 3. Borrado (mejorado)
         List<ConsumesBean> successfullyDeleted = new ArrayList<>();
+        List<ConsumesBean> failedToDelete = new ArrayList<>(); // Lista para los fallidos
 
-        // If no items are selected, show a warning
-        if (selectedConsumes.isEmpty()) {
-            Platform.runLater(() -> {
-                Alert warningAlert = new Alert(Alert.AlertType.WARNING, "No consumes selected for deletion.", ButtonType.OK);
-                warningAlert.showAndWait();
-            });
-            return;
+        for (ConsumesBean selectedConsume : selectedConsumes) {
+            try {
+                String productId = selectedConsume.getProduct().getId().toString();
+                String animalGroupId = selectedConsume.getAnimalGroup().getId().toString();
+
+                ConsumesManagerFactory.get().deleteConsume(productId, animalGroupId);
+                successfullyDeleted.add(selectedConsume);
+            } catch (WebApplicationException e) {
+                System.err.println("Error deleting consume ID " + selectedConsume.getConsumesId() + ": " + e.getMessage());
+                failedToDelete.add(selectedConsume); // Añade a la lista de fallidos
+                handleException(e); // Mantén tu manejo de excepciones
+            } catch (Exception e) {
+                System.err.println("Unexpected error deleting consume ID " + selectedConsume.getConsumesId() + ": " + e.getMessage());
+                failedToDelete.add(selectedConsume); // Añade a la lista de fallidos
+                Platform.runLater(() -> {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR,
+                            "Unexpected error during deletion: " + e.getMessage(),
+                            ButtonType.OK);
+                    errorAlert.showAndWait();
+                });
+            }
         }
 
-        // Show a confirmation alert
+        // 4. Actualización de la tabla (mejorada)
         Platform.runLater(() -> {
-            Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
-                    "Are you sure you want to delete the selected consumes?",
-                    ButtonType.YES, ButtonType.NO);
-            Optional<ButtonType> result = confirmationAlert.showAndWait();
+            if (!successfullyDeleted.isEmpty()) {
+                tableConsumes.getItems().removeAll(successfullyDeleted);
+                tableConsumes.getSelectionModel().clearSelection();
+                tableConsumes.refresh();
+            }
 
-            if (result.isPresent() && result.get() == ButtonType.YES) {
-                for (ConsumesBean selectedConsume : selectedConsumes) {
-                    try {
-                        String productId = selectedConsume.getProduct().getId().toString();  // Product ID
-                        String animalGroupId = selectedConsume.getAnimalGroup().getId().toString();  // Animal Group ID
-
-                        ConsumesManagerFactory.get().deleteConsume(productId, animalGroupId);
-                        successfullyDeleted.add(selectedConsume);
-                    } catch (WebApplicationException e) {
-                        System.err.println("Error deleting consume ID " + selectedConsume.getConsumesId() + ": " + e.getMessage());
-                        handleException(e);
-                    } catch (Exception e) {
-                        Platform.runLater(() -> {
-                            Alert errorAlert = new Alert(Alert.AlertType.ERROR,
-                                    "Unexpected error during deletion: " + e.getMessage(),
-                                    ButtonType.OK);
-                            errorAlert.showAndWait();
-                        });
-                    }
+            // 5. Mostrar mensaje de error si hubo fallos (nuevo)
+            if (!failedToDelete.isEmpty()) {
+                String errorMessage = "Some consumes could not be deleted:\n";
+                for (ConsumesBean consume : failedToDelete) {
+                    errorMessage += "ID: " + consume.getConsumesId() + "\n"; // Incluye el ID
                 }
-
-                if (!successfullyDeleted.isEmpty()) {
-                    Platform.runLater(() -> {
-                        // Remove successfully deleted items from the table
-                        tableConsumes.getItems().removeAll(successfullyDeleted);
-                        tableConsumes.getSelectionModel().clearSelection();
-                        tableConsumes.refresh();
-                    });
-                }
+                Alert errorAlert = new Alert(Alert.AlertType.ERROR, errorMessage, ButtonType.OK);
+                errorAlert.showAndWait();
             }
         });
     }
-
+}
     /**
      * Fetches and displays all consumes from the backend. If no consumes are found, it shows an informational alert. If any error occurs while fetching the data, it shows an error alert.
      */
