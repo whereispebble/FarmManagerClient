@@ -78,14 +78,12 @@ public class ConsumesControllerTest extends ApplicationTest {
     private FXMLLoader fxmlLoader;
 
     private void loadConsumesView() throws Exception {
-<<<<<<< HEAD
-        fxmlLoader.setLocation(getClass().getResource("/ui/view/Consumes.fxml")); // Correct path
-=======
-        fxmlLoader.setLocation(getClass().getResource("/ui/view/ConsumesView.fxml")); // Correct path
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
+
+        fxmlLoader.setLocation(getClass().getResource("/ui/view/Consumes.fxml")); 
+
         Parent root = fxmlLoader.load();
         Scene scene = new Scene(root);
-        primaryStage.setScene(scene); // Use the stored stage
+        primaryStage.setScene(scene); 
         primaryStage.show();
         controller = fxmlLoader.getController();
     }
@@ -133,31 +131,9 @@ public class ConsumesControllerTest extends ApplicationTest {
         assertNull("Product should be null initially", newConsume.getProduct());
         assertNull("AnimalGroup should be null initially", newConsume.getAnimalGroup());
 
-<<<<<<< HEAD
+
     }
 
-//    @Test
-//    public void testD_UpdateConsumes() {
-//        WaitForAsyncUtils.waitForFxEvents();
-//        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-//        if (table.getItems().isEmpty()) {
-//            testC_AddConsumes(); // Add a consume if the table is empty
-//        }
-//        ConsumesBean consumeToUpdate = table.getItems().get(0);
-//
-//        clickOn(table.lookup(".table-row-cell"));
-//        doubleClickOn(table.lookup(".table-cell")); // Animal Group
-//
-//        // Simulate selection from ComboBox (replace with your actual selection method)
-//        // Example: clickOn("New Animal Group Name");
-//        push(KeyCode.ENTER);
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        ConsumesBean updatedConsume = table.getItems().get(0);
-//        assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
-//
-//        
-//    }
         @Test
     public void testD_UpdateConsumes() {
         WaitForAsyncUtils.waitForFxEvents(); 
@@ -246,55 +222,7 @@ public class ConsumesControllerTest extends ApplicationTest {
         assertTrue("The deleted item should not be in the table", isDeleted);
         }
     }
-}
-=======
-        // Test for adding with valid data (replace with your actual data)
-        // ...
+
+
     }
 
-    @Test
-    public void testD_UpdateConsumes() {
-        WaitForAsyncUtils.waitForFxEvents();
-        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-        if (table.getItems().isEmpty()) {
-            testC_AddConsumes(); // Add a consume if the table is empty
-        }
-        ConsumesBean consumeToUpdate = table.getItems().get(0);
-
-        clickOn(table.lookup(".table-row-cell"));
-        doubleClickOn(table.lookup(".table-cell")); // Animal Group
-
-        // Simulate selection from ComboBox (replace with your actual selection method)
-        // Example: clickOn("New Animal Group Name");
-        push(KeyCode.ENTER);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        ConsumesBean updatedConsume = table.getItems().get(0);
-        assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
-
-        // Similar tests for Product and Consume Amount updates, including error handling
-        // ...
-    }
-
-
-    @Test
-    public void testE_DeleteConsumes() {
-        WaitForAsyncUtils.waitForFxEvents();
-        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-        if (table.getItems().isEmpty()) {
-            testC_AddConsumes(); // Add a consume if the table is empty
-        }
-        int initialSize = table.getItems().size();
-
-        clickOn(table.lookup(".table-row-cell"));
-        rightClickOn(table.lookup(".table-row-cell"));
-        clickOn("#miDelete");
-        clickOn("Yes");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        int finalSize = table.getItems().size();
-        assertEquals("Table size should decrease by 1", initialSize - 1, finalSize);
-
-    }
-    }
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a

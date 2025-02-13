@@ -81,19 +81,10 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
     @Test
     public void testA_OpenConsumesView() throws Exception {
         if (!loggedIn) {
-<<<<<<< HEAD
             clickOn("#tfUsername").write("pablo@paia.com");
             verifyThat("#tfUsername", hasText("pablo@paia.com"));
-
             clickOn("#pfPasswd").write("12345678"); 
-=======
-            clickOn("#tfUsername").write("pablo@paia.com"); // Replace with your test user
-            verifyThat("#tfUsername", hasText("pablo@paia.com"));
-
-            clickOn("#pfPasswd").write("12345678"); // Replace with your test password
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
             verifyThat("#pfPasswd", hasText("12345678"));
-
             clickOn("#btnSignIn");
             loggedIn = true;
             loadConsumesView();
@@ -114,26 +105,21 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
         TableView<ConsumesBean> table = lookup("#tableConsumes").query();
         int initialSize = table.getItems().size();
-<<<<<<< HEAD
-        clickOn("#btnAdd");
-        WaitForAsyncUtils.waitForFxEvents();
-        int finalSize = table.getItems().size();
-        assertEquals("Table size should increase by 1", initialSize + 1, finalSize);
-=======
-
         clickOn("#btnAdd");
         WaitForAsyncUtils.waitForFxEvents();
 
         int finalSize = table.getItems().size();
         assertEquals("Table size should increase by 1", initialSize + 1, finalSize);
 
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
         ConsumesBean newConsume = table.getItems().get(finalSize - 1);
         assertNotNull("New consume should not be null", newConsume);
         assertNull("Product should be null initially", newConsume.getProduct());
         assertNull("AnimalGroup should be null initially", newConsume.getAnimalGroup());
     }
 
+    
+    
+    
     @Test
     public void testD_UpdateConsumes() {
         WaitForAsyncUtils.waitForFxEvents();
@@ -142,27 +128,15 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
             testC_AddConsumes();
         }
         ConsumesBean consumeToUpdate = table.getItems().get(0);
-<<<<<<< HEAD
         clickOn(table.lookup(".table-row-cell"));
         doubleClickOn(table.lookup(".table-cell"));        
-=======
 
-        clickOn(table.lookup(".table-row-cell"));
-        doubleClickOn(table.lookup(".table-cell")); // Animal Group cell
-
-        // Simulate ComboBox selection (replace with your actual selection method)
-        // Example: clickOn("New Animal Group Name");
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
         push(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
         ConsumesBean updatedConsume = table.getItems().get(0);
         assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
 
-<<<<<<< HEAD
-=======
-        // Similar tests for Product and Consume Amount updates
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
     }
 
     @Test
@@ -185,33 +159,6 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
     }
 
     @Test
-    public void testF_SearchByProduct() {
-<<<<<<< HEAD
-      
-=======
-        // Implement search by product test
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
-    }
-
-    @Test
-    public void testG_SearchByAnimalGroup() {
-<<<<<<< HEAD
-   
-=======
-        // Implement search by animal group test
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
-    }
-
-    @Test
-    public void testH_SearchByDate() {
-<<<<<<< HEAD
-
-=======
-        // Implement search by date test
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
-    }
-
-    @Test
     public void testI_AddConsumesInvalidInput() {
         WaitForAsyncUtils.waitForFxEvents();
         TableView<ConsumesBean> table = lookup("#tableConsumes").query();
@@ -221,13 +168,10 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         WaitForAsyncUtils.waitForFxEvents();
 
         clickOn(table.lookup(".table-row-cell"));
-<<<<<<< HEAD
+
         doubleClickOn(table.lookup(".table-cell"));
         write("abc"); 
-=======
-        doubleClickOn(table.lookup(".table-cell")); // Consume Amount cell
-        write("abc"); // Invalid input
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
+
         push(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
@@ -244,20 +188,12 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         }
 
         clickOn(table.lookup(".table-row-cell"));
-<<<<<<< HEAD
         doubleClickOn(table.lookup(".table-cell"));
         write("xyz"); 
         push(KeyCode.ENTER);
         WaitForAsyncUtils.waitForFxEvents();
 
-=======
-        doubleClickOn(table.lookup(".table-cell")); // Consume Amount cell
-        write("xyz"); // Invalid input
-        push(KeyCode.ENTER);
-        WaitForAsyncUtils.waitForFxEvents();
 
-        // Add assertion to check if value remains unchanged or error message is shown
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
     }
 
     @Test
@@ -269,17 +205,12 @@ public class ConsumesControllerErrorTest extends ApplicationTest {
         DatePicker dpTo = lookup("#dpSearchTo").query();
 
         dpFrom.setValue(java.time.LocalDate.of(2024, 02, 10));
-<<<<<<< HEAD
+
         dpTo.setValue(java.time.LocalDate.of(2024, 02, 05)); 
-=======
-        dpTo.setValue(java.time.LocalDate.of(2024, 02, 05)); // Invalid range
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
+
 
         clickOn("#btnSearch");
       
     }}
-<<<<<<< HEAD
+
     
-=======
-        // Add assertion: check if table is empty or specific error message is shown
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
