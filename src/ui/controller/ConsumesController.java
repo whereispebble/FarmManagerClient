@@ -203,21 +203,6 @@ public class ConsumesController implements Initializable {
         }
 
         try {
-
-            // Initialize UI components
-            initializeComponents();
-
-            // Initialize table
-            initializeTable();
-
-        } catch (Exception e) {
-            // Handle and log any errors that occur during the initialization of the RestClient
-            String errorMsg = "Error initializing Rest: " + e + consumesClient;
-            showErrorAlert(errorMsg); // Display error message to the user
-            LOGGER.log(Level.SEVERE, errorMsg); // Log the error details for debugging
-        }
-
-        try {
             // Initialize UI components (e.g., buttons, fields, etc.)
             initializeComponents();
 
@@ -282,11 +267,6 @@ public class ConsumesController implements Initializable {
             LOGGER.info("Initializing search field...");
             searchField.setPromptText("Enter search text");
             LOGGER.info("Search field initialized successfully.");
-
-            // Set default value for ComboBox
-            LOGGER.info("Setting ComboBox value...");
-            comboSearch.setValue("Animal Group");
-            LOGGER.info("ComboBox value set to 'Animal Group'.");
 
             // Initialize the search button
             LOGGER.info("Initializing buttons...");
@@ -355,61 +335,43 @@ public class ConsumesController implements Initializable {
             handleException(e); // Handle error
             LOGGER.log(Level.SEVERE, errorMsg);
         }
-
-        // Initialize the Product column
         try {
-            LOGGER.info("Setting up Product column...");
-            tcProduct.setCellValueFactory(new PropertyValueFactory<>("product"));
+    // ... (Animal Group setup - keep it as is) ...
 
-            List<ProductBean> productList = new ArrayList<ProductBean>();
-            LOGGER.info("Fetching products...");
-            productList = ProductManagerFactory.get().getAllProducts(new GenericType<List<ProductBean>>() {
-            });
+    LOGGER.info("Setting up Product column...");
+    tcProduct.setCellValueFactory(new PropertyValueFactory<>("product")); // Access the ProductBean
 
-            ObservableList<ProductBean> productData = FXCollections.observableArrayList(productList);
-            LOGGER.info("Products fetched, setting up ComboBox cell...");
-            tcProduct.setCellFactory(ComboBoxTableCell.forTableColumn(productData));
+    List<ProductBean> productList = ProductManagerFactory.get().getAllProducts(new GenericType<List<ProductBean>>() {});
 
-            tcProduct.setOnEditCommit(event -> {
-                LOGGER.info("Product edit committed: " + event.getNewValue());
-                handleEditCommit(event, "product");
-            });
-        } catch (Exception e) {
-            String errorMsg = "Error setting up product column: \n";
-            handleException(e); // Handle error
-            LOGGER.log(Level.SEVERE, errorMsg);
+    ObservableList<ProductBean> productData = FXCollections.observableArrayList(productList);
+    LOGGER.info("Products fetched, setting up ComboBox cell...");
+    tcProduct.setCellFactory(ComboBoxTableCell.forTableColumn(productData)); // Same as Animal Group
+
+    tcProduct.setOnEditCommit(event -> {
+        LOGGER.info("Product edit committed: " + event.getNewValue());
+        handleEditCommit(event, "product");
+    });
+
+} catch (Exception e) {
+    // ... (error handling) ...
+}
+         //Initialize column consume amount
+        tcConsumeAmount.setCellValueFactory(new PropertyValueFactory<>("consumeAmount"));
+
+        tcConsumeAmount.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Float>() {
+   
+         public String toString(Float value) {
+         return value != null ? value.toString() : "";
+         }
+
+         public Float fromString(String string) {
+          try {
+            return Float.parseFloat(string);
+        } catch (NumberFormatException e) {
+            return 0.0f; // Default value in case of invalid input
         }
-
-        // Initialize the Consume Amount column
-        try {
-            LOGGER.info("Setting up ConsumeAmount column...");
-            tcConsumeAmount.setCellValueFactory(new PropertyValueFactory<>("consumeAmount"));
-
-            tcConsumeAmount.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Float>() {
-                public String toString(Float value) {
-                    return value != null ? value.toString() : "";
-                }
-
-                public Float fromString(String string) {
-                    try {
-                        return Float.parseFloat(string);
-                    } catch (NumberFormatException e) {
-                        LOGGER.log(Level.WARNING, "Invalid input for consume amount: " + string, e);
-                        return 0.0f; // Default value in case of invalid input
-                    }
-                }
-            }));
-
-            tcConsumeAmount.setOnEditCommit(event -> {
-                LOGGER.info("ConsumeAmount edit committed: " + event.getNewValue());
-                handleEditCommit(event, "consumeAmount");
-            });
-        } catch (Exception e) {
-            String errorMsg = "Error setting up consume column: \n";
-            handleException(e); // Handle error
-            LOGGER.log(Level.SEVERE, errorMsg);
         }
-
+        }));
         // Initialize the Date column with a custom DatePicker cell
         try {
             LOGGER.info("Setting up Date column...");
