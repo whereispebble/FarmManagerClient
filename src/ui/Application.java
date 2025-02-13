@@ -5,20 +5,11 @@
  */
 package ui;
 
-import DTO.AnimalBean;
-import DTO.SpeciesBean;
-import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javax.ws.rs.core.GenericType;
-import ui.controller.AnimalController;
-import businessLogic.animal.AnimalManagerFactory;
-import businessLogic.species.SpeciesManagerFactory;
 
 /**
  * The main application class responsible for initializing and displaying the Sign In window.
@@ -42,7 +33,7 @@ public class Application extends javafx.application.Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-
+        
         Parent root = FXMLLoader.load(getClass().getResource("view/SignIn.fxml"));
         
         Scene scene = new Scene(root);
