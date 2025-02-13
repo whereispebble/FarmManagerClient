@@ -6,12 +6,19 @@
 package animal;
 
 import DTO.AnimalBean;
+import DTO.AnimalGroupBean;
+import DTO.SpeciesBean;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.input.KeyCode;
@@ -65,111 +72,108 @@ public class AnimalControllerTest extends ApplicationTest{
         clickOn("#miAnimal");
     }
        
-//    @Test
-//    public void testB_GetAnimals() {
-//        TableView<AnimalBean> table = lookup("#tbAnimal").query();
-//
-//        assertNotNull("La tabla de animales no debería ser nula", table);
-//
-//        ObservableList<AnimalBean> items = table.getItems();
-//
-//        assertNotNull("La lista de animales no debería ser nula", items);
-//        assertNotEquals("La tabla de animales no debería estar vacía", 0, items.size());
-//
-//        for (Object item : items) {
-//            assertNotNull("El elemento en la tabla no debería ser nulo", item);
-//            assertEquals("El elemento de la tabla debería ser de tipo AnimalBean", AnimalBean.class, item.getClass());
-//        }
-//    }
+    @Test
+    public void testB_GetAnimals() {
+        TableView<AnimalBean> table = lookup("#tbAnimal").query();
+
+        assertNotNull("La tabla de animales no debería ser nula", table);
+
+        ObservableList<AnimalBean> items = table.getItems();
+
+        assertNotNull("La lista de animales no debería ser nula", items);
+        assertNotEquals("La tabla de animales no debería estar vacía", 0, items.size());
+
+        for (Object item : items) {
+            assertNotNull("El elemento en la tabla no debería ser nulo", item);
+            assertEquals("El elemento de la tabla debería ser de tipo AnimalBean", AnimalBean.class, item.getClass());
+        }
+    }
     
-//    @Test
-//    public void testC_AddAnimal() {
-//        TableView<AnimalBean> table = lookup("#tbAnimal").query();
-//        int initialSize = table.getItems().size();
-//        clickOn("#btnAdd");
-//        
-//        write("NEW"); 
-//        push(KeyCode.ENTER);
-//
-//        ObservableList<AnimalBean> items = table.getItems();
-//        boolean newAnimalAdded = items.stream().anyMatch(item -> "NEW".equals(item.getName()));
-//        assertTrue("El animal con el nombre 'NEW' debería estar presente en la tabla", newAnimalAdded);
-//
-//        assertEquals("La tabla debería tener una fila más", initialSize + 1, table.getItems().size());
-//sleep(500);
-//    }
+    @Test
+    public void testC_AddAnimal() {
+        TableView<AnimalBean> table = lookup("#tbAnimal").query();
+        int initialSize = table.getItems().size();
+        clickOn("#btnAdd");
+        
+        write("NEW"); 
+        push(KeyCode.ENTER);
+
+        ObservableList<AnimalBean> items = table.getItems();
+        boolean newAnimalAdded = items.stream().anyMatch(item -> "NEW".equals(item.getName()));
+        assertTrue("El animal con el nombre 'NEW' debería estar presente en la tabla", newAnimalAdded);
+
+        assertEquals("La tabla debería tener una fila más", initialSize + 1, table.getItems().size());
+        sleep(500);
+    }
  
     @Test
     public void testB_UpdateAnimal() {
         TableView<AnimalBean> table = lookup("#tbAnimal").query();
-
-        ObservableList<AnimalBean> items = table.getItems();
-//        AnimalBean animalToUpdate = items.stream()
-//                                         .filter(item -> "NEW".equals(item.getName()))
-//                                         .findFirst()
-//                                         .orElse(null);
-//
-//        assertNotNull("No se encontró el animal con el nombre 'NEW'", animalToUpdate);
-
-      
-        sleep(500);
-        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(items.indexOf(0)).query();
-        Node cell = from(row).lookup(".table-cell").nth(0).query();
-        clickOn(cell); 
-        clickOn(cell);
+        
+        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(0).query();
+        clickOn(row);
+        Integer tablerow = table.getSelectionModel().getSelectedIndex();
+        
+        //Name
+        Node tcName = lookup("#tcName").nth(tablerow + 1).query();
+        doubleClickOn(tcName);
         write("TEST");
         push(KeyCode.ENTER);
-       
-        cell = from(row).lookup(".table-cell").nth(1).query();
-        clickOn(cell); 
-        clickOn(cell);
-        clickOn(cell);        
+
+       //Birthdate
+        Node tcBirthdate = lookup("#tcBirthdate").nth(tablerow + 1).query();
+        doubleClickOn(tcBirthdate);
+        clickOn(tcBirthdate);
         write("01/02/2025");
         push(KeyCode.ENTER);
 
-        items = table.getItems();
-        boolean animalUpdated = items.stream().anyMatch(item -> "TEST".equals(item.getName()));
-        assertTrue("El animal con el nombre 'TEST' debería estar presente en la tabla", animalUpdated);
+        //AnimalGroup
+        Node tcAnimalGroup = lookup("#tcAnimalGroup").nth(tablerow + 1).query();
+        doubleClickOn(tcAnimalGroup);
+        ComboBox<AnimalGroupBean> comboBoxAG = lookup("#tcAnimalGroup .combo-box").queryAs(ComboBox.class);
+        Node optionAG = lookup(".list-view .list-cell").nth(0).query();
+        clickOn(optionAG);
+        AnimalGroupBean newValueAG = comboBoxAG.getValue();
+
+        //Subespecies
+        Node tcSubespecies = lookup("#tcSubespecies").nth(tablerow + 1).query();
+        doubleClickOn(tcSubespecies);
+        write("SUB");
+        push(KeyCode.ENTER);
+
+        //Species
+        Node tcSpecies = lookup("#tcSpecies").nth(tablerow + 1).query();
+        doubleClickOn(tcSpecies);
+        ComboBox<SpeciesBean> comboBoxS = lookup("#tcSpecies .combo-box").queryAs(ComboBox.class);
+        Node optionS = lookup(".list-view .list-cell").nth(0).query();
+        clickOn(optionS);
+        SpeciesBean newValueS = comboBoxS.getValue();
+
+        AnimalBean updatedAnimal = (AnimalBean) table.getSelectionModel().getSelectedItem();
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        String modifiedBirthdate = sdf.format(updatedAnimal.getBirthdate());
+        assertEquals("The name of the animal should be 'TEST'", "TEST", updatedAnimal.getName());
+        assertEquals("The birthdate of the animal should be '01/02/2025'", "01/02/2025", modifiedBirthdate);
+        assertEquals("The animal group of the animal should be "+newValueAG.getName(), newValueAG.getName(), updatedAnimal.getAnimalGroup().getName());
+        assertEquals("The subespecies of the animal should be 'SUB'", "SUB", updatedAnimal.getSubespecies());
+        assertEquals("The species of the animal should be " + newValueS.getName(), newValueS.getName(), updatedAnimal.getSpecies().getName());
     }
 
-//    @Test
-//    public void testE_DeleteAniaml() {
-//        TableView<AnimalBean> table = lookup("#tbAnimal").query();
-//        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(0).query();
-//        clickOn(row);
-//
-//        AnimalBean selectedAnimal=(AnimalBean)table.getSelectionModel().getSelectedItem();
-//        rightClickOn(row);
-//        clickOn("#miDelete");
-//        clickOn("Sí");
-//        
-//        ObservableList<AnimalBean> items = table.getItems();
-//        boolean isDeleted = items.stream().noneMatch(item -> item.equals(selectedAnimal));
-//
-//        assertTrue("El item eliminado no debería estar presente en la tabla", isDeleted);
-//    }
-    
-//    @Test
-//    public void testC_DeleteAnimal() {
-//        TableView<AnimalBean> table = lookup("#tbAnimal").query();
-//
-//        ObservableList<AnimalBean> items = table.getItems();
-//        AnimalBean animalToDelete = items.stream()
-//                                        .filter(item -> "TEST".equals(item.getName()))
-//                                        .findFirst()
-//                                        .orElse(null);
-//
-//        assertNotNull("No se encontró el animal con el nombre 'TEST'", animalToDelete);
-//
-//        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(items.indexOf(animalToDelete)).query();
-//        clickOn(row);
-//
-//        rightClickOn(row);
-//        clickOn("#miDelete");
-//        clickOn("Sí");
-//
-//        items = table.getItems();
-//        boolean animalDeleted = items.stream().noneMatch(item -> "TEST".equals(item.getName()));
-//        assertTrue("El animal con el nombre 'TEST' debería haber sido eliminado de la tabla", animalDeleted);
-//    }
+    @Test
+    public void testE_DeleteAniaml() {
+        TableView<AnimalBean> table = lookup("#tbAnimal").query();
+        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(0).query();
+        clickOn(row);
+
+        AnimalBean selectedAnimal=(AnimalBean)table.getSelectionModel().getSelectedItem();
+        rightClickOn(row);
+        clickOn("#miDelete");
+        clickOn("Sí");
+        
+        ObservableList<AnimalBean> items = table.getItems();
+        boolean isDeleted = items.stream().noneMatch(item -> item.equals(selectedAnimal));
+
+        assertTrue("El item eliminado no debería estar presente en la tabla", isDeleted);
+    }
 }

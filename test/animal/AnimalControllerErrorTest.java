@@ -97,4 +97,9 @@ public class AnimalControllerErrorTest extends ApplicationTest{
         sleep(500);
         clickOn("Aceptar");
     } 
+    
+    @Test
+    public void testE_EditServerError() {   
+       //TODO
+    }
 }
