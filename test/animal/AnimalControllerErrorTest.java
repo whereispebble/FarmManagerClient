@@ -100,6 +100,20 @@ public class AnimalControllerErrorTest extends ApplicationTest{
     
     @Test
     public void testE_EditServerError() {   
-       //TODO
+       TableView<AnimalBean> table = lookup("#tbAnimal").query();
+        
+        TableRow<AnimalBean> row = lookup(".table-row-cell").nth(0).query();
+        clickOn(row);
+        Integer tablerow = table.getSelectionModel().getSelectedIndex();
+        
+        //Name
+        Node tcName = lookup("#tcName").nth(tablerow + 1).query();
+        doubleClickOn(tcName);
+        write("TEST");
+        push(KeyCode.ENTER);
+        
+        verifyThat("Error", isVisible());
+        sleep(500);
+        clickOn("Aceptar");
     }
 }
