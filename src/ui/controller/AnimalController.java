@@ -187,7 +187,7 @@ public class AnimalController implements Initializable {
      /**
      * ManagerBean representing the current user managing the animals.
      */
-    private static ManagerBean manager;
+    static ManagerBean manager;
     
     /**
      * Sets the manager for this controller.

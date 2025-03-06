@@ -192,6 +192,7 @@ public class SignInController {
             ((Node) actionEvent.getSource()).getScene().getWindow().hide();
             MenuController.setManager(signedManager);
             AnimalGroupController.setManager(signedManager);
+            ConsumesController.setManager(signedManager);
             WindowManager.openWindowWithManager("/ui/view/AnimalGroup.fxml", "Animal Group", signedManager);
                 
 

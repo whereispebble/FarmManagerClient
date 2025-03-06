@@ -148,10 +148,6 @@ public class ConsumesController implements Initializable {
     @FXML
     private StackPane stack;
 
-    /**
-     * The ID of the manager associated with the current session.
-     */
-    private String managerId;
 
     /**
      * The current stage for the consumes view window.
@@ -162,7 +158,30 @@ public class ConsumesController implements Initializable {
      * The client used to interact with the backend consume-related services.
      */
     private ConsumesRestClient consumesClient;
+         /**
+     * ManagerBean representing the current user managing the animals.
+     */
+    private static ManagerBean manager;
+    
+    private String managerId;
+    
+    /**
+     * Sets the manager for this controller.
+     *
+     * @param manager The ManagerBean to set.
+     */
+    public static void setManager(ManagerBean manager) {
+        ConsumesController.manager = manager;
+    }
 
+    /**
+     * Gets the current manager.
+     *
+     * @return The ManagerBean instance.
+     */
+    public static ManagerBean getManager() {
+        return manager;
+    }
     /**
      * Logger used for logging any actions or errors within the controller.
      */
@@ -192,20 +211,26 @@ public class ConsumesController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         //Initialize RestClient
-        try {
-            consumesClient = new ConsumesRestClient();
-            ManagerBean manager = new ManagerBean();
-            managerId = String.valueOf(manager.getId());
-        } catch (Exception e) {
-            String errorMsg = "Error initializing Rest: " + e + consumesClient;
-            showErrorAlert(errorMsg);
-            LOGGER.log(Level.SEVERE, errorMsg);
+  try {
+        consumesClient = new ConsumesRestClient();
+        if (manager != null) {
+            LOGGER.info("Manager ID: " + manager.getId()); // Log the manager ID
+        } else {
+            LOGGER.severe("Manager is null");
         }
+    } catch (Exception e) {
+        String errorMsg = "Error initializing Rest: " + e + consumesClient;
+        showErrorAlert(errorMsg);
+        LOGGER.log(Level.SEVERE, errorMsg);
+        return;
+    }
+
+
 
         try {
             // Initialize UI components (e.g., buttons, fields, etc.)
             initializeComponents();
-
+          
             // Initialize the table to display the consume records
             initializeTable();
 
@@ -229,9 +254,7 @@ public class ConsumesController implements Initializable {
                 traceBuilder.append(element.toString()).append("\n");
             }
             String errorMsg = "Error initializing window: \n" + traceBuilder.toString();
-
-            // Output the error message for debugging
-            System.err.println(errorMsg); // Or use a logger if preferred
+            LOGGER.log(Level.SEVERE, errorMsg);
         }
     }
 
@@ -311,33 +334,9 @@ public class ConsumesController implements Initializable {
      * @throws Exception if any error occurs while initializing the table or setting up the columns.
      */
     private void initializeTable() {
-        // Initialize the Animal Group column
-        tableConsumes.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
         try {
-            LOGGER.info("Setting up AnimalGroup column...");
-            tcAnimalGroup.setCellValueFactory(new PropertyValueFactory<>("animalGroup"));
-
-            List<AnimalGroupBean> animalGroupList = new ArrayList<AnimalGroupBean>();
-            LOGGER.info("Fetching animal groups for manager...");
-            animalGroupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {
-            }, managerId);
-
-            ObservableList<AnimalGroupBean> animalGroupData = FXCollections.observableArrayList(animalGroupList);
-            LOGGER.info("Animal groups fetched, setting up ComboBox cell...");
-            tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(animalGroupData));
-
-            tcAnimalGroup.setOnEditCommit(event -> {
-                LOGGER.info("AnimalGroup edit committed: " + event.getNewValue());
-                handleEditCommit(event, "animalGroup");
-            });
-        } catch (Exception e) {
-            String errorMsg = "Error initializing animal group column: \n";
-            handleException(e); // Handle error
-            LOGGER.log(Level.SEVERE, errorMsg);
-        }
-        try {
-    // ... (Animal Group setup - keep it as is) ...
-
+ 
     LOGGER.info("Setting up Product column...");
     tcProduct.setCellValueFactory(new PropertyValueFactory<>("product")); // Access the ProductBean
 
@@ -353,8 +352,44 @@ public class ConsumesController implements Initializable {
     });
 
 } catch (Exception e) {
-    // ... (error handling) ...
+   
 }
+       try {
+        if (manager != null && manager.getId() != null) {
+            List<AnimalGroupBean> animalGroupList = AnimalGroupFactory.get().getAnimalGroupsByManager(new GenericType<List<AnimalGroupBean>>() {}, manager.getId().toString());
+            ObservableList<AnimalGroupBean> animalGroupData = FXCollections.observableArrayList(animalGroupList);
+
+            tcAnimalGroup.setCellValueFactory(new PropertyValueFactory<>("animalGroup"));
+            tcAnimalGroup.setCellFactory(ComboBoxTableCell.forTableColumn(new StringConverter<AnimalGroupBean>() {
+                @Override
+                public String toString(AnimalGroupBean animalGroup) {
+                    return animalGroup != null ? animalGroup.getName() : "";
+                }
+
+                @Override
+                public AnimalGroupBean fromString(String string) {
+                    return animalGroupData.stream().filter(ag -> ag.getName().equals(string)).findFirst().orElse(null);
+                }
+            }, animalGroupData));
+
+            tcAnimalGroup.setOnEditCommit(event -> {
+                ConsumesBean consume = event.getRowValue();
+                consume.setAnimalGroup(event.getNewValue());
+                try {
+                    ConsumesManagerFactory.get().updateConsume(consume);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Error updating consume: ", e);
+                }
+            });
+        } else {
+            LOGGER.severe("Manager ID is null");
+        }
+    } catch (Exception e) {
+        String errorMsg = "Error initializing animal group column: " + e.getMessage();
+        showErrorAlert(errorMsg);
+        LOGGER.log(Level.SEVERE, errorMsg, e);
+    }
+
          //Initialize column consume amount
         tcConsumeAmount.setCellValueFactory(new PropertyValueFactory<>("consumeAmount"));
 
@@ -551,29 +586,21 @@ public class ConsumesController implements Initializable {
      * @param event The cell edit event triggered by editing a table cell.
      * @param fieldName The field name to which the edited value should be applied (e.g., "consumeAmount", "animalGroup", "product").
      */
+
     private <T> void handleEditCommit(TableColumn.CellEditEvent<ConsumesBean, T> event, String fieldName) {
-        try {
-            TablePosition<ConsumesBean, T> pos = event.getTablePosition();
-            T newValue = event.getNewValue();
+    try {
+        TablePosition<ConsumesBean, T> pos = event.getTablePosition();
+        T newValue = event.getNewValue();
+        if (newValue == null || (newValue instanceof String && ((String) newValue).trim().isEmpty())) {
+            throw new IllegalArgumentException("The entered value is invalid.");
+        }
 
-            if (newValue == null || (newValue instanceof String && ((String) newValue).trim().isEmpty())) {
-                throw new IllegalArgumentException("The entered value is invalid.");
-            }
+        int row = pos.getRow();
+        ConsumesBean consume = event.getTableView().getItems().get(row);
+        ConsumesBean consumeCopy = (ConsumesBean) consume.clone();
 
-            int row = pos.getRow();
-            ConsumesBean consume = event.getTableView().getItems().get(row);
-            ConsumesBean consumeCopy = (ConsumesBean) consume.clone();
-
-            switch (fieldName) {
-                case "consumeAmount":
-                    if (newValue instanceof Number) {
-                        consumeCopy.setConsumeAmount(((Number) newValue).floatValue());
-                        ConsumesManagerFactory.get().updateConsume(consumeCopy);
-                        consume.setConsumeAmount(((Number) newValue).floatValue());
-                    }
-                    break;
-
-                case "animalGroup":
+        switch (fieldName) {
+             case "animalGroup":
                     if (newValue instanceof AnimalGroupBean) {
                         consumeCopy.setAnimalGroup((AnimalGroupBean) newValue);
                         ConsumesManagerFactory.get().updateConsume(consumeCopy);
@@ -581,26 +608,37 @@ public class ConsumesController implements Initializable {
                     }
                     break;
 
-                case "product":
-                    if (newValue instanceof ProductBean) {
-                        consumeCopy.setProduct((ProductBean) newValue);
-                        ConsumesManagerFactory.get().updateConsume(consumeCopy);
-                        consume.setProduct((ProductBean) newValue);
-                    }
-                    break;
+            case "product":
+                if (newValue instanceof ProductBean) {
+                    consumeCopy.setProduct((ProductBean) newValue);
+                    ConsumesManagerFactory.get().updateConsume(consumeCopy);
+                    consume.setProduct((ProductBean) newValue);
+                }
+                break;
 
-                default:
-                    throw new IllegalArgumentException("Unknown field: " + fieldName);
-            }
+            case "consumeAmount":
+                float newValueFloat = ((Number) newValue).floatValue();
+                if (newValue instanceof Number && newValueFloat >= 0.0f) {
+                    consumeCopy.setConsumeAmount(newValueFloat);
+                    ConsumesManagerFactory.get().updateConsume(consumeCopy);
+                    consume.setConsumeAmount(newValueFloat);
+                } else {
+                    throw new IllegalArgumentException("Invalid value, must be >= 0.0");
+                }
+                break;
 
-            event.getTableView().refresh();
-        } catch (Exception e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-            alert.showAndWait();
-            event.consume();
-            handleException(e);
+            default:
+                throw new IllegalArgumentException("Unknown field: " + fieldName);
         }
+
+        event.getTableView().refresh();
+    } catch (Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+        alert.showAndWait();
+        event.consume();
+        handleException(e);
     }
+}
 
     /**
      * Updates the consumption date for the currently selected item in the table. The method creates a clone of the selected `ConsumesBean` item, sets the updated date on the clone, and then updates the original item in the backend and the table.
@@ -616,7 +654,7 @@ public class ConsumesController implements Initializable {
             try {
                 ConsumesManagerFactory.get().updateConsume(consumeCopy);
                 consume.setDate(updatedDate);
-            } catch (WebApplicationException e) {
+            } catch (Exception e) {
                 Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
                 alert.showAndWait();
             }
@@ -639,8 +677,8 @@ public class ConsumesController implements Initializable {
         // Create the new consumption in the database
         try {
             ConsumesManagerFactory.get().createConsume(newConsume);
-        } catch (WebApplicationException e) {
-            System.err.println("Error creating consume: " + e.getMessage());
+        } catch (Exception e) {
+           LOGGER.severe("Error occurred while: " + e.getMessage());
             handleException(e);
             return;
         }
@@ -681,11 +719,11 @@ private void handleDeleteAction(ActionEvent event) {
 
                 ConsumesManagerFactory.get().deleteConsume(productId, animalGroupId);
                 successfullyDeleted.add(selectedConsume);
-            } catch (WebApplicationException e) {
-                System.err.println("Error deleting consume ID " + selectedConsume.getConsumesId() + ": " + e.getMessage());
+            } catch (Exception e) {
+                LOGGER.severe("Error occurred while: " + e.getMessage());
                 failedToDelete.add(selectedConsume); // Añade a la lista de fallidos
                 handleException(e); // Mantén tu manejo de excepciones
-            } catch (Exception e) {
+            
                 System.err.println("Unexpected error deleting consume ID " + selectedConsume.getConsumesId() + ": " + e.getMessage());
                 failedToDelete.add(selectedConsume); // Añade a la lista de fallidos
                 Platform.runLater(() -> {
@@ -738,7 +776,7 @@ private void handleDeleteAction(ActionEvent event) {
                 alert.showAndWait();
             }
 
-        } catch (WebApplicationException e) {
+        } catch (Exception e) {
             LOGGER.severe("Error occurred while fetching consumes: " + e.getMessage());
             Alert alert = new Alert(Alert.AlertType.ERROR, "Error al cargar los consumos: " + e.getMessage(), ButtonType.OK);
             alert.showAndWait();
@@ -766,9 +804,10 @@ private void handleDeleteAction(ActionEvent event) {
         for (StackTraceElement element : stackTraceElements) {
             traceBuilder.append(element.toString()).append("\n");
         }
-
+        
         String errorMsg = "Error in search Action Handler: \n" + traceBuilder.toString();
         System.err.println(errorMsg);
+        LOGGER.severe("Error occurred while: " + e.getMessage());
     }
 
     /**
@@ -792,4 +831,5 @@ private void handleDeleteAction(ActionEvent event) {
             showErrorAlert("Error al imprimir:\n" + ex.getMessage());
         }
     }
+   
 }
