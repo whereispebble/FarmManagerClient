@@ -57,6 +57,7 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.view.JasperViewer;
 
+
 /**
  * Controller class for managing the "Consumes" window in the application. Handles user interactions such as searching, adding, and deleting consume records. Provides methods for managing the view and controlling business logic interactions related to consume operations. Implements {@link Initializable} to initialize the controller and its elements.
  *
@@ -147,6 +148,13 @@ public class ConsumesController implements Initializable {
      */
     @FXML
     private StackPane stack;
+    
+    
+     /**
+     * Button for the print action.
+     */
+    @FXML
+    private Button btnPrint;
 
 
     /**
@@ -458,7 +466,10 @@ public class ConsumesController implements Initializable {
         LOGGER.info("Setting up Delete item.");
         itemDelete.setDisable(false);
         itemDelete.setOnAction(this::handleDeleteAction);
-
+        
+        LOGGER.info("Setting up print button.");
+        
+        btnPrint.setOnAction(this::handlePrintAction);
 //        tableConsumes.getSelectionModel().getSelectedItems().addListener((ListChangeListener<ConsumesBean>) change -> {
 //            itemDelete.setDisable(tableConsumes.getSelectionModel().getSelectedItems().isEmpty());
 //            LOGGER.info("Item delete launched.");
@@ -815,21 +826,40 @@ private void handleDeleteAction(ActionEvent event) {
      *
      * @param event The action event triggered by clicking the "Print" button.
      */
-    private void handlePrintAction(ActionEvent event) {
+   private void handlePrintAction(ActionEvent event) {
+    try {
+        LOGGER.info("Beginning printing action...");
+
+        List<ConsumesBean> consumesList = new ArrayList<>(this.tableConsumes.getItems());
+        generateReport(consumesList);
+
+    } catch (Exception ex) {
+        showErrorAlert("Error al imprimir:\n" + ex.getMessage());    
+    }
+   }
+    
+     private void generateReport(List<ConsumesBean> consumeList) {
         try {
-            LOGGER.info("Beginning printing action...");
+            // Cargar el archivo de reporte Jasper
+            JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/reports/ConsumesReport.jrxml"));
 
-            JasperReport report = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/reports/ConsumesReport.jrxml"));
-            JRBeanCollectionDataSource dataItems = new JRBeanCollectionDataSource((Collection<ConsumesBean>) this.tableConsumes.getItems());
+            // Crear la fuente de datos para el reporte
+            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(consumeList);
+
+            // Crear un mapa para pasar parámetros al reporte
             Map<String, Object> parameters = new HashMap<>();
+            parameters.put("ReportTitle", "Consumes Report");
 
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, parameters, dataItems);
+            // Llenar el reporte con datos
+            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+            // Mostrar el reporte
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
-
-        } catch (JRException ex) {
-            showErrorAlert("Error al imprimir:\n" + ex.getMessage());
+        } catch (JRException e) {
+            e.printStackTrace();
         }
     }
-   
+    
 }
+
