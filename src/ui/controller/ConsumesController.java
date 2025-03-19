@@ -41,6 +41,7 @@ import ui.controller.AnimalController;
 import businessLogic.consumes.ConsumesManagerFactory;
 import businessLogic.consumes.IConsumesManager;
 import businessLogic.product.ProductManagerFactory;
+import static groovy.util.ObservableList.ChangeType.oldValue;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -399,22 +400,55 @@ public class ConsumesController implements Initializable {
     }
 
          //Initialize column consume amount
-        tcConsumeAmount.setCellValueFactory(new PropertyValueFactory<>("consumeAmount"));
+       //Initialize column consume amount
+tcConsumeAmount.setCellValueFactory(new PropertyValueFactory<>("consumeAmount"));
 
-        tcConsumeAmount.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Float>() {
-   
-         public String toString(Float value) {
-         return value != null ? value.toString() : "";
-         }
+tcConsumeAmount.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Float>() {
 
-         public Float fromString(String string) {
-          try {
-            return Float.parseFloat(string);
+    public String toString(Float value) {
+        return value != null ? value.toString() : "";
+    }
+
+    public Float fromString(String string) {
+        try {
+            if (string == null || string.trim().isEmpty()) {
+                throw new IllegalArgumentException("Enter a valid value.");
+            }
+
+            Float value = Float.parseFloat(string);
+
+            if (value < 0.0f) {
+                throw new IllegalArgumentException("Value must be 0.0 or greater.");
+            }
+            return value;
+
         } catch (NumberFormatException e) {
-            return 0.0f; // Default value in case of invalid input
+            showAlert("Invalid Format", "Value must be 0.0 or greater.");
+            return null;
+        } catch (IllegalArgumentException e) {
+            showAlert("Invalid Format", e.getMessage());
+            return null;
         }
+    }
+}));
+
+tcConsumeAmount.setOnEditCommit(event -> {
+    ConsumesBean consume = event.getRowValue();
+    Float newValue = event.getNewValue();
+    
+    if (newValue != null) { // Solo si el valor es válido
+        consume.setConsumeAmount(newValue);
+        try {
+            ConsumesManagerFactory.get().updateConsume(consume);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Error al actualizar el consumo: ", e);
+            showAlert("Error", "No se pudo actualizar el consumo en la base de datos.");
         }
-        }));
+    }
+});
+
+
+
         // Initialize the Date column with a custom DatePicker cell
         try {
             LOGGER.info("Setting up Date column...");
@@ -446,7 +480,14 @@ public class ConsumesController implements Initializable {
             LOGGER.log(Level.SEVERE, errorMsg);
         }
     }
-
+// Método para mostrar Alertas
+private void showAlert(String title, String message) {
+    Alert alert = new Alert(Alert.AlertType.ERROR);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(message);
+    alert.showAndWait();
+}
     /**
      * Sets up event handlers for all the UI components on the window. This method configures actions for buttons, combo boxes, and table selections.
      */
@@ -602,6 +643,7 @@ public class ConsumesController implements Initializable {
     try {
         TablePosition<ConsumesBean, T> pos = event.getTablePosition();
         T newValue = event.getNewValue();
+        T oldValue = event.getOldValue();
         if (newValue == null || (newValue instanceof String && ((String) newValue).trim().isEmpty())) {
             throw new IllegalArgumentException("The entered value is invalid.");
         }
@@ -629,21 +671,24 @@ public class ConsumesController implements Initializable {
 
             case "consumeAmount":
                 float newValueFloat = ((Number) newValue).floatValue();
-                if (newValue instanceof Number && newValueFloat >= 0.0f) {
-                    consumeCopy.setConsumeAmount(newValueFloat);
-                    ConsumesManagerFactory.get().updateConsume(consumeCopy);
-                    consume.setConsumeAmount(newValueFloat);
-                } else {
-                    throw new IllegalArgumentException("Invalid value, must be >= 0.0");
-                }
-                break;
+                if (newValueFloat >= 0.0f) {  
+                     consumeCopy.setConsumeAmount(newValueFloat);
+                     consume.setConsumeAmount(newValueFloat);
+                     ConsumesManagerFactory.get().updateConsume(consumeCopy);
+               } else {
+                 float oldValueFloat = ((Number) oldValue).floatValue(); 
+            consume.setConsumeAmount(oldValueFloat);
+            tcConsumeAmount.getTableView().refresh();
+               }
+               break;
+ 
 
             default:
                 throw new IllegalArgumentException("Unknown field: " + fieldName);
         }
 
         event.getTableView().refresh();
-    } catch (Exception e) {
+    } catch (CloneNotSupportedException | IllegalArgumentException | WebApplicationException e) {
         Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
         alert.showAndWait();
         event.consume();
