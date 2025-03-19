@@ -43,6 +43,9 @@ import businessLogic.consumes.IConsumesManager;
 import businessLogic.product.ProductManagerFactory;
 import static groovy.util.ObservableList.ChangeType.oldValue;
 import java.io.File;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -677,11 +680,25 @@ private void showAlert(String title, String message) {
                      ConsumesManagerFactory.get().updateConsume(consumeCopy);
                } else {
                  float oldValueFloat = ((Number) oldValue).floatValue(); 
-            consume.setConsumeAmount(oldValueFloat);
-            tcConsumeAmount.getTableView().refresh();
+                 consume.setConsumeAmount(oldValueFloat);
+                 tcConsumeAmount.getTableView().refresh();
                }
                break;
+            case "Date":
+                 LocalDate today = LocalDate.now(); 
+
+                 LocalDate fromDate = dpSearchFrom.getValue();
+                 LocalDate toDate = dpSearchTo.getValue();
+
+                if ((fromDate != null && fromDate.isAfter(today)) || (toDate != null && toDate.isAfter(today))) {
+                showAlert("Invalid Date", "The date cannot be later than today.");
+                  break; 
  
+               } else {
+                 showAllConsumes(); 
+               }
+               break;
+
 
             default:
                 throw new IllegalArgumentException("Unknown field: " + fieldName);
@@ -703,19 +720,34 @@ private void showAlert(String title, String message) {
      * @throws CloneNotSupportedException If cloning the `ConsumesBean` object fails.
      */
     private void updateConsumeDate(Date updatedDate) throws CloneNotSupportedException {
-        ConsumesBean consume = tableConsumes.getSelectionModel().getSelectedItem();
-        if (consume != null && updatedDate != null) {
-            ConsumesBean consumeCopy = (ConsumesBean) consume.clone();
-            consumeCopy.setDate(updatedDate);
-            try {
-                ConsumesManagerFactory.get().updateConsume(consumeCopy);
-                consume.setDate(updatedDate);
-            } catch (Exception e) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
-                alert.showAndWait();
-            }
+    ConsumesBean consume = tableConsumes.getSelectionModel().getSelectedItem();
+
+    if (consume != null && updatedDate != null) {
+        // Obtener la fecha actual
+        LocalDate today = LocalDate.now();
+
+        // Convertir la fecha actualizada a LocalDate para la comparación
+        Instant instant = updatedDate.toInstant();
+        LocalDate updatedLocalDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+
+        // Validar si la fecha ingresada es posterior a hoy
+        if (updatedLocalDate.isAfter(today)) {
+            showAlert("Invalid Date", "The date cannot be later than today.");
+            return; // Salir del método si la fecha es inválida
+        }
+
+        ConsumesBean consumeCopy = (ConsumesBean) consume.clone();
+        consumeCopy.setDate(updatedDate);
+
+        try {
+            ConsumesManagerFactory.get().updateConsume(consumeCopy);
+            consume.setDate(updatedDate);
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK);
+            alert.showAndWait();
         }
     }
+}
 
     /**
      * Handles the create action. This method is invoked when a user clicks the "Add" button. It creates a new `ConsumesBean` object with initial values, persists it via the backend, and adds it to the table for display. The newly added item is also edited in the column "Quantity".
