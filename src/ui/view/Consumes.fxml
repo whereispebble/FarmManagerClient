@@ -69,7 +69,7 @@
             <Menu mnemonicParsing="false" text="Navigate to">
                <items>
                   <MenuItem fx:id="itemAnimals" mnemonicParsing="false" text="Animals" />
-                  <MenuItem fx:id="itemConsumes" mnemonicParsing="false" text="Consumes" />
+                  <MenuItem id="miConsumes" fx:id="itemConsumes" mnemonicParsing="false" text="Consumes" />
                   <MenuItem fx:id="itemProducts" mnemonicParsing="false" text="Products" />
                </items>
             </Menu>

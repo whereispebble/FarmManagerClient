@@ -141,17 +141,6 @@ public class ConsumesController implements Initializable {
     @FXML
     private ComboBox<String> comboSearch;
 
-    /**
-     * HBox containing the DatePicker components.
-     */
-    @FXML
-    private HBox hboxDatePicker;
-
-    /**
-     * StackPane for managing the layout of the consume records table.
-     */
-    @FXML
-    private StackPane stack;
     
     
      /**
@@ -483,7 +472,7 @@ tcConsumeAmount.setOnEditCommit(event -> {
             LOGGER.log(Level.SEVERE, errorMsg);
         }
     }
-// Método para mostrar Alertas
+//Alert Methods
 private void showAlert(String title, String message) {
     Alert alert = new Alert(Alert.AlertType.ERROR);
     alert.setTitle(title);
@@ -514,10 +503,6 @@ private void showAlert(String title, String message) {
         LOGGER.info("Setting up print button.");
         
         btnPrint.setOnAction(this::handlePrintAction);
-//        tableConsumes.getSelectionModel().getSelectedItems().addListener((ListChangeListener<ConsumesBean>) change -> {
-//            itemDelete.setDisable(tableConsumes.getSelectionModel().getSelectedItems().isEmpty());
-//            LOGGER.info("Item delete launched.");
-//        });
 
         LOGGER.info("Setting up selection listener for table...");
         tableConsumes.getSelectionModel().selectedItemProperty().addListener(
@@ -607,7 +592,7 @@ private void showAlert(String title, String message) {
                             consumesList = ConsumesManagerFactory.get().getConsumesByDateTo(new GenericType<List<ConsumesBean>>() {
                             }, to);
                         } else {
-                            showAllConsumes(); // Method to display all consumption records.
+                            showAllConsumes(); 
                         }
                         break;
 
@@ -723,17 +708,12 @@ private void showAlert(String title, String message) {
     ConsumesBean consume = tableConsumes.getSelectionModel().getSelectedItem();
 
     if (consume != null && updatedDate != null) {
-        // Obtener la fecha actual
         LocalDate today = LocalDate.now();
-
-        // Convertir la fecha actualizada a LocalDate para la comparación
         Instant instant = updatedDate.toInstant();
         LocalDate updatedLocalDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-
-        // Validar si la fecha ingresada es posterior a hoy
         if (updatedLocalDate.isAfter(today)) {
             showAlert("Invalid Date", "The date cannot be later than today.");
-            return; // Salir del método si la fecha es inválida
+            return; 
         }
 
         ConsumesBean consumeCopy = (ConsumesBean) consume.clone();
@@ -755,14 +735,13 @@ private void showAlert(String title, String message) {
      * @param event The action event triggered by clicking the "Add" button.
      */
     private void handleCreateAction(ActionEvent event) {
+        
         // Create a new ConsumesBean with initial values
         ConsumesBean newConsume = new ConsumesBean();
-        newConsume.setProduct(null);  // Null product
-        newConsume.setAnimalGroup(null);  // Null animal group
-        newConsume.setConsumeAmount(0f);  // Initial amount set to 0
-        newConsume.setDate(new Date());  // Set the current date
-
-        // Create the new consumption in the database
+        newConsume.setProduct(null);  
+        newConsume.setAnimalGroup(null); 
+        newConsume.setConsumeAmount(0f); 
+        newConsume.setDate(new Date());  
         try {
             ConsumesManagerFactory.get().createConsume(newConsume);
         } catch (Exception e) {
@@ -776,29 +755,26 @@ private void showAlert(String title, String message) {
         tableConsumes.refresh();
 
         // Set the "Quantity" column to edit mode for the newly added item
-        final int NEW_CONSUME_ROW = tableConsumes.getItems().size() - 1; // Last added row
+        final int NEW_CONSUME_ROW = tableConsumes.getItems().size() - 1; 
         Platform.runLater(() -> tableConsumes.edit(NEW_CONSUME_ROW, tcAnimalGroup));
     }
 private void handleDeleteAction(ActionEvent event) {
     ObservableList<ConsumesBean> selectedConsumes = tableConsumes.getSelectionModel().getSelectedItems();
 
-    // 1. Manejo de selección vacía (mejorado)
     if (selectedConsumes.isEmpty()) {
         Alert warningAlert = new Alert(Alert.AlertType.WARNING, "No consumes selected for deletion.", ButtonType.OK);
-        warningAlert.showAndWait(); // No necesitas Platform.runLater aquí, ya que se llama desde el hilo de la UI
+        warningAlert.showAndWait();
         return;
     }
-
-    // 2. Confirmación (sin cambios sustanciales)
     Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION,
             "Are you sure you want to delete the selected consumes?",
             ButtonType.YES, ButtonType.NO);
     Optional<ButtonType> result = confirmationAlert.showAndWait();
 
     if (result.isPresent() && result.get() == ButtonType.YES) {
-        // 3. Borrado (mejorado)
+        
         List<ConsumesBean> successfullyDeleted = new ArrayList<>();
-        List<ConsumesBean> failedToDelete = new ArrayList<>(); // Lista para los fallidos
+        List<ConsumesBean> failedToDelete = new ArrayList<>(); 
 
         for (ConsumesBean selectedConsume : selectedConsumes) {
             try {
@@ -809,11 +785,10 @@ private void handleDeleteAction(ActionEvent event) {
                 successfullyDeleted.add(selectedConsume);
             } catch (Exception e) {
                 LOGGER.severe("Error occurred while: " + e.getMessage());
-                failedToDelete.add(selectedConsume); // Añade a la lista de fallidos
-                handleException(e); // Mantén tu manejo de excepciones
-            
+                failedToDelete.add(selectedConsume); 
+                handleException(e);      
                 System.err.println("Unexpected error deleting consume ID " + selectedConsume.getConsumesId() + ": " + e.getMessage());
-                failedToDelete.add(selectedConsume); // Añade a la lista de fallidos
+                failedToDelete.add(selectedConsume); 
                 Platform.runLater(() -> {
                     Alert errorAlert = new Alert(Alert.AlertType.ERROR,
                             "Unexpected error during deletion: " + e.getMessage(),
@@ -823,7 +798,6 @@ private void handleDeleteAction(ActionEvent event) {
             }
         }
 
-        // 4. Actualización de la tabla (mejorada)
         Platform.runLater(() -> {
             if (!successfullyDeleted.isEmpty()) {
                 tableConsumes.getItems().removeAll(successfullyDeleted);
@@ -831,7 +805,6 @@ private void handleDeleteAction(ActionEvent event) {
                 tableConsumes.refresh();
             }
 
-            // 5. Mostrar mensaje de error si hubo fallos (nuevo)
             if (!failedToDelete.isEmpty()) {
                 String errorMessage = "Some consumes could not be deleted:\n";
                 for (ConsumesBean consume : failedToDelete) {
@@ -917,20 +890,11 @@ private void handleDeleteAction(ActionEvent event) {
     
      private void generateReport(List<ConsumesBean> consumeList) {
         try {
-            // Cargar el archivo de reporte Jasper
             JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/ui/reports/ConsumesReport.jrxml"));
-
-            // Crear la fuente de datos para el reporte
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(consumeList);
-
-            // Crear un mapa para pasar parámetros al reporte
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("ReportTitle", "Consumes Report");
-
-            // Llenar el reporte con datos
             JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-
-            // Mostrar el reporte
             JasperViewer jasperViewer = new JasperViewer(jasperPrint, false);
             jasperViewer.setVisible(true);
         } catch (JRException e) {
