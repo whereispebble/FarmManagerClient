@@ -132,12 +132,14 @@ public class ConsumesRestClient implements IConsumesManager {
      * @return The HTTP response from the server.
      * @throws WebApplicationException if an error occurs during the request.
      */
-    @Override
-    public Response deleteConsume(String productId, String animalGroupId) throws WebApplicationException {
-        return webTarget.path("Delete/" + productId + "/" + animalGroupId)
-                        .request(MediaType.APPLICATION_XML)
-                        .delete();
-    }
+   @Override
+public Response deleteConsume(String productId, String animalGroupId) throws WebApplicationException {
+    return webTarget.path("Delete")
+        .queryParam("productId", productId) // Usa queryParam
+        .queryParam("animalGroupId", animalGroupId) // Usa queryParam
+        .request(MediaType.APPLICATION_XML)
+        .delete();
+}
 
     /**
      * Retrieves all consumption records.

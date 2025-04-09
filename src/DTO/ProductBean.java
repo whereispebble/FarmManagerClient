@@ -126,10 +126,7 @@ public class ProductBean implements Serializable, Cloneable {
         }
         return true;
     }
-
-    @Override
-    public String toString() {
-        return "entities.ProductEntity[ id=" + id + " ]";
-    }
-
-}
+@Override
+public String toString() {
+    return name;
+}}

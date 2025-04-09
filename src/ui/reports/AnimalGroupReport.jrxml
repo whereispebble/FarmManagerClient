@@ -3,11 +3,11 @@
 	<property name="ireport.zoom" value="1.2100000000000006"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<field name="name" class="java.lang.String"/>
-	<field name="area" class="java.lang.String"/>
-	<field name="description" class="java.lang.String"/>
-	<field name="consume" class="java.lang.Double"/>
-	<field name="creationDate" class="java.util.Date"/>
+
+	<field name="product" class="java.lang.String"/>
+	<field name="animalGroup" class="java.lang.String"/>
+	<field name="consumeAmount" class="java.lang.Double"/>
+	<field name="date" class="java.util.Date"/>
 	<background>
 		<band splitType="Stretch"/>
 	</background>

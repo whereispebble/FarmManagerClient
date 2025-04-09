@@ -8,43 +8,21 @@ package consumes;
 
 
 import DTO.*;
-import businessLogic.animalGroup.AnimalGroupFactory;
-import businessLogic.consumes.ConsumesManagerFactory;
-import businessLogic.product.ProductManagerFactory;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.concurrent.TimeUnit;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.ComboBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.util.StringConverter;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.GenericType;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import static org.junit.Assert.*;
-import org.testfx.api.FxAssert;
 import static org.testfx.api.FxAssert.verifyThat;
 import org.testfx.framework.junit.ApplicationTest;
 import static org.testfx.matcher.base.NodeMatchers.isVisible;
@@ -58,11 +36,12 @@ public class ConsumesControllerTest extends ApplicationTest {
     private static final Logger LOGGER = Logger.getLogger(ConsumesControllerTest.class.getName());
     private static boolean loggedIn = false;
     private ConsumesController controller;
-    private Stage primaryStage; // Store the primary stage
-
+    private Stage primaryStage; 
+    private FXMLLoader fxmlLoader;
+    
     @Override
     public void start(Stage stage) throws Exception {
-        this.primaryStage = stage; // Store the stage
+        this.primaryStage = stage; 
         fxmlLoader = new FXMLLoader();
         if (!loggedIn) {
             fxmlLoader.setLocation(getClass().getResource("/ui/view/SignIn.fxml")); // Correct path
@@ -70,25 +49,10 @@ public class ConsumesControllerTest extends ApplicationTest {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
-        } else {
-            loadConsumesView();
-        }
+            LOGGER.log(Level.FINE, "Signed In");
+        } 
     }
 
-    private FXMLLoader fxmlLoader;
-
-    private void loadConsumesView() throws Exception {
-<<<<<<< HEAD
-        fxmlLoader.setLocation(getClass().getResource("/ui/view/Consumes.fxml")); // Correct path
-=======
-        fxmlLoader.setLocation(getClass().getResource("/ui/view/ConsumesView.fxml")); // Correct path
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
-        Parent root = fxmlLoader.load();
-        Scene scene = new Scene(root);
-        primaryStage.setScene(scene); // Use the stored stage
-        primaryStage.show();
-        controller = fxmlLoader.getController();
-    }
 
 
     @Test
@@ -102,18 +66,23 @@ public class ConsumesControllerTest extends ApplicationTest {
 
             clickOn("#btnSignIn");
             loggedIn = true;
-            loadConsumesView(); // Load the ConsumesView after successful login
 
-        }
-        verifyThat("#tableConsumes", isVisible());
+       
+         verifyThat("#menuBar", isVisible());
+          clickOn("#menuNavigateTo");
+          clickOn("#miConsume");
+          LOGGER.log(Level.FINE, "Consumes opened");
     }
-
+     }
+    
     @Test
     public void testB_LoadConsumes() {
         WaitForAsyncUtils.waitForFxEvents();
         TableView<ConsumesBean> table = lookup("#tableConsumes").query();
         assertNotNull("Consumes table should not be null", table);
         assertFalse("Consumes table should not be empty", table.getItems().isEmpty());
+        LOGGER.log(Level.FINE, "Loading consumes ok");
+        
     }
 
     @Test
@@ -133,84 +102,78 @@ public class ConsumesControllerTest extends ApplicationTest {
         assertNull("Product should be null initially", newConsume.getProduct());
         assertNull("AnimalGroup should be null initially", newConsume.getAnimalGroup());
 
-<<<<<<< HEAD
+
     }
 
-//    @Test
-//    public void testD_UpdateConsumes() {
-//        WaitForAsyncUtils.waitForFxEvents();
-//        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-//        if (table.getItems().isEmpty()) {
-//            testC_AddConsumes(); // Add a consume if the table is empty
-//        }
-//        ConsumesBean consumeToUpdate = table.getItems().get(0);
-//
-//        clickOn(table.lookup(".table-row-cell"));
-//        doubleClickOn(table.lookup(".table-cell")); // Animal Group
-//
-//        // Simulate selection from ComboBox (replace with your actual selection method)
-//        // Example: clickOn("New Animal Group Name");
-//        push(KeyCode.ENTER);
-//        WaitForAsyncUtils.waitForFxEvents();
-//
-//        ConsumesBean updatedConsume = table.getItems().get(0);
-//        assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
-//
-//        
-//    }
-        @Test
-    public void testD_UpdateConsumes() {
-        WaitForAsyncUtils.waitForFxEvents(); 
-        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-
-        if (table.getItems().isEmpty()) {
-            testC_AddConsumes(); 
-        }
-
-        ObservableList<ConsumesBean> consumes = table.getItems();
-        int lastRowIndex = consumes.size() - 1;
-
-        if (lastRowIndex < 0) {
-            fail("Table is empty, cannot update.");
-            return;
-        }
-
-        ConsumesBean consumeToUpdate = consumes.get(lastRowIndex);
-
-        // --- Update Animal Group ---
-        AnimalGroupBean newAnimalGroup = new AnimalGroupBean(); 
-        newAnimalGroup.setName("Male Sheeps"); 
-        consumeToUpdate.setAnimalGroup(newAnimalGroup);
-        table.refresh(); 
-
-        // --- Update Product ---
-        ProductBean newProduct = new ProductBean();
-        newProduct.setName("Apples");
-        consumeToUpdate.setProduct(newProduct);
-        table.refresh();
-
-        // --- Update Consume Amount ---
-        consumeToUpdate.setConsumeAmount(123.45f);
-        table.refresh();
-
-        // --- Update Date ---
-        java.time.LocalDate localDate = java.time.LocalDate.of(2024,01, 15);
-        java.util.Date newDate = java.util.Date.from(localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant());
-        consumeToUpdate.setDate(newDate);
-        table.refresh();
-
+  @Test
+public void testD_UpdateConsumes() {
+  
+    WaitForAsyncUtils.waitForFxEvents(); 
+    TableView<ConsumesBean> table = lookup("#tableConsumes").query();   
+    if (table.getItems().isEmpty()) {
+        testC_AddConsumes(); 
         WaitForAsyncUtils.waitForFxEvents();
-
-        // --- Assertions ---
-        ConsumesBean updatedConsume = consumes.get(lastRowIndex); 
-
-        assertNotEquals("Animal Group should be updated", newAnimalGroup, updatedConsume.getAnimalGroup());
-        assertNotEquals("Product should be updated", newProduct, updatedConsume.getProduct());
-        assertEquals("Consume Amount should be updated", 123.45f, updatedConsume.getConsumeAmount(), 0.001); 
-        assertEquals("Date should be updated", newDate, updatedConsume.getDate());
-
-
     }
+    int lastRowIndex = table.getItems().size() - 1;
+    table.getSelectionModel().select(lastRowIndex);
+    WaitForAsyncUtils.waitForFxEvents();
+     
+  // --- Update Animal Group ---
+    ConsumesBean consumeToUpdate = table.getItems().get(lastRowIndex);
+    Node tcAnimalGroup = lookup("#tcAnimalGroup").nth(lastRowIndex + 1).query();   
+    doubleClickOn(tcAnimalGroup);   
+    ComboBox<AnimalGroupBean> comboBoxAG = lookup("#tcAnimalGroup .combo-box").queryAs(ComboBox.class);  
+    clickOn(comboBoxAG);
+    sleep(500);
+    Node optionAG = lookup(".list-view .list-cell").nth(0).query();
+    sleep(1000);
+    clickOn(optionAG);
+    AnimalGroupBean newValueAG = comboBoxAG.getValue();
+
+    
+    // --- Update Product ---
+    Node tcProduct = lookup("#tcProduct").nth(lastRowIndex + 1).query();
+    doubleClickOn(tcProduct);
+    WaitForAsyncUtils.waitForFxEvents();
+    ComboBox<ProductBean> comboBoxP = lookup("#tcProduct .combo-box").queryAs(ComboBox.class);
+    Node optionP = lookup(".list-view .list-cell").nth(0).query();
+    clickOn(optionP);
+    ProductBean newValueP = comboBoxP.getValue(); 
+     
+    // --- Update Consume Amount ---
+    Node tcConsumeAmount = lookup("#tcConsumeAmount").nth(lastRowIndex + 1).query();
+    doubleClickOn(tcConsumeAmount);
+    write("123.45f");
+    push(KeyCode.ENTER);
+    
+    // --- Update Date ---
+    Node tcDate = lookup("#tcDate").nth(lastRowIndex + 1).query();
+        doubleClickOn(tcDate);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        push(KeyCode.DELETE);
+        write("15/03/2025");
+        push(KeyCode.ENTER);
+
+
+    WaitForAsyncUtils.waitForFxEvents();
+    table.refresh();
+     
+    // --- Assertions ---
+    ConsumesBean updatedConsume = table.getItems().get(lastRowIndex); 
+    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    String modifiedDate = sdf.format(updatedConsume.getDate());
+    assertNotEquals("Animal Group should be updated"+newValueAG.getName(), newValueAG.getName(), updatedConsume.getAnimalGroup());
+    assertNotEquals("Product should be updated"+newValueP.getName(), newValueP.getName(), updatedConsume.getProduct());
+    assertEquals("Consume Amount should be updated", 123.45f, updatedConsume.getConsumeAmount(),0.001); 
+    assertEquals("The birthdate of the animal should be '15/03/2025'", "15/03/2025", modifiedDate);
+}
 
 
   @Test
@@ -237,7 +200,7 @@ public class ConsumesControllerTest extends ApplicationTest {
 
         rightClickOn(row);
         clickOn("#itemDelete");
-        clickOn("Yes");
+        clickOn(".dialog-pane .button-bar .button:text('Yes')");
         WaitForAsyncUtils.waitForFxEvents();
 
         ObservableList<ConsumesBean> items = table.getItems();
@@ -246,55 +209,7 @@ public class ConsumesControllerTest extends ApplicationTest {
         assertTrue("The deleted item should not be in the table", isDeleted);
         }
     }
-}
-=======
-        // Test for adding with valid data (replace with your actual data)
-        // ...
+
+
     }
 
-    @Test
-    public void testD_UpdateConsumes() {
-        WaitForAsyncUtils.waitForFxEvents();
-        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-        if (table.getItems().isEmpty()) {
-            testC_AddConsumes(); // Add a consume if the table is empty
-        }
-        ConsumesBean consumeToUpdate = table.getItems().get(0);
-
-        clickOn(table.lookup(".table-row-cell"));
-        doubleClickOn(table.lookup(".table-cell")); // Animal Group
-
-        // Simulate selection from ComboBox (replace with your actual selection method)
-        // Example: clickOn("New Animal Group Name");
-        push(KeyCode.ENTER);
-        WaitForAsyncUtils.waitForFxEvents();
-
-        ConsumesBean updatedConsume = table.getItems().get(0);
-        assertNotEquals("Animal Group should be updated", consumeToUpdate.getAnimalGroup(), updatedConsume.getAnimalGroup());
-
-        // Similar tests for Product and Consume Amount updates, including error handling
-        // ...
-    }
-
-
-    @Test
-    public void testE_DeleteConsumes() {
-        WaitForAsyncUtils.waitForFxEvents();
-        TableView<ConsumesBean> table = lookup("#tableConsumes").query();
-        if (table.getItems().isEmpty()) {
-            testC_AddConsumes(); // Add a consume if the table is empty
-        }
-        int initialSize = table.getItems().size();
-
-        clickOn(table.lookup(".table-row-cell"));
-        rightClickOn(table.lookup(".table-row-cell"));
-        clickOn("#miDelete");
-        clickOn("Yes");
-        WaitForAsyncUtils.waitForFxEvents();
-
-        int finalSize = table.getItems().size();
-        assertEquals("Table size should decrease by 1", initialSize - 1, finalSize);
-
-    }
-    }
->>>>>>> 5e7b117b69fdbed779be5a521872f37d7301276a
