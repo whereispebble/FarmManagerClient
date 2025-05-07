@@ -63,9 +63,12 @@ import net.sf.jasperreports.view.JasperViewer;
 
 
 /**
- * Controller class for managing the "Consumes" window in the application. Handles user interactions such as searching, adding, and deleting consume records. Provides methods for managing the view and controlling business logic interactions related to consume operations. Implements {@link Initializable} to initialize the controller and its elements.
+ * Controller class for managing the "Consumes" window in the application. 
+ * Handles user interactions such as searching, adding, and deleting consume records. 
+ * Provides methods for managing the view and controlling business logic interactions related to consume operations.
+ * Implements {@link Initializable} to initialize the controller and its elements.
  *
- * @author YourName
+ * @author Pablo
  */
 public class ConsumesController implements Initializable {
 
@@ -189,25 +192,10 @@ public class ConsumesController implements Initializable {
     private static final Logger LOGGER = Logger.getLogger("ConsumesController");
 
     /**
-     * Initializes the window and prepares the necessary components and data for the "Consumes" window. 
-     * This method is invoked automatically when the FXML is loaded, setting up the RestClient, 
-     * UI components, event handlers, and initial data.
-     *
-     * <p>
-     * It performs the following actions:</p>
-     * <ul>
-     * <li>Initializes the RestClient and sets up the Manager's ID.</li>
-     * <li>Initializes UI components such as buttons, tables, and other controls.</li>
-     * <li>Sets up event handlers for user interactions with the window.</li>
-     * <li>Loads and displays all consume records from the backend system.</li>
-     * <li>Shows the stage (window) to the user.</li>
-     * </ul>
-     *
-     * <p>
-     * If any error occurs during the initialization, an error message is displayed and logged.</p>
-     *
-     * @param url The location used to resolve relative paths for the root object (usually <code>null</code>).
-     * @param rb The resource bundle used to localize the root object (usually <code>null</code>).
+     * Initializes the controller class, setting up the interface components and event handlers.
+     * 
+     * @param url The location of the FXML file that is being loaded.
+     * @param rb  The resource bundle used to localize the controller's text.
      */
     public void initialize(URL url, ResourceBundle rb) {
 
@@ -260,21 +248,9 @@ public class ConsumesController implements Initializable {
     }
 
     /**
-     * Initializes the window components including the ComboBox, search field, buttons, and menu items. This method configures the basic UI elements and sets up their default states. It also handles the visibility of certain UI components based on the initial setup.
-     *
-     * <p>
-     * This method performs the following actions:</p>
-     * <ul>
-     * <li>Initializes and populates the ComboBox for search criteria with values like "Animal Group", "Product", and "Date".</li>
-     * <li>Sets a default value for the ComboBox and ensures it is not editable.</li>
-     * <li>Configures the search field with a prompt text to guide the user on its expected input.</li>
-     * <li>Sets up the "Search" button as enabled and the default action button for the UI.</li>
-     * <li>Disables the "Delete" menu item, ensuring it is inactive initially.</li>
-     * <li>Hides the date pickers used for filtering the records by date.</li>
-     * </ul>
-     *
-     * <p>
-     * If an error occurs during the initialization, it is logged and displayed to the user.</p>
+     * Initializes the window components including the ComboBox, search field, buttons, and menu items.
+     * This method configures the basic UI elements and sets up their default states.
+     * It also handles the visibility of certain UI components based on the initial setup.   
      *
      * @throws Exception if any error occurs while initializing components.
      */
@@ -318,20 +294,10 @@ public class ConsumesController implements Initializable {
     }
 
     /**
-     * Initializes the table and sets up each column with appropriate cell factories, data bindings, and edit commit handlers. This method configures the table for displaying consume records, with each column bound to a specific property of the `ConsumesBean` model. It also loads data for the columns (such as animal groups, products, and consume amounts) and sets up event handlers to allow editing of the table's contents.
-     *
-     * <p>
-     * This method performs the following actions:</p>
-     * <ul>
-     * <li>Configures the "Animal Group" column by fetching data for animal groups and setting up a ComboBox for selection.</li>
-     * <li>Sets up the "Product" column by fetching available products and using a ComboBox for product selection.</li>
-     * <li>Configures the "Consume Amount" column to allow numeric input and binds it to the corresponding property of `ConsumesBean`.</li>
-     * <li>Sets up the "Date" column with a custom DatePicker cell that allows users to pick and update the date for each consume record.</li>
-     * </ul>
-     *
-     * <p>
-     * If an error occurs while setting up any of the columns, it is logged and handled appropriately.</p>
-     *
+     * Initializes the table and sets up each column with appropriate cell factories, data bindings, and edit commit handlers. 
+     * This method configures the table for displaying consume records, with each column bound to a specific property of the `ConsumesBean` model. 
+     * It also loads data for the columns (such as animal groups, products, and consume amounts) and sets up event handlers to allow editing of the table's contents.
+     * 
      * @throws Exception if any error occurs while initializing the table or setting up the columns.
      */
     private void initializeTable() {
@@ -391,8 +357,7 @@ public class ConsumesController implements Initializable {
         LOGGER.log(Level.SEVERE, errorMsg, e);
     }
 
-         //Initialize column consume amount
-       //Initialize column consume amount
+      
 tcConsumeAmount.setCellValueFactory(new PropertyValueFactory<>("consumeAmount"));
 
 tcConsumeAmount.setCellFactory(TextFieldTableCell.forTableColumn(new StringConverter<Float>() {
@@ -428,7 +393,7 @@ tcConsumeAmount.setOnEditCommit(event -> {
     ConsumesBean consume = event.getRowValue();
     Float newValue = event.getNewValue();
     
-    if (newValue != null) { // Solo si el valor es válido
+    if (newValue != null) { 
         consume.setConsumeAmount(newValue);
         try {
             ConsumesManagerFactory.get().updateConsume(consume);
@@ -438,8 +403,6 @@ tcConsumeAmount.setOnEditCommit(event -> {
         }
     }
 });
-
-
 
         // Initialize the Date column with a custom DatePicker cell
         try {
@@ -526,7 +489,8 @@ private void showAlert(String title, String message) {
     }
 
     /**
-     * Updates the prompt text for the search field based on the selected search type. The prompt will change based on whether the search type is "Product", "Animal Group", or "Date".
+     * Updates the prompt text for the search field based on the selected search type. 
+     * The prompt will change based on whether the search type is "Product", "Animal Group", or "Date".
      *
      * @param searchType The type of search selected (Product, Animal Group, or Date).
      */
@@ -553,7 +517,9 @@ private void showAlert(String title, String message) {
     }
 
     /**
-     * Handles the search action when the search button is clicked. It performs a search based on the selected criteria (Product, Animal Group, Date) and displays the results in the table. If no search criteria is provided, it retrieves and displays all consumption records.
+     * Handles the search action when the search button is clicked.
+     * It performs a search based on the selected criteria (Product, Animal Group, Date) and displays the results in the table. 
+     * If no search criteria is provided, it retrieves and displays all consumption records.
      *
      * @param event The action event triggered by the search button click.
      */
@@ -621,7 +587,8 @@ private void showAlert(String title, String message) {
     }
 
     /**
-     * Handles the commit of an edit in the table's columns (e.g., when a user changes a value in a table cell). Validates the new value and updates the underlying data model accordingly.
+     * Handles the commit of an edit in the table's columns (e.g., when a user changes a value in a table cell).
+     * Validates the new value and updates the underlying data model accordingly.
      *
      * @param event The cell edit event triggered by editing a table cell.
      * @param fieldName The field name to which the edited value should be applied (e.g., "consumeAmount", "animalGroup", "product").
@@ -699,7 +666,9 @@ private void showAlert(String title, String message) {
 }
 
     /**
-     * Updates the consumption date for the currently selected item in the table. The method creates a clone of the selected `ConsumesBean` item, sets the updated date on the clone, and then updates the original item in the backend and the table.
+     * Updates the consumption date for the currently selected item in the table. 
+     * The method creates a clone of the selected `ConsumesBean` item, sets the updated date on the clone,
+     * and then updates the original item in the backend and the table.
      *
      * @param updatedDate The updated date to set for the consumption.
      * @throws CloneNotSupportedException If cloning the `ConsumesBean` object fails.
@@ -730,7 +699,9 @@ private void showAlert(String title, String message) {
 }
 
     /**
-     * Handles the create action. This method is invoked when a user clicks the "Add" button. It creates a new `ConsumesBean` object with initial values, persists it via the backend, and adds it to the table for display. The newly added item is also edited in the column "Quantity".
+     * Handles the create action. This method is invoked when a user clicks the "Add" button.
+     * It creates a new `ConsumesBean` object with initial values, persists it via the backend, and adds it to the table for display.
+     * The newly added item is also edited in the column "Quantity".
      *
      * @param event The action event triggered by clicking the "Add" button.
      */
@@ -817,7 +788,9 @@ private void handleDeleteAction(ActionEvent event) {
     }
 }
     /**
-     * Fetches and displays all consumes from the backend. If no consumes are found, it shows an informational alert. If any error occurs while fetching the data, it shows an error alert.
+     * Fetches and displays all consumes from the backend.
+     * If no consumes are found, it shows an informational alert.
+     * If any error occurs while fetching the data, it shows an error alert.
      */
     private void showAllConsumes() {
         try {
